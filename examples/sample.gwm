@@ -1,0 +1,18 @@
+// This is a simple file for testing purposes.
+/* (multiple line comments are possible as well)
+   See the other files for additional meaningful examples
+*/
+
+
+// The number of agents
+N = 1;
+
+// The list of global states.
+S1; S2;
+
+// The epistemic relation is a list of triples (agent, state, state)
+R = { (1, S1,S2) };
+
+// This tells that atom1 is true in S1 and S3, etc.
+atom1 = { S1 };
+atom2 = { S2 };
