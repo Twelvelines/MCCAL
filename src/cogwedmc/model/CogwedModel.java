@@ -9,28 +9,21 @@ public class CogwedModel {
     private int numAgents;
 
     // The list of global states
-    private Map<String, List<String>> gStates;
-
-    // The temporal relation, a set of SingleTransition elements
-    // (see SingleTransition.java for comments)
-    private Set<SingleTransition> rt;
+    private List<String> gStates;
 
     // A map from the string to the set of states where the atom is true.
     private Map<String, Set<String>> atoms;
 
-    // These are the epistemic relations. They need to be built
-    // after loading states etc. Notice that we store the equivalence
-    // sets of the relation. The idea is that to each agent (identified by
-    // a number) we associate a list of equivalence sets.
-
+    // These are the epistemic relations.
+    // The idea is that to each agent (identified by a number)
+    // we associate a list of equivalence sets.
     private Map<Integer, List<Set<String>>> rk;
 
     // Standard constructor;
     public CogwedModel() {
-        gStates = new HashMap<String, List<String>>();
-        rt = new HashSet<SingleTransition>();
-        atoms = new HashMap<String, Set<String>>();
-        rk = new HashMap<Integer, List<Set<String>>>();
+        gStates = new ArrayList<>();
+        atoms = new HashMap<>();
+        rk = new HashMap<>();
     }
 
     // Constructor with number of agents
@@ -51,15 +44,15 @@ public class CogwedModel {
     // add a global state to the map.
     // TODO: fail if we try to add an existing state? For the moment
     // we just ignore existing states.
-    public void addGlobalState(String id, List<String> gstate) {
-        if (!gStates.containsKey(id)) {
-            gStates.put(id, gstate);
+    public void addGlobalState(String id) {
+        if (!gStates.contains(id)) {
+            gStates.add(id);
         }
     }
 
     // add a single transition to the set of transitions
-    public void addTransition(SingleTransition s) {
-        rt.add(s);
+    public void addEdge(Integer agent, Set<String> edge) {
+        rk.get(agent).add(edge);
     }
 
     // Add an atom to the set of atoms.
@@ -76,36 +69,23 @@ public class CogwedModel {
         return numAgents;
     }
 
-    public Map<String, List<String>> getAllStates() {
+    public List<String> getAllStates() {
         return gStates;
-    }
-
-    public Set<SingleTransition> getTemporalRelation() {
-        return rt;
     }
 
     public Map<String, Set<String>> getAtoms() {
         return atoms;
     }
 
-    public Map<Integer, List<Set<String>>> getRK() {
-        return rk;
-    }
-
-    public List<Set<String>> getRK(int i) {
-        // TODO: Add error checking on i
-        return rk.get(i);
-    }
-
-
     // Get the tuple of local states for a given global state ID
     // TODO: we return null for non-existing id: shall we fail?
-    public List<String> getGlobalStateDetails(String id) {
-        if (gStates.containsKey(id)) {
-            return gStates.get(id);
-        } else {
-            return null;
+    public String getGlobalStateDetails(String id) {
+        for (String s : gStates) {
+            if (s.equals(id)) {
+                return s;
+            }
         }
+        return null;
     }
 
 
@@ -120,12 +100,13 @@ public class CogwedModel {
     }
 
 
+    /*
     // Get the successor states for a given source state
     // TODO: this could be implemented more efficiently (probably)
     // using a filter on an iterator
     public Set<String> getSuccessors(String source) {
         Set<String> result = new HashSet<String>();
-        for (SingleTransition st : rt) {
+        for (Edge st : edges) {
             if (st.getEdge1().equals(source)) {
                 result.add(st.getEdge2());
             }
@@ -137,7 +118,7 @@ public class CogwedModel {
     // TODO: probably using a filter on iterator is more efficient.
     public Set<String> getPredecessors(String destination) {
         Set<String> result = new HashSet<String>();
-        for (SingleTransition st : rt) {
+        for (Edge st : edges) {
             if (st.getEdge2().equals(destination)) {
                 result.add(st.getEdge1());
             }
@@ -158,8 +139,10 @@ public class CogwedModel {
         }
         return tmpResult;
     }
+    */
 
 
+    /*
     // Returns the set of global states epistemically equivalent to
     // aState for agent i
     public Set<String> getEquivalentStates(int i, String aState) {
@@ -175,25 +158,27 @@ public class CogwedModel {
         }
         return null;
     }
+    */
 
+    /*
     public void setupModel() {
         // TODO: add some consistency checks here.
         // For the moment we just build the map rk.
-        Set<String> gstatesIds = gStates.keySet();
 
         // we iterate over agents
         for (int i = 0; i < numAgents; i++) {
+
             // We start from the whole set of states and we split it
-            Set<String> tmpGStates = new HashSet<String>(gstatesIds);
-            List<Set<String>> eqClassesForAgent = new ArrayList<Set<String>>();
+            Set<String> tmpGStates = new HashSet<>(gStates);
+            List<Set<String>> eqClassesForAgent = new ArrayList<>();
 
             while (tmpGStates.size() > 0) {
                 // we pick the "first" element and we compute its equivalence
                 // class. To get an element, we convert the set to a
                 // List (I couldn't find a better way...)
-                List<String> listString = new ArrayList<String>(tmpGStates);
+                List<String> listString = new ArrayList<>(tmpGStates);
                 String aState = listString.get(0);
-                Set<String> equivalenceClass = new HashSet<String>();
+                Set<String> equivalenceClass = new HashSet<>();
                 // Now we iterate over the remaining states and we
                 // construct the equivalence class of the state at
                 // position randomPos
@@ -217,5 +202,6 @@ public class CogwedModel {
             rk.put(i, new ArrayList<Set<String>>(eqClassesForAgent));
         } // end for loop over agents
     }
+    */
 
 }

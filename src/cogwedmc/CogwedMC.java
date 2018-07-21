@@ -11,7 +11,6 @@ import cogwedmc.model.*;
 import cogwedmc.model.modelreader.*;
 import cogwedmc.model.modelreader.antlr.*;
 
-import cogwedmc.formula.*;
 import cogwedmc.formula.formulareader.*;
 import cogwedmc.formula.formulareader.antlr.*;
 
@@ -85,7 +84,7 @@ public class CogwedMC {
             System.out.println(dateFormat.format(cal.getTime()) + ": model generated");
 
             // Creating epistemic relations etc.
-            cwmodel.setupModel();
+            //cwmodel.setupModel();
 
             // We begin to parse the formula:
             ANTLRInputStream finput = new ANTLRInputStream(formula);
@@ -112,7 +111,6 @@ public class CogwedMC {
             System.out.println("Model size: ");
             System.out.println("  Number of agents: " + cwmodel.getNumberOfAgents());
             System.out.println("  Number of states: " + cwmodel.getAllStates().size());
-            System.out.println("  Number of transitions: " + cwmodel.getTemporalRelation().size());
             cal = Calendar.getInstance();
             System.out.println(dateFormat.format(cal.getTime()) + ": job done, see you soon!");
         } catch (Exception e) {

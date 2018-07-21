@@ -81,11 +81,11 @@ public class ExtractCogwedModelListener
     // to r. The relevant rule is edge
     @Override
     public void enterEdge(CogwedModelGrammarParser.EdgeContext ctx) {
-        cogwedmodel.addTransition(new SingleTransition(
-                Integer.parseInt(ctx.ID().get(0).getText()),
-                ctx.ID().get(1).getText(),
-                ctx.ID().get(2).getText()
-        ));
+        Set<String> edge = new HashSet<>();
+        Integer agent = Integer.parseInt(ctx.ID().get(0).getText());
+        edge.add(ctx.ID().get(1).getText());
+        edge.add(ctx.ID().get(2).getText());
+        cogwedmodel.addEdge(agent, edge);
     }
 
 

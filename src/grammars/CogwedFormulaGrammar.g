@@ -29,6 +29,7 @@ formula:
     | formula 'or' formula          # Disjunction
     | formula ('implies'|'->') formula          # Implication
     | '(' formula ')'               # parens
+    | 'K' '(' agentid ',' formula ')'    # Knowledge
     | ID                            # id
     ;
 
