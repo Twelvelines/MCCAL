@@ -57,66 +57,66 @@ public class CogwedMC {
         // standard input, see above)
         System.out.println("FRANCO: Filename is: " + this.filename);
 
-        try {
-            // TODO: improve exception handling :-)!
 
-            ANTLRInputStream input = new
-                    ANTLRInputStream(new FileInputStream(this.filename));
-            // create a lexer that feeds off of input CharStream
-            CogwedModelGrammarLexer lexer = new CogwedModelGrammarLexer(input);
-            // create a buffer of tokens pulled from the lexer
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            // create a parser that feeds off the tokens buffer
-            CogwedModelGrammarParser parser = new CogwedModelGrammarParser(tokens);
-            // begin parsing at cogwed_model_file rule
-            ParseTree tree = parser.cogwed_model_file();
-            // Just a standard walker
-            ParseTreeWalker walker = new ParseTreeWalker();
-            // Now we associate our extractor to the parser.
-            ExtractCogwedModelListener extractor =
-                    new ExtractCogwedModelListener(parser);
-            // and we walk the tree with our extractor.
-            walker.walk(extractor, tree);
-            // End of model parsing
-            // We finally get our model:
-            this.cwmodel = extractor.getModel();
-            cal = Calendar.getInstance();
-            System.out.println(dateFormat.format(cal.getTime()) + ": model generated");
-
-            // Creating epistemic relations etc.
-            //cwmodel.setupModel();
-
-            // We begin to parse the formula:
-            ANTLRInputStream finput = new ANTLRInputStream(formula);
-            CogwedFormulaGrammarLexer flexer = new
-                    CogwedFormulaGrammarLexer(finput);
-            // create a buffer of tokens pulled from the lexer
-            CommonTokenStream ftokens = new CommonTokenStream(flexer);
-            // create a parser that feeds off the tokens buffer
-            CogwedFormulaGrammarParser fparser = new CogwedFormulaGrammarParser(ftokens);
-            // begin parsing
-            ParseTree ftree = fparser.start();
-            // Just a standard walker
-            ParseTreeWalker fwalker = new ParseTreeWalker();
-            // Now we associate our extractor to the parser.
-            FormulaEvaluator evaluator = new FormulaEvaluator(fparser);
-            evaluator.setModel(cwmodel);
-            // and we walk the tree with our extractor.
-            fwalker.walk(evaluator, ftree);
-
-            // Et voila, job done
-            Set<String> solution = evaluator.getSolution();
-            System.out.println("The formula is true in " + solution.size() + " states");
-            //System.out.println("These are the states: "+evaluator.getSolution());
-            System.out.println("Model size: ");
-            System.out.println("  Number of agents: " + cwmodel.getNumberOfAgents());
-            System.out.println("  Number of states: " + cwmodel.getAllStates().size());
-            cal = Calendar.getInstance();
-            System.out.println(dateFormat.format(cal.getTime()) + ": job done, see you soon!");
-        } catch (Exception e) {
-            System.err.println("Something went wrong...");
+        // TODO: improve exception handling :-)!
+        ANTLRInputStream input;
+        try (FileInputStream fi = new FileInputStream(this.filename)) {
+            input = new ANTLRInputStream(fi);
+        } catch (IOException e) {
             System.err.println(e.getMessage());
+            return;
         }
+        // create a lexer that feeds off of input CharStream
+        CogwedModelGrammarLexer lexer = new CogwedModelGrammarLexer(input);
+        // create a buffer of tokens pulled from the lexer
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        // create a parser that feeds off the tokens buffer
+        CogwedModelGrammarParser parser = new CogwedModelGrammarParser(tokens);
+        // begin parsing at cogwed_model_file rule
+        ParseTree tree = parser.cogwed_model_file();
+        // Just a standard walker
+        ParseTreeWalker walker = new ParseTreeWalker();
+        // Now we associate our extractor to the parser.
+        ExtractCogwedModelListener extractor =
+                new ExtractCogwedModelListener(parser);
+        // and we walk the tree with our extractor.
+        walker.walk(extractor, tree);
+        // End of model parsing
+        // We finally get our model:
+        this.cwmodel = extractor.getModel();
+        cal = Calendar.getInstance();
+        System.out.println(dateFormat.format(cal.getTime()) + ": model generated");
+
+        // Creating epistemic relations etc.
+        //cwmodel.setupModel();
+
+        // We begin to parse the formula:
+        ANTLRInputStream finput = new ANTLRInputStream(formula);
+        CogwedFormulaGrammarLexer flexer = new
+                CogwedFormulaGrammarLexer(finput);
+        // create a buffer of tokens pulled from the lexer
+        CommonTokenStream ftokens = new CommonTokenStream(flexer);
+        // create a parser that feeds off the tokens buffer
+        CogwedFormulaGrammarParser fparser = new CogwedFormulaGrammarParser(ftokens);
+        // begin parsing
+        ParseTree ftree = fparser.start();
+        // Just a standard walker
+        ParseTreeWalker fwalker = new ParseTreeWalker();
+        // Now we associate our extractor to the parser.
+        FormulaEvaluator evaluator = new FormulaEvaluator(fparser);
+        evaluator.setModel(cwmodel);
+        // and we walk the tree with our extractor.
+        fwalker.walk(evaluator, ftree);
+
+        // Et voila, job done
+        Set<String> solution = evaluator.getSolution();
+        System.out.println("The formula is true in " + solution.size() + " states");
+        System.out.println("These are the states: "+evaluator.getSolution());
+        System.out.println("Model size: ");
+        System.out.println("  Number of agents: " + cwmodel.getNumberOfAgents());
+        System.out.println("  Number of states: " + cwmodel.getAllStates().size());
+        cal = Calendar.getInstance();
+        System.out.println(dateFormat.format(cal.getTime()) + ": job done, see you soon!");
 
 
     }

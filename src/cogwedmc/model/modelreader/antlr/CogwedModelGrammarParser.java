@@ -495,6 +495,10 @@ public class CogwedModelGrammarParser extends Parser {
 
 
     public static class EdgeContext extends ParserRuleContext {
+        public TerminalNode NONZEROINT() {
+            return getToken(CogwedModelGrammarParser.NONZEROINT, 0);
+        }
+
         public List<TerminalNode> ID() {
             return getTokens(CogwedModelGrammarParser.ID);
         }
@@ -538,13 +542,13 @@ public class CogwedModelGrammarParser extends Parser {
                 match(NONZEROINT);
                 setState(68);
                 match(T__5);
-                setState(67);
-                match(ID);
-                setState(68);
-                match(T__5);
                 setState(69);
                 match(ID);
                 setState(70);
+                match(T__5);
+                setState(71);
+                match(ID);
+                setState(72);
                 match(T__6);
             }
         } catch (RecognitionException re) {
@@ -603,9 +607,9 @@ public class CogwedModelGrammarParser extends Parser {
                 while (_la == ID) {
                     {
                         {
-                            setState(72);
-                            singledef();
                             setState(73);
+                            singledef();
+                            setState(74);
                             match(T__3);
                         }
                     }

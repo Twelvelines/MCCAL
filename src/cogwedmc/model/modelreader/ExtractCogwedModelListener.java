@@ -82,9 +82,9 @@ public class ExtractCogwedModelListener
     @Override
     public void enterEdge(CogwedModelGrammarParser.EdgeContext ctx) {
         Set<String> edge = new HashSet<>();
-        Integer agent = Integer.parseInt(ctx.ID().get(0).getText());
+        Integer agent = Integer.parseInt(ctx.NONZEROINT().getText());
+        edge.add(ctx.ID().get(0).getText());
         edge.add(ctx.ID().get(1).getText());
-        edge.add(ctx.ID().get(2).getText());
         cogwedmodel.addEdge(agent, edge);
     }
 

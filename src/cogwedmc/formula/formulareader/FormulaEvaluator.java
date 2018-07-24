@@ -41,14 +41,14 @@ public class FormulaEvaluator
     @Override
     public void exitId(CogwedFormulaGrammarParser.IdContext ctx) {
         // Nothing special, the model gives us the set of states
-        stack.push(new HashSet<String>(cogwedmodel.getStatesWhereTrue(ctx.ID().getText())));
+        stack.push(new HashSet<>(cogwedmodel.getStatesWhereTrue(ctx.ID().getText())));
     }
 
     // Negation: we have to take the complement of the set
     @Override
 
     public void exitNegation(CogwedFormulaGrammarParser.NegationContext ctx) {
-        Set<String> allStates = new HashSet<String>(this.cogwedmodel.getAllStates().keySet());
+        Set<String> allStates = new HashSet<>(this.cogwedmodel.getAllStates());
         Set<String> previous = stack.pop();
 
         // removeAll is the set difference
@@ -89,7 +89,7 @@ public class FormulaEvaluator
         Set<String> left = stack.pop();
 
         // These are all the states
-        Set<String> allStates = new HashSet<String>(this.cogwedmodel.getAllStates().keySet());
+        Set<String> allStates = new HashSet<String>(this.cogwedmodel.getAllStates());
 
         // We compute !a:
         allStates.removeAll(left);
@@ -100,6 +100,8 @@ public class FormulaEvaluator
         // And we push to stack:
         stack.push(new HashSet<String>(allStates));
     }
+
+    /*
 
     // EX is easy: just the pre-image of all the states in which
     // the formula is true.
@@ -153,12 +155,12 @@ public class FormulaEvaluator
 
         Set<String> tmpResult = new HashSet<String>();
 
-	/* IDEA!
-	   We don't need to iterate over all states, it is enough
-	   to check the ratio of the equiv. class w.r.t. the comparison
-	   operator: the truth value is the same for all the states in the
-	   equiv. class.
-	*/
+        // IDEA!
+        // We don't need to iterate over all states, it is enough
+        // to check the ratio of the equiv. class w.r.t. the comparison
+        // operator: the truth value is the same for all the states in the
+        // equiv. class.
+
         for (Set<String> eqClass : this.cogwedmodel.getRK(agentID - 1)) {
 
             // the set of states of the equivalence class in which the
@@ -200,6 +202,7 @@ public class FormulaEvaluator
         stack.push(new HashSet<String>(tmpResult));
     }
 
+    */
 
     public CogwedModel getModel() {
         return cogwedmodel;

@@ -34,11 +34,15 @@ public class CogwedModel {
 
     // Set the number of agents
     public void setNumberOfAgents(int n) {
-        if (n != 0) {
+        if (numAgents != 0) {
             System.err.print("CogwedModel: Number of agent already set\n");
             return;
         }
         numAgents = n;
+        while (n != 0) {
+            rk.put(n, new ArrayList<>());
+            n--;
+        }
     }
 
     // add a global state to the map.
@@ -75,6 +79,11 @@ public class CogwedModel {
 
     public Map<String, Set<String>> getAtoms() {
         return atoms;
+    }
+
+    public List<Set<String>> getRK(int i) {
+        // TODO: Add error checking on i
+        return rk.get(i);
     }
 
     // Get the tuple of local states for a given global state ID
@@ -142,7 +151,6 @@ public class CogwedModel {
     */
 
 
-    /*
     // Returns the set of global states epistemically equivalent to
     // aState for agent i
     public Set<String> getEquivalentStates(int i, String aState) {
@@ -158,7 +166,6 @@ public class CogwedModel {
         }
         return null;
     }
-    */
 
     /*
     public void setupModel() {
