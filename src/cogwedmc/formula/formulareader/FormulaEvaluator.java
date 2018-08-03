@@ -106,7 +106,7 @@ public class FormulaEvaluator
     // EX is easy: just the pre-image of all the states in which
     // the formula is true.
     @Override
-    public void exitEx(CogwedFormulaGrammarParser.ExContext ctx) {
+    public void exitEx(cogwedmc.formula.formulareader.antlr.CogwedFormulaGrammarParser.ExContext ctx) {
         Set<String> tmpResult = new HashSet<String>();
         Set<String> previous = stack.pop();
 
@@ -122,7 +122,7 @@ public class FormulaEvaluator
     // EG is computed using a fix-point, based on the idea that
     // EG p = p and (EX EG p)
     @Override
-    public void exitEg(CogwedFormulaGrammarParser.EgContext ctx) {
+    public void exitEg(cogwedmc.formula.formulareader.antlr.CogwedFormulaGrammarParser.EgContext ctx) {
 
         Set<String> previous = stack.pop();
 
@@ -141,7 +141,7 @@ public class FormulaEvaluator
 
     // This is the only complicated operator
     @Override
-    public void exitBelief(CogwedFormulaGrammarParser.BeliefContext ctx) {
+    public void exitBelief(cogwedmc.formula.formulareader.antlr.CogwedFormulaGrammarParser.BeliefContext ctx) {
         // all the states
         // Set<String> allStates = this.cogwedmodel.getAllStates().keySet();
 

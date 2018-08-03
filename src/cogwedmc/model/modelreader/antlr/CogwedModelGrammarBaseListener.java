@@ -1,5 +1,4 @@
-// Generated from /Users/franco/college/mysoft/mccogwed/src/grammars/CogwedModelGrammar.g by ANTLR 4.5
-package cogwedmc.model.modelreader.antlr;
+package cogwedmc.model.modelreader.antlr;// Generated from CogwedModelGrammar.g by ANTLR 4.7.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -47,30 +46,6 @@ public class CogwedModelGrammarBaseListener implements CogwedModelGrammarListene
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStatesdef(CogwedModelGrammarParser.StatesdefContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	//@Override public void enterStatedef(CogwedModelGrammarParser.StatedefContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	//@Override public void exitStatedef(CogwedModelGrammarParser.StatedefContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	//@Override public void enterLstateslist(CogwedModelGrammarParser.LstateslistContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	//@Override public void exitLstateslist(CogwedModelGrammarParser.LstateslistContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

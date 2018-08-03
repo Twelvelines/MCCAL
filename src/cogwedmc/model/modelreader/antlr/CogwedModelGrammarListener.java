@@ -1,5 +1,4 @@
-// Generated from /Users/franco/college/mysoft/mccogwed/src/grammars/CogwedModelGrammar.g by ANTLR 4.5
-package cogwedmc.model.modelreader.antlr;
+package cogwedmc.model.modelreader.antlr;// Generated from CogwedModelGrammar.g by ANTLR 4.7.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -39,26 +38,6 @@ public interface CogwedModelGrammarListener extends ParseTreeListener {
 	void exitStatesdef(CogwedModelGrammarParser.StatesdefContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CogwedModelGrammarParser#reldef}.
-	 * @param ctx the parse tree
-	 */
-	//void enterStatedef(CogwedModelGrammarParser.StatedefContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CogwedModelGrammarParser#statedef}.
-	 * @param ctx the parse tree
-	 */
-	//void exitStatedef(CogwedModelGrammarParser.StatedefContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CogwedModelGrammarParser#lstateslist}.
-	 * @param ctx the parse tree
-	 */
-	//void enterLstateslist(CogwedModelGrammarParser.LstateslistContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CogwedModelGrammarParser#lstateslist}.
-	 * @param ctx the parse tree
-	 */
-	//void exitLstateslist(CogwedModelGrammarParser.LstateslistContext ctx);
-	/**
-	 * Enter a parse tree produced by { CogwedModelGrammarParser#tempreldef}.
 	 * @param ctx the parse tree
 	 */
 	void enterReldef(CogwedModelGrammarParser.ReldefContext ctx);

@@ -55,14 +55,14 @@ public class ExtractCogwedModelListener
     // This is to store global states.
     // Entering the definition of a global state
     @Override
-    public void enterStatedef(CogwedModelGrammarParser.StatedefContext ctx) {
+    public void enterStatedef(cogwedmc.model.modelreader.antlr.CogwedModelGrammarParser.StatedefContext ctx) {
         curGStateID = ctx.ID().getText();
         curLStateList.clear();
     }
 
     // Entering the definition of a list of local states
     @Override
-    public void enterLstateslist(CogwedModelGrammarParser.LstateslistContext ctx) {
+    public void enterLstateslist(cogwedmc.model.modelreader.antlr.CogwedModelGrammarParser.LstateslistContext ctx) {
         for (TerminalNode id : ctx.ID()) {
             curLStateList.add(id.getText());
         }
@@ -70,7 +70,7 @@ public class ExtractCogwedModelListener
 
     // Exiting the definition of a global state
     @Override
-    public void exitStatedef(CogwedModelGrammarParser.StatedefContext ctx) {
+    public void exitStatedef(cogwedmc.model.modelreader.antlr.CogwedModelGrammarParser.StatedefContext ctx) {
         cogwedmodel.addGlobalState(new String(curGStateID), new ArrayList<String>(curLStateList));
     }
     // All done with global states

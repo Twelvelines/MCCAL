@@ -1,8 +1,6 @@
-// Generated from /Users/franco/college/mysoft/mccogwed/src/grammars/CogwedFormulaGrammar.g by ANTLR 4.5
-package cogwedmc.formula.formulareader.antlr;
+package cogwedmc.formula.formulareader.antlr;// Generated from CogwedFormulaGrammar.g by ANTLR 4.7.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -29,30 +27,6 @@ public class CogwedFormulaGrammarBaseListener implements CogwedFormulaGrammarLis
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBelief(CogwedFormulaGrammarParser.BeliefContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBelief(CogwedFormulaGrammarParser.BeliefContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterEg(CogwedFormulaGrammarParser.EgContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitEg(CogwedFormulaGrammarParser.EgContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterParens(CogwedFormulaGrammarParser.ParensContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -72,18 +46,6 @@ public class CogwedFormulaGrammarBaseListener implements CogwedFormulaGrammarLis
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDisjunction(CogwedFormulaGrammarParser.DisjunctionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterEx(CogwedFormulaGrammarParser.ExContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitEx(CogwedFormulaGrammarParser.ExContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -125,6 +87,18 @@ public class CogwedFormulaGrammarBaseListener implements CogwedFormulaGrammarLis
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterKnowledge(CogwedFormulaGrammarParser.KnowledgeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitKnowledge(CogwedFormulaGrammarParser.KnowledgeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterImplication(CogwedFormulaGrammarParser.ImplicationContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -132,42 +106,6 @@ public class CogwedFormulaGrammarBaseListener implements CogwedFormulaGrammarLis
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitImplication(CogwedFormulaGrammarParser.ImplicationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterComparisonexpr(CogwedFormulaGrammarParser.ComparisonexprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitComparisonexpr(CogwedFormulaGrammarParser.ComparisonexprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterComparisonoperator(CogwedFormulaGrammarParser.ComparisonoperatorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitComparisonoperator(CogwedFormulaGrammarParser.ComparisonoperatorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterComparisonvalue(CogwedFormulaGrammarParser.ComparisonvalueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitComparisonvalue(CogwedFormulaGrammarParser.ComparisonvalueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
