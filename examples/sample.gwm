@@ -11,7 +11,7 @@ N = 1;
 S1; S2;
 
 // The epistemic relation is a list of triples (agent, state, state)
-RT = { (1, S1, S2) };
+R = { (1, S1, S2) };
 
 // This tells that atom1 is true in S1 and S3, etc.
 atom1 = { S1 };

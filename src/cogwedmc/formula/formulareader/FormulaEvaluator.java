@@ -30,7 +30,7 @@ public class FormulaEvaluator
     public FormulaEvaluator(CogwedFormulaGrammarParser p) {
         this.parser = p;
         // In the constructor we create an empty stack.
-        stack = new Stack<Set<String>>();
+        stack = new Stack<>();
     }
 
     public void setModel(CogwedModel m) {

@@ -1,8 +1,14 @@
 package cogwedmc.model.modelreader.antlr;// Generated from CogwedModelGrammar.g by ANTLR 4.7.1
-import org.antlr.v4.runtime.atn.*;
-import org.antlr.v4.runtime.dfa.DFA;
+
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNDeserializer;
+import org.antlr.v4.runtime.atn.ParserATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.util.List;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
@@ -24,8 +30,7 @@ public class CogwedModelGrammarParser extends Parser {
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "'N'", "'n'", "'='", "';'", "'RT'", "'{'", "','", "'}'", "'('", 
-		"')'"
+		null, "'N'", "'n'", "'='", "';'", "'R'", "'{'", "','", "'}'", "'('", "')'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, null, null, null, null, null, null, null, null, null, null, "NONZEROINT", 
@@ -99,11 +104,11 @@ public class CogwedModelGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_cogwed_model_file; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).enterCogwed_model_file(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).enterCogwed_model_file(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).exitCogwed_model_file(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).exitCogwed_model_file(this);
 		}
 	}
 
@@ -142,11 +147,11 @@ public class CogwedModelGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_nofagents; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).enterNofagents(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).enterNofagents(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).exitNofagents(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).exitNofagents(this);
 		}
 	}
 
@@ -197,11 +202,11 @@ public class CogwedModelGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_statesdef; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).enterStatesdef(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).enterStatesdef(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).exitStatesdef(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).exitStatesdef(this);
 		}
 	}
 
@@ -212,7 +217,7 @@ public class CogwedModelGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(28); 
+			setState(28);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
@@ -224,7 +229,7 @@ public class CogwedModelGrammarParser extends Parser {
 				match(T__3);
 				}
 				}
-				setState(30); 
+				setState(30);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==ID );
@@ -254,11 +259,11 @@ public class CogwedModelGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_reldef; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).enterReldef(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).enterReldef(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).exitReldef(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).exitReldef(this);
 		}
 	}
 
@@ -322,11 +327,11 @@ public class CogwedModelGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_edge; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).enterEdge(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).enterEdge(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).exitEdge(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).exitEdge(this);
 		}
 	}
 
@@ -376,11 +381,11 @@ public class CogwedModelGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_atomsdef; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).enterAtomsdef(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).enterAtomsdef(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).exitAtomsdef(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).exitAtomsdef(this);
 		}
 	}
 
@@ -431,11 +436,11 @@ public class CogwedModelGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_singledef; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).enterSingledef(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).enterSingledef(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).exitSingledef(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).exitSingledef(this);
 		}
 	}
 
@@ -479,11 +484,11 @@ public class CogwedModelGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_gstateslist; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).enterGstateslist(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).enterGstateslist(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedModelGrammarListener ) ((CogwedModelGrammarListener)listener).exitGstateslist(this);
+			if ( listener instanceof CogwedModelGrammarListener) ((CogwedModelGrammarListener)listener).exitGstateslist(this);
 		}
 	}
 

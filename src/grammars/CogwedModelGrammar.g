@@ -47,7 +47,7 @@ statesdef: (ID ';')+;
 
 
 /* The epistemic relation is a list of triples (agent, state, state) */
-reldef: 'RT' '=' '{' edge (',' edge)* '}' ';';
+reldef: 'R' '=' '{' edge (',' edge)* '}' ';';
 // Just an INT and two IDs
 edge: '(' NONZEROINT ',' ID ',' ID ')';
 // End of reldef
