@@ -54,7 +54,7 @@ public class FormulaEvaluator
         // removeAll is the set difference
         // TODO: check what happens with empty difference
         allStates.removeAll(previous);
-        stack.push(new HashSet<String>(allStates));
+        stack.push(new HashSet<>(allStates));
     }
 
 
@@ -67,7 +67,7 @@ public class FormulaEvaluator
         // retainAll is the intersection.
         left.retainAll(right);
         // FIXME: check that everything is OK with an empty intersection
-        stack.push(new HashSet<String>(left));
+        stack.push(new HashSet<>(left));
     }
 
     // This is similar to conjunction above
@@ -77,7 +77,7 @@ public class FormulaEvaluator
         Set<String> right = stack.pop();
         // addAll is the union.
         left.addAll(right);
-        stack.push(new HashSet<String>(left));
+        stack.push(new HashSet<>(left));
     }
 
     // (a -> b) is (!a or b)
@@ -89,7 +89,7 @@ public class FormulaEvaluator
         Set<String> left = stack.pop();
 
         // These are all the states
-        Set<String> allStates = new HashSet<String>(this.cogwedmodel.getAllStates());
+        Set<String> allStates = new HashSet<>(this.cogwedmodel.getAllStates());
 
         // We compute !a:
         allStates.removeAll(left);
@@ -98,7 +98,7 @@ public class FormulaEvaluator
         allStates.addAll(right);
 
         // And we push to stack:
-        stack.push(new HashSet<String>(allStates));
+        stack.push(new HashSet<>(allStates));
     }
 
     /*
@@ -145,7 +145,7 @@ public class FormulaEvaluator
         // all the states
         // Set<String> allStates = this.cogwedmodel.getAllStates().keySet();
 
-        // The set of states where the formula is true:
+        // The set of states where the inner formula is true:
         Set<String> previous = stack.pop();
 
         float value = Float.parseFloat(ctx.comparisonexpr().comparisonvalue().getText());
@@ -201,8 +201,25 @@ public class FormulaEvaluator
         // Pushing the result to the stack
         stack.push(new HashSet<String>(tmpResult));
     }
-
     */
+
+
+    @Override
+    public void exitKnowledge(CogwedFormulaGrammarParser.KnowledgeContext ctx) {
+        // List<String> allStates = this.cogwedmodel.getAllStates();    // all the states
+        Set<String> previous = stack.pop();    // The set of states where the inner formula is true
+        int agent = Integer.valueOf(ctx.agentid().getText());
+        Set<String> result = new HashSet<>();
+
+        for (Set<String> rk : cogwedmodel.getRK(agent)) {
+            if (previous.containsAll(rk)) {    // if both of the pair of states are among the previous true states
+                result.addAll(rk);
+            }    // otherwise cannot distinguish, meaning the agent doesn't know
+        }
+
+        // Pushing the result to the stack
+        stack.push(new HashSet<>(result));
+    }
 
     public CogwedModel getModel() {
         return cogwedmodel;
