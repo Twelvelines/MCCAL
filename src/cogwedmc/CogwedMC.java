@@ -113,12 +113,16 @@ public class CogwedMC {
         System.out.println("The formula is true in " + solution.size() + " states");
         System.out.println("These are the states: "+evaluator.getSolution());
         System.out.println("Model size: ");
-        System.out.println("  Number of agents: " + cwmodel.getNumberOfAgents());
+        int numAgents = cwmodel.getNumberOfAgents();
+        System.out.println("  Number of agents: " + numAgents);
         System.out.println("  Number of states: " + cwmodel.getAllStates().size());
+        int numRelations = 0;
+        for (int i = 0; i < numAgents; i++) {
+            numRelations += cwmodel.getRelationsOfAgent(i+1).size();
+        }
+        System.out.println("  Number of equivalence relations: " + numRelations);
         cal = Calendar.getInstance();
         System.out.println(dateFormat.format(cal.getTime()) + ": job done, see you soon!");
-
-
     }
 
 }

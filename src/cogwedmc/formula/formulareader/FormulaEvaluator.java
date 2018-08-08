@@ -2,10 +2,6 @@ package cogwedmc.formula.formulareader;
 
 import java.util.*;
 
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.misc.Interval;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import cogwedmc.formula.formulareader.antlr.*;
 import cogwedmc.model.*;
 
@@ -161,7 +157,7 @@ public class FormulaEvaluator
         // operator: the truth value is the same for all the states in the
         // equiv. class.
 
-        for (Set<String> eqClass : this.cogwedmodel.getRK(agentID - 1)) {
+        for (Set<String> eqClass : this.cogwedmodel.getRelationsOfAgent(agentID - 1)) {
 
             // the set of states of the equivalence class in which the
             // formula is true: it's just the intersection:
@@ -213,7 +209,7 @@ public class FormulaEvaluator
 
         for (String state : previous) {     // for every states in the previous true states
             boolean allRelatedStatesAreInThePreviousTrueStates = true;
-            for (Set<String> rk : cogwedmodel.getRK(agent)) {    // examine all equiv relations
+            for (Set<String> rk : cogwedmodel.getRelationsOfAgent(agent)) {    // examine all equiv relations
                 if (!rk.contains(state)) {     // rid of the irrelevant
                     continue;
                 }    // the rest relations contains the current state

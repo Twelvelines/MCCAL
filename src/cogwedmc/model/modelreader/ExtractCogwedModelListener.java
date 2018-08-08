@@ -21,10 +21,13 @@ public class ExtractCogwedModelListener
     // This is the model we want to build.
     private CogwedModel cogwedmodel;
 
+    // Temporarily storing number of agents
+    private int numAgent;
+
 
     // Some variables to store temporary values.    
     // the id of the current global state
-    private String curGStateID;
+    //private String curGStateID;
     /*
     // A list of local states;
     private List<String> curLStateList = new ArrayList<String>();
@@ -47,7 +50,8 @@ public class ExtractCogwedModelListener
     // idea is simple).
     @Override
     public void enterNofagents(CogwedModelGrammarParser.NofagentsContext ctx) {
-        cogwedmodel.setNumberOfAgents(Integer.parseInt(ctx.NONZEROINT().getText()));
+        numAgent = Integer.parseInt(ctx.NONZEROINT().getText());
+        cogwedmodel.setNumberOfAgents(numAgent);
     }
 
 
@@ -57,7 +61,17 @@ public class ExtractCogwedModelListener
     @Override
     public void enterStatesdef(cogwedmc.model.modelreader.antlr.CogwedModelGrammarParser.StatesdefContext ctx) {
         for (TerminalNode i : ctx.ID()) {
-            cogwedmodel.addGlobalState(i.getText());
+            String curState = i.getText();
+            cogwedmodel.addGlobalState(curState);
+            /*
+            // also adding implicit relations, thus making model relations explicit
+            Set<String> edge = new HashSet<>();
+            for (int agent = 1; agent <= numAgent; agent++) {
+                edge.add(curState);
+                edge.add(curState);
+                cogwedmodel.addRelations(agent, edge);
+            }
+            */
         }
     }
 
@@ -87,7 +101,7 @@ public class ExtractCogwedModelListener
         Integer agent = Integer.parseInt(ctx.NONZEROINT().getText());
         edge.add(ctx.ID().get(0).getText());
         edge.add(ctx.ID().get(1).getText());
-        cogwedmodel.addEdge(agent, edge);
+        cogwedmodel.addRelations(agent, edge);
     }
 
 

@@ -54,8 +54,8 @@ public class CogwedModel {
         }
     }
 
-    // add a single transition to the set of transitions
-    public void addEdge(Integer agent, Set<String> edge) {
+    // add a relation
+    public void addRelations(Integer agent, Set<String> edge) {
         rk.get(agent).add(edge);
     }
 
@@ -81,9 +81,13 @@ public class CogwedModel {
         return atoms;
     }
 
-    public List<Set<String>> getRK(int i) {
+    public Map<Integer, List<Set<String>>> getRK() {
+        return rk;
+    }
+
+    public List<Set<String>> getRelationsOfAgent(int agent) {
         // TODO: Add error checking on i
-        return rk.get(i);
+        return rk.get(agent);
     }
 
     // Get the tuple of local states for a given global state ID
