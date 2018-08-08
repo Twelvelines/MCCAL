@@ -211,10 +211,21 @@ public class FormulaEvaluator
         int agent = Integer.valueOf(ctx.agentid().getText());
         Set<String> result = new HashSet<>();
 
-        for (Set<String> rk : cogwedmodel.getRK(agent)) {
-            if (previous.containsAll(rk)) {    // if both of the pair of states are among the previous true states
-                result.addAll(rk);
-            }    // otherwise cannot distinguish, meaning the agent doesn't know
+        for (String state : previous) {     // for every states in the previous true states
+            boolean allRelatedStatesAreInThePreviousTrueStates = true;
+            for (Set<String> rk : cogwedmodel.getRK(agent)) {    // examine all equiv relations
+                if (!rk.contains(state)) {     // rid of the irrelevant
+                    continue;
+                }    // the rest relations contains the current state
+                if (!previous.containsAll(rk)) {
+                    // if either states in the relation is not among the previous true states
+                    allRelatedStatesAreInThePreviousTrueStates = false;
+                    break;
+                }
+            }
+            if (allRelatedStatesAreInThePreviousTrueStates) {
+                result.add(state);
+            }
         }
 
         // Pushing the result to the stack
