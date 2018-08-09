@@ -63,7 +63,6 @@ public class ExtractCogwedModelListener
         for (TerminalNode i : ctx.ID()) {
             String curState = i.getText();
             cogwedmodel.addGlobalState(curState);
-            /*
             // also adding implicit relations, thus making model relations explicit
             Set<String> edge = new HashSet<>();
             for (int agent = 1; agent <= numAgent; agent++) {
@@ -71,7 +70,6 @@ public class ExtractCogwedModelListener
                 edge.add(curState);
                 cogwedmodel.addRelations(agent, edge);
             }
-            */
         }
     }
 
