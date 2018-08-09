@@ -35,19 +35,28 @@ public class CogwedMC {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
+        if (args.length < 2 || args.length > 3) {
             // TODO: we should improve error checking (file exists, etc);
-            System.err.println("You need to provide a model file and a formula.");
-            System.err.println("Example: ");
-            System.out.println("$ java CogwedMC sample.gwm \"B[<.5](1,p1win)\"");
+            System.err.println("You need to provide a model file and a formula, ");
+            System.err.println("\tExample: ");
+            System.out.println("\t$ java CogwedMC sample.gwm \"K(1,p1win)\"");
+            System.err.println("Or, an extra state, ");
+            System.err.println("\tExample: ");
+            System.out.println("\t$ java CogwedMC sample.gwm \"K(1,p1win)\" S1");
             System.exit(1);
         }
 
         CogwedMC mc = new CogwedMC(args[0], args[1]);
-        mc.start();
+        boolean isStateProvided = false;
+        String providedState = null;
+        if (args.length == 3) {
+            isStateProvided = true;
+            providedState = args[2];
+        }
+        mc.start(isStateProvided, providedState);
     }
 
-    public void start() {
+    public void start(boolean isStateProvided, String providedState) {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
         Calendar cal = Calendar.getInstance();
@@ -109,9 +118,17 @@ public class CogwedMC {
         fwalker.walk(evaluator, ftree);
 
         // Et voila, job done
+        // Printing output
         Set<String> solution = evaluator.getSolution();
         System.out.println("The formula is true in " + solution.size() + " states");
-        System.out.println("These are the states: "+evaluator.getSolution());
+        if (isStateProvided) {
+            System.out.println("Under the provided state " + providedState + " the formula is " +
+                    solution.contains(providedState)
+            );
+        } else {
+            System.out.println("These are the states: "+evaluator.getSolution());
+        }
+        // Model info
         System.out.println("Model size: ");
         int numAgents = cwmodel.getNumberOfAgents();
         System.out.println("  Number of agents: " + numAgents);
