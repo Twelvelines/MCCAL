@@ -1,6 +1,6 @@
 # EpistemicMC
 Originally a fork from [fraimondi/mccogwed][1]\
-Utilising ANTLR for customising parser
+Utilising ANTLR for customising parser\
 **ANTLR version: 4.7.1**
 
 The project has an IDEA project structure, thus it is preferred to be opened under Intellij IDEA. Importation may be needed if opened from other development environment (such as Eclipse) as a whole project. 
