@@ -24,16 +24,21 @@ grammar CogwedFormulaGrammar;
 start: formula;
 
 formula:
-    ('!'|'not') formula                 # Negation
+    ('!'|'not') formula             # Negation
     | formula 'and' formula         # Conjunction
     | formula 'or' formula          # Disjunction
-    | formula ('implies'|'->') formula          # Implication
+    | formula ('implies'|'->') formula           # Implication
     | '(' formula ')'               # parens
-    | 'K' '(' agentid ',' formula ')'    # knowledge
+    | 'K' '(' agentid ',' formula ')'     # Knowledge
+    | '[' an_formula ']' formula 		# Announcement
+    | '<<' agentlist '>>' formula   # Coalitional_announcement
     | ID                            # id
     ;
 
+an_formula: formula;
+
 agentid:  INT;
+agentlist: agentid (',' agentid )* ;
 
 INT: [0-9]+;
 

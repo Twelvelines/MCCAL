@@ -133,11 +133,11 @@ public class CogwedMC {
         int numAgents = cwmodel.getNumberOfAgents();
         System.out.println("  Number of agents: " + numAgents);
         System.out.println("  Number of states: " + cwmodel.getAllStates().size());
-        int numRelations = 0;
+        int numEquivSets = 0;
         for (int i = 0; i < numAgents; i++) {
-            numRelations += cwmodel.getRelationsOfAgent(i+1).size();
+            numEquivSets += cwmodel.getESofAgent(i+1).size();
         }
-        System.out.println("  Number of edges: " + numRelations);
+        System.out.println("  Number of equivalence sets: " + numEquivSets);
         cal = Calendar.getInstance();
         System.out.println(dateFormat.format(cal.getTime()) + ": job done, see you soon!");
     }

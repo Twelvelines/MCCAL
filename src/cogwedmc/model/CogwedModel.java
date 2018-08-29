@@ -54,9 +54,36 @@ public class CogwedModel {
         }
     }
 
-    // add a relation
-    public void addRelations(Integer agent, Set<String> edge) {
-        rk.get(agent).add(edge);
+    // add a relation to the equiv. sets
+    // state 1 and 2 are a pair of indistinguishable states specified in input model file
+    // the two states are possibly identical, thus no need for any state to be added
+    public void addRelation(Integer agent, String state1, String state2) {
+        boolean belongingClusterFound = false;
+        for (Set<String> equivSet : rk.get(agent)) {
+            if (equivSet.contains(state1)) {
+                if (!state1.equals(state2)) {
+                    equivSet.add(state2);
+                }
+                belongingClusterFound = true;
+                break;
+            }
+            if (equivSet.contains(state2)) {
+                if (!state1.equals(state2)) {
+                    equivSet.add(state1);
+                }
+                belongingClusterFound = true;
+                break;
+            }
+        }
+        if (!belongingClusterFound) {
+            // add a brand new equiv. set
+            Set<String> newSet = new HashSet<>();
+            newSet.add(state1);
+            if (!state1.equals(state2)) {
+                newSet.add(state2);
+            }
+            rk.get(agent).add(newSet);
+        }
     }
 
     // Add an atom to the set of atoms.
@@ -85,7 +112,7 @@ public class CogwedModel {
         return rk;
     }
 
-    public List<Set<String>> getRelationsOfAgent(int agent) {
+    public List<Set<String>> getESofAgent(int agent) {
         // TODO: Add error checking on i
         return rk.get(agent);
     }

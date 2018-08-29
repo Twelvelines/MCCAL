@@ -157,7 +157,7 @@ public class FormulaEvaluator
         // operator: the truth value is the same for all the states in the
         // equiv. class.
 
-        for (Set<String> eqClass : this.cogwedmodel.getRelationsOfAgent(agentID - 1)) {
+        for (Set<String> eqClass : this.cogwedmodel.getESofAgent(agentID - 1)) {
 
             // the set of states of the equivalence class in which the
             // formula is true: it's just the intersection:
@@ -209,7 +209,7 @@ public class FormulaEvaluator
 
         for (String state : previous) {     // for every states in the previous true states
             boolean allRelatedStatesAreInThePreviousTrueStates = true;
-            for (Set<String> rk : cogwedmodel.getRelationsOfAgent(agent)) {    // examine all equiv relations
+            for (Set<String> rk : cogwedmodel.getESofAgent(agent)) {    // examine all equiv relations
                 if (!rk.contains(state)) {     // rid of the irrelevant
                     continue;
                 }    // the rest relations contains the current state
@@ -226,6 +226,13 @@ public class FormulaEvaluator
 
         // Pushing the result to the stack
         stack.push(new HashSet<>(result));
+    }
+
+    @Override
+    public void exitAnnouncement(CogwedFormulaGrammarParser.AnnouncementContext ctx) {
+        Set<String> examined = stack.pop();
+        Set<String> announced = stack.pop();
+
     }
 
     public CogwedModel getModel() {

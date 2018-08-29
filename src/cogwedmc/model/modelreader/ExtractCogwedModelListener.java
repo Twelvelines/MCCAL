@@ -22,7 +22,9 @@ public class ExtractCogwedModelListener
     private CogwedModel cogwedmodel;
 
     // Temporarily storing number of agents
-    private int numAgent;
+    //private int numAgent;
+    // Temporarily storing all states for constructing implicit relations
+    //List<String> gStates;
 
 
     // Some variables to store temporary values.    
@@ -50,8 +52,7 @@ public class ExtractCogwedModelListener
     // idea is simple).
     @Override
     public void enterNofagents(CogwedModelGrammarParser.NofagentsContext ctx) {
-        numAgent = Integer.parseInt(ctx.NONZEROINT().getText());
-        cogwedmodel.setNumberOfAgents(numAgent);
+        cogwedmodel.setNumberOfAgents(Integer.parseInt(ctx.NONZEROINT().getText()));
     }
 
 
@@ -63,13 +64,6 @@ public class ExtractCogwedModelListener
         for (TerminalNode i : ctx.ID()) {
             String curState = i.getText();
             cogwedmodel.addGlobalState(curState);
-            // also adding implicit relations, thus making model relations explicit
-            Set<String> edge = new HashSet<>();
-            for (int agent = 1; agent <= numAgent; agent++) {
-                edge.add(curState);
-                edge.add(curState);
-                cogwedmodel.addRelations(agent, edge);
-            }
         }
     }
 
@@ -91,15 +85,23 @@ public class ExtractCogwedModelListener
     */
 
 
-    // Relation: this is a bit easier, we just add Edge
-    // to r. The relevant rule is edge
+    // Add the relation to rk
     @Override
     public void enterEdge(CogwedModelGrammarParser.EdgeContext ctx) {
-        Set<String> edge = new HashSet<>();
         Integer agent = Integer.parseInt(ctx.NONZEROINT().getText());
-        edge.add(ctx.ID().get(0).getText());
-        edge.add(ctx.ID().get(1).getText());
-        cogwedmodel.addRelations(agent, edge);
+        cogwedmodel.addRelation(agent, ctx.ID().get(0).getText(), ctx.ID().get(1).getText());
+    }
+
+    // Add implicit relations
+
+    @Override
+    public void exitReldef(CogwedModelGrammarParser.ReldefContext ctx) {
+        List<String> states = cogwedmodel.getAllStates();
+        for (String s : states) {
+            for (int agent = 1; agent <= cogwedmodel.getNumberOfAgents(); agent++) {
+                cogwedmodel.addRelation(agent, s, s);
+            }
+        }
     }
 
 

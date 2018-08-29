@@ -1,4 +1,6 @@
-package cogwedmc.formula.formulareader.antlr;// Generated from CogwedFormulaGrammar.g by ANTLR 4.7.1
+// Generated from CogwedFormulaGrammar.g by ANTLR 4.7.1
+package cogwedmc.formula.formulareader.antlr;
+
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -53,6 +55,18 @@ public interface CogwedFormulaGrammarListener extends ParseTreeListener {
 	 */
 	void exitNegation(CogwedFormulaGrammarParser.NegationContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code Announcement}
+	 * labeled alternative in {@link CogwedFormulaGrammarParser#formula}.
+	 * @param ctx the parse tree
+	 */
+	void enterAnnouncement(CogwedFormulaGrammarParser.AnnouncementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Announcement}
+	 * labeled alternative in {@link CogwedFormulaGrammarParser#formula}.
+	 * @param ctx the parse tree
+	 */
+	void exitAnnouncement(CogwedFormulaGrammarParser.AnnouncementContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code Conjunction}
 	 * labeled alternative in {@link CogwedFormulaGrammarParser#formula}.
 	 * @param ctx the parse tree
@@ -89,6 +103,18 @@ public interface CogwedFormulaGrammarListener extends ParseTreeListener {
 	 */
 	void exitKnowledge(CogwedFormulaGrammarParser.KnowledgeContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code Coalitional_announcement}
+	 * labeled alternative in {@link CogwedFormulaGrammarParser#formula}.
+	 * @param ctx the parse tree
+	 */
+	void enterCoalitional_announcement(CogwedFormulaGrammarParser.Coalitional_announcementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Coalitional_announcement}
+	 * labeled alternative in {@link CogwedFormulaGrammarParser#formula}.
+	 * @param ctx the parse tree
+	 */
+	void exitCoalitional_announcement(CogwedFormulaGrammarParser.Coalitional_announcementContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code Implication}
 	 * labeled alternative in {@link CogwedFormulaGrammarParser#formula}.
 	 * @param ctx the parse tree
@@ -101,6 +127,16 @@ public interface CogwedFormulaGrammarListener extends ParseTreeListener {
 	 */
 	void exitImplication(CogwedFormulaGrammarParser.ImplicationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CogwedFormulaGrammarParser#an_formula}.
+	 * @param ctx the parse tree
+	 */
+	void enterAn_formula(CogwedFormulaGrammarParser.An_formulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CogwedFormulaGrammarParser#an_formula}.
+	 * @param ctx the parse tree
+	 */
+	void exitAn_formula(CogwedFormulaGrammarParser.An_formulaContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CogwedFormulaGrammarParser#agentid}.
 	 * @param ctx the parse tree
 	 */
@@ -110,4 +146,14 @@ public interface CogwedFormulaGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAgentid(CogwedFormulaGrammarParser.AgentidContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CogwedFormulaGrammarParser#agentlist}.
+	 * @param ctx the parse tree
+	 */
+	void enterAgentlist(CogwedFormulaGrammarParser.AgentlistContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CogwedFormulaGrammarParser#agentlist}.
+	 * @param ctx the parse tree
+	 */
+	void exitAgentlist(CogwedFormulaGrammarParser.AgentlistContext ctx);
 }
