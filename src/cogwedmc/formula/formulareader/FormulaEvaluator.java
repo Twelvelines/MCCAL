@@ -18,6 +18,8 @@ public class FormulaEvaluator
 
     // This is the model where we want to evaluate the formula.
     private CogwedModel cogwedmodel;
+    // announcement cache
+    private CogwedModel aCache;
 
     // This is the stack where we store temporary results.
     private Stack<Set<String>> stack;
@@ -96,6 +98,57 @@ public class FormulaEvaluator
         // And we push to stack:
         stack.push(new HashSet<>(allStates));
     }
+
+
+    @Override
+    public void exitKnowledge(CogwedFormulaGrammarParser.KnowledgeContext ctx) {
+        // List<String> allStates = this.cogwedmodel.getAllStates();    // all the states
+        Set<String> previous = stack.pop();    // The set of states where the inner formula is true
+        int agent = Integer.valueOf(ctx.agentid().getText());
+        Set<String> result = new HashSet<>();
+
+        for (String state : previous) {     // for every states in the previous true states
+            boolean allRelatedStatesAreInThePreviousTrueStates = true;
+            for (Set<String> rk : cogwedmodel.getESofAgent(agent)) {    // examine all equiv relations
+                if (!rk.contains(state)) {     // rid of the irrelevant
+                    continue;
+                }    // the rest relations contains the current state
+                if (!previous.containsAll(rk)) {
+                    // if either states in the relation is not among the previous true states
+                    allRelatedStatesAreInThePreviousTrueStates = false;
+                    break;
+                }
+            }
+            if (allRelatedStatesAreInThePreviousTrueStates) {
+                result.add(state);
+            }
+        }
+
+        // Pushing the result to the stack
+        stack.push(new HashSet<>(result));
+    }
+
+    @Override
+    public void exitAnnouncement(CogwedFormulaGrammarParser.AnnouncementContext ctx) {
+        cogwedmodel = aCache;
+
+    }
+
+    @Override
+    public void exitAn_formula(CogwedFormulaGrammarParser.An_formulaContext ctx) {
+        Set<String> announced = stack.pop();
+        aCache = cogwedmodel;
+        cogwedmodel = cogwedmodel.getShrunkModel(announced);
+    }
+
+    public CogwedModel getModel() {
+        return cogwedmodel;
+    }
+
+    public Set<String> getSolution() {
+        return stack.peek();
+    }
+
 
     /*
 
@@ -198,49 +251,5 @@ public class FormulaEvaluator
         stack.push(new HashSet<String>(tmpResult));
     }
     */
-
-
-    @Override
-    public void exitKnowledge(CogwedFormulaGrammarParser.KnowledgeContext ctx) {
-        // List<String> allStates = this.cogwedmodel.getAllStates();    // all the states
-        Set<String> previous = stack.pop();    // The set of states where the inner formula is true
-        int agent = Integer.valueOf(ctx.agentid().getText());
-        Set<String> result = new HashSet<>();
-
-        for (String state : previous) {     // for every states in the previous true states
-            boolean allRelatedStatesAreInThePreviousTrueStates = true;
-            for (Set<String> rk : cogwedmodel.getESofAgent(agent)) {    // examine all equiv relations
-                if (!rk.contains(state)) {     // rid of the irrelevant
-                    continue;
-                }    // the rest relations contains the current state
-                if (!previous.containsAll(rk)) {
-                    // if either states in the relation is not among the previous true states
-                    allRelatedStatesAreInThePreviousTrueStates = false;
-                    break;
-                }
-            }
-            if (allRelatedStatesAreInThePreviousTrueStates) {
-                result.add(state);
-            }
-        }
-
-        // Pushing the result to the stack
-        stack.push(new HashSet<>(result));
-    }
-
-    @Override
-    public void exitAnnouncement(CogwedFormulaGrammarParser.AnnouncementContext ctx) {
-        Set<String> examined = stack.pop();
-        Set<String> announced = stack.pop();
-
-    }
-
-    public CogwedModel getModel() {
-        return cogwedmodel;
-    }
-
-    public Set<String> getSolution() {
-        return stack.peek();
-    }
 
 }

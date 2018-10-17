@@ -15,15 +15,14 @@ public class CogwedModel {
     private Map<String, Set<String>> atoms;
 
     // These are the epistemic relations.
-    // The idea is that to each agent (identified by a number)
-    // we associate a list of equivalence sets.
-    private Map<Integer, List<Set<String>>> rk;
+    // The idea is that to each agent (identified by a number) we associate a list of equivalence sets.
+    private Map<Integer, List<Set<String>>> equivRels;
 
     // Standard constructor;
     public CogwedModel() {
         gStates = new ArrayList<>();
         atoms = new HashMap<>();
-        rk = new HashMap<>();
+        equivRels = new HashMap<>();
     }
 
     // Constructor with number of agents
@@ -40,7 +39,7 @@ public class CogwedModel {
         }
         numAgents = n;
         while (n != 0) {
-            rk.put(n, new ArrayList<>());
+            equivRels.put(n, new ArrayList<>());
             n--;
         }
     }
@@ -59,7 +58,7 @@ public class CogwedModel {
     // the two states are possibly identical, thus no need for any state to be added
     public void addRelation(Integer agent, String state1, String state2) {
         boolean belongingClusterFound = false;
-        for (Set<String> equivSet : rk.get(agent)) {
+        for (Set<String> equivSet : equivRels.get(agent)) {
             if (equivSet.contains(state1)) {
                 if (!state1.equals(state2)) {
                     equivSet.add(state2);
@@ -82,7 +81,7 @@ public class CogwedModel {
             if (!state1.equals(state2)) {
                 newSet.add(state2);
             }
-            rk.get(agent).add(newSet);
+            equivRels.get(agent).add(newSet);
         }
     }
 
@@ -109,12 +108,12 @@ public class CogwedModel {
     }
 
     public Map<Integer, List<Set<String>>> getRK() {
-        return rk;
+        return equivRels;
     }
 
     public List<Set<String>> getESofAgent(int agent) {
         // TODO: Add error checking on i
-        return rk.get(agent);
+        return equivRels.get(agent);
     }
 
     // Get the tuple of local states for a given global state ID
@@ -139,6 +138,57 @@ public class CogwedModel {
         }
     }
 
+
+    // Returns the set of global states epistemically equivalent to
+    // aState for agent i
+    public Set<String> getEquivalentStates(int i, String aState) {
+        // We get the eq. classes for this agent:
+        List<Set<String>> eqClasses = equivRels.get(i);
+
+        // We iterate over the classes to see if there is one that
+        // contains aState
+        for (Set<String> aClass : eqClasses) {
+            if (aClass.contains(aState)) {
+                return aClass;
+            }
+        }
+        return null;
+    }
+
+
+    // Get a new model shrunk from the original one based on specified valid states
+    // TODO better algorithm to speed up the elimination of invalid states?
+    public CogwedModel getShrunkModel(Set<String> validStates) {
+        Map<String, Set<String>> shrunkAtoms = new HashMap<>(atoms);
+        Map<Integer, List<Set<String>>> shrunkEquivRels = new HashMap<>(equivRels);
+        for (Map.Entry<String, Set<String>> atom : shrunkAtoms.entrySet()) {
+            // TODO possibly use a filter here?
+            List<String> elimination = new ArrayList<>();
+            for (String state : atom.getValue()) {
+                if (!validStates.contains(state)) {
+                    elimination.add(state);
+                }
+            }
+            atom.getValue().removeAll(elimination);
+        }
+        for (Map.Entry<Integer, List<Set<String>>> equivRel : shrunkEquivRels.entrySet()) {
+            for (Set<String> equivSet : equivRel.getValue()) {
+                List<String> elimination = new ArrayList<>();
+                for (String state : equivSet) {
+                    if (!validStates.contains(state)) {
+                        elimination.add(state);
+                    }
+                }
+                equivSet.removeAll(elimination);
+            }
+        }
+        CogwedModel shrunk = new CogwedModel();
+        shrunk.numAgents = numAgents;
+        shrunk.gStates = new ArrayList<>(validStates);
+        shrunk.atoms = shrunkAtoms;
+        shrunk.equivRels = shrunkEquivRels;
+        return shrunk;
+    }
 
     /*
     // Get the successor states for a given source state
@@ -181,22 +231,6 @@ public class CogwedModel {
     }
     */
 
-
-    // Returns the set of global states epistemically equivalent to
-    // aState for agent i
-    public Set<String> getEquivalentStates(int i, String aState) {
-        // We get the eq. classes for this agent:
-        List<Set<String>> eqClasses = rk.get(i);
-
-        // We iterate over the classes to see if there is one that
-        // contains aState
-        for (Set<String> aClass : eqClasses) {
-            if (aClass.contains(aState)) {
-                return aClass;
-            }
-        }
-        return null;
-    }
 
     /*
     public void setupModel() {
