@@ -19,16 +19,19 @@ public class FormulaEvaluator
     // This is the model where we want to evaluate the formula.
     private CogwedModel cogwedmodel;
     // announcement cache
-    private CogwedModel aCache;
+    private CogwedModel aModelCache;
 
     // This is the stack where we store temporary results.
-    private Stack<Set<String>> stack;
+    private Stack<Set<String>> evalStack;
+
+    private Stack<Set<String>> aFalseStatesCache;
 
 
     public FormulaEvaluator(CogwedFormulaGrammarParser p) {
         this.parser = p;
         // In the constructor we create an empty stack.
-        stack = new Stack<>();
+        evalStack = new Stack<>();
+        aFalseStatesCache = new Stack<>();
     }
 
     public void setModel(CogwedModel m) {
@@ -39,7 +42,7 @@ public class FormulaEvaluator
     @Override
     public void exitId(CogwedFormulaGrammarParser.IdContext ctx) {
         // Nothing special, the model gives us the set of states
-        stack.push(new HashSet<>(cogwedmodel.getStatesWhereTrue(ctx.ID().getText())));
+        evalStack.push(new HashSet<>(cogwedmodel.getStatesWhereTrue(ctx.ID().getText())));
     }
 
     // Negation: we have to take the complement of the set
@@ -47,12 +50,12 @@ public class FormulaEvaluator
 
     public void exitNegation(CogwedFormulaGrammarParser.NegationContext ctx) {
         Set<String> allStates = new HashSet<>(this.cogwedmodel.getAllStates());
-        Set<String> previous = stack.pop();
+        Set<String> previous = evalStack.pop();
 
         // removeAll is the set difference
         // TODO: check what happens with empty difference
         allStates.removeAll(previous);
-        stack.push(new HashSet<>(allStates));
+        evalStack.push(new HashSet<>(allStates));
     }
 
 
@@ -60,22 +63,22 @@ public class FormulaEvaluator
     // of the stack
     @Override
     public void exitConjunction(CogwedFormulaGrammarParser.ConjunctionContext ctx) {
-        Set<String> left = stack.pop();
-        Set<String> right = stack.pop();
+        Set<String> left = evalStack.pop();
+        Set<String> right = evalStack.pop();
         // retainAll is the intersection.
         left.retainAll(right);
         // FIXME: check that everything is OK with an empty intersection
-        stack.push(new HashSet<>(left));
+        evalStack.push(new HashSet<>(left));
     }
 
     // This is similar to conjunction above
     @Override
     public void exitDisjunction(CogwedFormulaGrammarParser.DisjunctionContext ctx) {
-        Set<String> left = stack.pop();
-        Set<String> right = stack.pop();
+        Set<String> left = evalStack.pop();
+        Set<String> right = evalStack.pop();
         // addAll is the union.
         left.addAll(right);
-        stack.push(new HashSet<>(left));
+        evalStack.push(new HashSet<>(left));
     }
 
     // (a -> b) is (!a or b)
@@ -83,8 +86,8 @@ public class FormulaEvaluator
     public void exitImplication(CogwedFormulaGrammarParser.ImplicationContext ctx) {
         // Arguments are swapped on top of stack!
         // (bug fixed)
-        Set<String> right = stack.pop();
-        Set<String> left = stack.pop();
+        Set<String> right = evalStack.pop();
+        Set<String> left = evalStack.pop();
 
         // These are all the states
         Set<String> allStates = new HashSet<>(this.cogwedmodel.getAllStates());
@@ -96,14 +99,14 @@ public class FormulaEvaluator
         allStates.addAll(right);
 
         // And we push to stack:
-        stack.push(new HashSet<>(allStates));
+        evalStack.push(new HashSet<>(allStates));
     }
 
 
     @Override
     public void exitKnowledge(CogwedFormulaGrammarParser.KnowledgeContext ctx) {
         // List<String> allStates = this.cogwedmodel.getAllStates();    // all the states
-        Set<String> previous = stack.pop();    // The set of states where the inner formula is true
+        Set<String> previous = evalStack.pop();    // The set of states where the inner formula is true
         int agent = Integer.valueOf(ctx.agentid().getText());
         Set<String> result = new HashSet<>();
 
@@ -125,20 +128,30 @@ public class FormulaEvaluator
         }
 
         // Pushing the result to the stack
-        stack.push(new HashSet<>(result));
+        evalStack.push(new HashSet<>(result));
     }
 
     @Override
     public void exitAnnouncement(CogwedFormulaGrammarParser.AnnouncementContext ctx) {
-        cogwedmodel = aCache;
-
+        cogwedmodel = aModelCache;
+        Set<String> result = evalStack.pop();
+        result.addAll(aFalseStatesCache.pop());
+        evalStack.push(result);
     }
 
     @Override
     public void exitAn_formula(CogwedFormulaGrammarParser.An_formulaContext ctx) {
-        Set<String> announced = stack.pop();
-        aCache = cogwedmodel;
-        cogwedmodel = cogwedmodel.getShrunkModel(announced);
+        // states where the announcement is true
+        Set<String> trueStates = evalStack.pop();
+        Set<String> falseStates;
+        // check if it is currently in a sub-formula (local formula)
+        falseStates = evalStack.empty() ? new HashSet<>(cogwedmodel.getAllStates()) : evalStack.pop();
+        // states where the announcement is false
+        falseStates.removeAll(trueStates);
+        // cache false states in which the evaluation are always true. Used when announcement exits
+        aFalseStatesCache.push(falseStates);
+        aModelCache = cogwedmodel;
+        cogwedmodel = cogwedmodel.getShrunkModel(trueStates);
     }
 
     public CogwedModel getModel() {
@@ -146,7 +159,7 @@ public class FormulaEvaluator
     }
 
     public Set<String> getSolution() {
-        return stack.peek();
+        return evalStack.peek();
     }
 
 
