@@ -31,6 +31,65 @@ public class CogwedModel {
         this.numAgents = n;
     }
 
+    public Set<String> intersect(Set<String> a, Set<String> b) {
+        Set<String> intersection = new HashSet<>(a);
+        intersection.retainAll(b);
+        return intersection;
+    }
+
+    // return reference to true class in the model, not the copy of it
+    public Set<String> getTrueClass(String trueState, int agent) {
+        List<Set<String>> classesList = equivRels.get(agent);
+        for (Set<String> aClass : classesList) {
+            if (aClass.contains(trueState)) {
+                return aClass;
+            }
+        }
+        return null;
+    }
+
+    // returned references are all to the states and equiv sets in the model, not copies
+    public Set<Set<String>> getStrategies(String trueState, int agent) {
+        Set<Set<String>> strategies = new HashSet<>();
+        Set<String> trueClass = new HashSet<>(getTrueClass(trueState, agent));
+        strategies.add(trueClass);
+        // combination of the equiv classes left
+        List<Set<String>> classesLeft = new ArrayList<>(equivRels.get(agent));
+        classesLeft.remove(trueClass);
+        int clSize = classesLeft.size();
+        for (int i = 0; i < clSize; i++) {
+            Set<String> stratI = new HashSet<>(trueClass);
+            stratI.addAll(classesLeft.get(i));
+            strategies.add(new HashSet<>(stratI));
+            for (int j = i+1; j < clSize; j++) {
+                Set<String> prev = new HashSet<>(stratI);
+                for (int k = j; k < clSize; k++) {
+                    prev.addAll(classesLeft.get(k));
+                    strategies.add(new HashSet<>(prev));
+                }
+            }
+        }
+        return strategies;
+    }
+
+    public Set<Set<String>> getStrategies(String trueState, List<Integer> agents) {
+        int numAgentsStrat = agents.size();
+        if (numAgentsStrat < 2) {
+            return getStrategies(trueState, agents.get(0));
+        }
+        Set<Set<String>> allStrats = new HashSet<>();
+        for (int i = 0; i < numAgentsStrat; i++) {
+            for (int j = i+1; j < numAgentsStrat; j++) {
+                for (Set<String> stratI : getStrategies(trueState, agents.get(i))) {
+                    for (Set<String> stratJ : getStrategies(trueState, agents.get(j))) {
+                        allStrats.add(intersect(stratI, stratJ));
+                    }
+                }
+            }
+        }
+        return allStrats;
+    }
+
     // Set the number of agents
     public void setNumberOfAgents(int n) {
         if (numAgents != 0) {

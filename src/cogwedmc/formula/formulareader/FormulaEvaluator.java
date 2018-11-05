@@ -26,6 +26,8 @@ public class FormulaEvaluator
 
     private Stack<Set<String>> aFalseStatesCache;
 
+    private Set<Set<String>> cStrats;
+
 
     public FormulaEvaluator(CogwedFormulaGrammarParser p) {
         this.parser = p;
@@ -152,6 +154,16 @@ public class FormulaEvaluator
         aFalseStatesCache.push(falseStates);
         aModelCache = cogwedmodel;
         cogwedmodel = cogwedmodel.getShrunkModel(trueStates);
+    }
+
+    @Override
+    public void enterCoalitional_announcement(CogwedFormulaGrammarParser.Coalitional_announcementContext ctx) {
+
+    }
+
+    @Override
+    public void exitAgentlist(CogwedFormulaGrammarParser.AgentlistContext ctx) {
+
     }
 
     public CogwedModel getModel() {
