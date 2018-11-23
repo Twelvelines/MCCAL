@@ -1,5 +1,5 @@
 # EpistemicMC
-Originally a fork from [fraimondi/mccogwed][1]\
+Originally a fork from [fraimondi/mccogwed][1], but now for a different logic\
 Utilising ANTLR for customising parser\
 **ANTLR version: 4.7.1**
 
