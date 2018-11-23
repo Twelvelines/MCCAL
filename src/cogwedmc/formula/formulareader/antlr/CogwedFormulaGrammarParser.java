@@ -1,14 +1,15 @@
-// Generated from CogwedFormulaGrammar.g by ANTLR 4.7.1
-package cogwedmc.formula.formulareader.antlr;
+package cogwedmc.formula.formulareader.antlr;// Generated from CogwedFormulaGrammar.g by ANTLR 4.7.1
 
-import org.antlr.v4.runtime.atn.*;
-import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNDeserializer;
+import org.antlr.v4.runtime.atn.ParserATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class CogwedFormulaGrammarParser extends Parser {
@@ -22,10 +23,10 @@ public class CogwedFormulaGrammarParser extends Parser {
 		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, INT=15, WS=16, LINE_COMMENT=17, 
 		COMMENT=18, ID=19;
 	public static final int
-		RULE_start = 0, RULE_formula = 1, RULE_an_formula = 2, RULE_agentid = 3, 
-		RULE_agentlist = 4;
+		RULE_start = 0, RULE_formula = 1, RULE_an_formula = 2, RULE_ca_formula = 3, 
+		RULE_agentid = 4, RULE_agentlist = 5;
 	public static final String[] ruleNames = {
-		"start", "formula", "an_formula", "agentid", "agentlist"
+		"start", "formula", "an_formula", "ca_formula", "agentid", "agentlist"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
@@ -95,11 +96,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_start; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterStart(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterStart(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitStart(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitStart(this);
 		}
 	}
 
@@ -109,7 +110,7 @@ public class CogwedFormulaGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(10);
+			setState(12);
 			formula(0);
 			}
 		}
@@ -129,7 +130,7 @@ public class CogwedFormulaGrammarParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_formula; }
-	 
+
 		public FormulaContext() { }
 		public void copyFrom(FormulaContext ctx) {
 			super.copyFrom(ctx);
@@ -142,11 +143,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public ParensContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterParens(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterParens(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitParens(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitParens(this);
 		}
 	}
 	public static class DisjunctionContext extends FormulaContext {
@@ -159,11 +160,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public DisjunctionContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterDisjunction(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterDisjunction(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitDisjunction(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitDisjunction(this);
 		}
 	}
 	public static class NegationContext extends FormulaContext {
@@ -173,11 +174,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public NegationContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterNegation(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterNegation(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitNegation(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitNegation(this);
 		}
 	}
 	public static class AnnouncementContext extends FormulaContext {
@@ -190,11 +191,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public AnnouncementContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterAnnouncement(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterAnnouncement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitAnnouncement(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitAnnouncement(this);
 		}
 	}
 	public static class ConjunctionContext extends FormulaContext {
@@ -207,11 +208,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public ConjunctionContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterConjunction(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterConjunction(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitConjunction(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitConjunction(this);
 		}
 	}
 	public static class IdContext extends FormulaContext {
@@ -219,11 +220,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public IdContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterId(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterId(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitId(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitId(this);
 		}
 	}
 	public static class KnowledgeContext extends FormulaContext {
@@ -236,28 +237,28 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public KnowledgeContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterKnowledge(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterKnowledge(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitKnowledge(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitKnowledge(this);
 		}
 	}
 	public static class Coalitional_announcementContext extends FormulaContext {
 		public AgentlistContext agentlist() {
 			return getRuleContext(AgentlistContext.class,0);
 		}
-		public FormulaContext formula() {
-			return getRuleContext(FormulaContext.class,0);
+		public Ca_formulaContext ca_formula() {
+			return getRuleContext(Ca_formulaContext.class,0);
 		}
 		public Coalitional_announcementContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterCoalitional_announcement(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterCoalitional_announcement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitCoalitional_announcement(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitCoalitional_announcement(this);
 		}
 	}
 	public static class ImplicationContext extends FormulaContext {
@@ -270,11 +271,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public ImplicationContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterImplication(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterImplication(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitImplication(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitImplication(this);
 		}
 	}
 
@@ -294,7 +295,7 @@ public class CogwedFormulaGrammarParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(37);
+			setState(39);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__0:
@@ -304,7 +305,7 @@ public class CogwedFormulaGrammarParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(13);
+				setState(15);
 				_la = _input.LA(1);
 				if ( !(_la==T__0 || _la==T__1) ) {
 				_errHandler.recoverInline(this);
@@ -314,7 +315,7 @@ public class CogwedFormulaGrammarParser extends Parser {
 					_errHandler.reportMatch(this);
 					consume();
 				}
-				setState(14);
+				setState(16);
 				formula(9);
 				}
 				break;
@@ -323,11 +324,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 				_localctx = new ParensContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(15);
-				match(T__6);
-				setState(16);
-				formula(0);
 				setState(17);
+				match(T__6);
+				setState(18);
+				formula(0);
+				setState(19);
 				match(T__7);
 				}
 				break;
@@ -336,17 +337,17 @@ public class CogwedFormulaGrammarParser extends Parser {
 				_localctx = new KnowledgeContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(19);
-				match(T__8);
-				setState(20);
-				match(T__6);
 				setState(21);
-				agentid();
+				match(T__8);
 				setState(22);
-				match(T__9);
+				match(T__6);
 				setState(23);
-				formula(0);
+				agentid();
 				setState(24);
+				match(T__9);
+				setState(25);
+				formula(0);
+				setState(26);
 				match(T__7);
 				}
 				break;
@@ -355,13 +356,13 @@ public class CogwedFormulaGrammarParser extends Parser {
 				_localctx = new AnnouncementContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(26);
-				match(T__10);
-				setState(27);
-				an_formula();
 				setState(28);
-				match(T__11);
+				match(T__10);
 				setState(29);
+				an_formula();
+				setState(30);
+				match(T__11);
+				setState(31);
 				formula(3);
 				}
 				break;
@@ -370,14 +371,14 @@ public class CogwedFormulaGrammarParser extends Parser {
 				_localctx = new Coalitional_announcementContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(31);
-				match(T__12);
-				setState(32);
-				agentlist();
 				setState(33);
-				match(T__13);
+				match(T__12);
 				setState(34);
-				formula(2);
+				agentlist();
+				setState(35);
+				match(T__13);
+				setState(36);
+				ca_formula();
 				}
 				break;
 			case ID:
@@ -385,7 +386,7 @@ public class CogwedFormulaGrammarParser extends Parser {
 				_localctx = new IdContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(36);
+				setState(38);
 				match(ID);
 				}
 				break;
@@ -393,26 +394,26 @@ public class CogwedFormulaGrammarParser extends Parser {
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(50);
+			setState(52);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
-			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+			while ( _alt!=2 && _alt!= ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(48);
+					setState(50);
 					_errHandler.sync(this);
 					switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 					case 1:
 						{
 						_localctx = new ConjunctionContext(new FormulaContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_formula);
-						setState(39);
-						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
-						setState(40);
-						match(T__2);
 						setState(41);
+						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
+						setState(42);
+						match(T__2);
+						setState(43);
 						formula(9);
 						}
 						break;
@@ -420,11 +421,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 						{
 						_localctx = new DisjunctionContext(new FormulaContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_formula);
-						setState(42);
-						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
-						setState(43);
-						match(T__3);
 						setState(44);
+						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
+						setState(45);
+						match(T__3);
+						setState(46);
 						formula(8);
 						}
 						break;
@@ -432,9 +433,9 @@ public class CogwedFormulaGrammarParser extends Parser {
 						{
 						_localctx = new ImplicationContext(new FormulaContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_formula);
-						setState(45);
+						setState(47);
 						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
-						setState(46);
+						setState(48);
 						_la = _input.LA(1);
 						if ( !(_la==T__4 || _la==T__5) ) {
 						_errHandler.recoverInline(this);
@@ -444,14 +445,14 @@ public class CogwedFormulaGrammarParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(47);
+						setState(49);
 						formula(7);
 						}
 						break;
 					}
-					} 
+					}
 				}
-				setState(52);
+				setState(54);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			}
@@ -478,11 +479,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_an_formula; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterAn_formula(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterAn_formula(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitAn_formula(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitAn_formula(this);
 		}
 	}
 
@@ -492,7 +493,46 @@ public class CogwedFormulaGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(53);
+			setState(55);
+			formula(0);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class Ca_formulaContext extends ParserRuleContext {
+		public FormulaContext formula() {
+			return getRuleContext(FormulaContext.class,0);
+		}
+		public Ca_formulaContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_ca_formula; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterCa_formula(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitCa_formula(this);
+		}
+	}
+
+	public final Ca_formulaContext ca_formula() throws RecognitionException {
+		Ca_formulaContext _localctx = new Ca_formulaContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_ca_formula);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(57);
 			formula(0);
 			}
 		}
@@ -515,21 +555,21 @@ public class CogwedFormulaGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_agentid; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterAgentid(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterAgentid(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitAgentid(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitAgentid(this);
 		}
 	}
 
 	public final AgentidContext agentid() throws RecognitionException {
 		AgentidContext _localctx = new AgentidContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_agentid);
+		enterRule(_localctx, 8, RULE_agentid);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(55);
+			setState(59);
 			match(INT);
 			}
 		}
@@ -557,36 +597,36 @@ public class CogwedFormulaGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_agentlist; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).enterAgentlist(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterAgentlist(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener ) ((CogwedFormulaGrammarListener)listener).exitAgentlist(this);
+			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitAgentlist(this);
 		}
 	}
 
 	public final AgentlistContext agentlist() throws RecognitionException {
 		AgentlistContext _localctx = new AgentlistContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_agentlist);
+		enterRule(_localctx, 10, RULE_agentlist);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(57);
+			setState(61);
 			agentid();
-			setState(62);
+			setState(66);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==T__9) {
 				{
 				{
-				setState(58);
+				setState(62);
 				match(T__9);
-				setState(59);
+				setState(63);
 				agentid();
 				}
 				}
-				setState(64);
+				setState(68);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -623,24 +663,25 @@ public class CogwedFormulaGrammarParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\25D\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
-		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3("+
-		"\n\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\7\3\63\n\3\f\3\16\3\66\13\3\3"+
-		"\4\3\4\3\5\3\5\3\6\3\6\3\6\7\6?\n\6\f\6\16\6B\13\6\3\6\2\3\4\7\2\4\6\b"+
-		"\n\2\4\3\2\3\4\3\2\7\b\2G\2\f\3\2\2\2\4\'\3\2\2\2\6\67\3\2\2\2\b9\3\2"+
-		"\2\2\n;\3\2\2\2\f\r\5\4\3\2\r\3\3\2\2\2\16\17\b\3\1\2\17\20\t\2\2\2\20"+
-		"(\5\4\3\13\21\22\7\t\2\2\22\23\5\4\3\2\23\24\7\n\2\2\24(\3\2\2\2\25\26"+
-		"\7\13\2\2\26\27\7\t\2\2\27\30\5\b\5\2\30\31\7\f\2\2\31\32\5\4\3\2\32\33"+
-		"\7\n\2\2\33(\3\2\2\2\34\35\7\r\2\2\35\36\5\6\4\2\36\37\7\16\2\2\37 \5"+
-		"\4\3\5 (\3\2\2\2!\"\7\17\2\2\"#\5\n\6\2#$\7\20\2\2$%\5\4\3\4%(\3\2\2\2"+
-		"&(\7\25\2\2\'\16\3\2\2\2\'\21\3\2\2\2\'\25\3\2\2\2\'\34\3\2\2\2\'!\3\2"+
-		"\2\2\'&\3\2\2\2(\64\3\2\2\2)*\f\n\2\2*+\7\5\2\2+\63\5\4\3\13,-\f\t\2\2"+
-		"-.\7\6\2\2.\63\5\4\3\n/\60\f\b\2\2\60\61\t\3\2\2\61\63\5\4\3\t\62)\3\2"+
-		"\2\2\62,\3\2\2\2\62/\3\2\2\2\63\66\3\2\2\2\64\62\3\2\2\2\64\65\3\2\2\2"+
-		"\65\5\3\2\2\2\66\64\3\2\2\2\678\5\4\3\28\7\3\2\2\29:\7\21\2\2:\t\3\2\2"+
-		"\2;@\5\b\5\2<=\7\f\2\2=?\5\b\5\2><\3\2\2\2?B\3\2\2\2@>\3\2\2\2@A\3\2\2"+
-		"\2A\13\3\2\2\2B@\3\2\2\2\6\'\62\64@";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\25H\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
+		"\3\5\3*\n\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\7\3\65\n\3\f\3\16\38\13"+
+		"\3\3\4\3\4\3\5\3\5\3\6\3\6\3\7\3\7\3\7\7\7C\n\7\f\7\16\7F\13\7\3\7\2\3"+
+		"\4\b\2\4\6\b\n\f\2\4\3\2\3\4\3\2\7\b\2J\2\16\3\2\2\2\4)\3\2\2\2\69\3\2"+
+		"\2\2\b;\3\2\2\2\n=\3\2\2\2\f?\3\2\2\2\16\17\5\4\3\2\17\3\3\2\2\2\20\21"+
+		"\b\3\1\2\21\22\t\2\2\2\22*\5\4\3\13\23\24\7\t\2\2\24\25\5\4\3\2\25\26"+
+		"\7\n\2\2\26*\3\2\2\2\27\30\7\13\2\2\30\31\7\t\2\2\31\32\5\n\6\2\32\33"+
+		"\7\f\2\2\33\34\5\4\3\2\34\35\7\n\2\2\35*\3\2\2\2\36\37\7\r\2\2\37 \5\6"+
+		"\4\2 !\7\16\2\2!\"\5\4\3\5\"*\3\2\2\2#$\7\17\2\2$%\5\f\7\2%&\7\20\2\2"+
+		"&\'\5\b\5\2\'*\3\2\2\2(*\7\25\2\2)\20\3\2\2\2)\23\3\2\2\2)\27\3\2\2\2"+
+		")\36\3\2\2\2)#\3\2\2\2)(\3\2\2\2*\66\3\2\2\2+,\f\n\2\2,-\7\5\2\2-\65\5"+
+		"\4\3\13./\f\t\2\2/\60\7\6\2\2\60\65\5\4\3\n\61\62\f\b\2\2\62\63\t\3\2"+
+		"\2\63\65\5\4\3\t\64+\3\2\2\2\64.\3\2\2\2\64\61\3\2\2\2\658\3\2\2\2\66"+
+		"\64\3\2\2\2\66\67\3\2\2\2\67\5\3\2\2\28\66\3\2\2\29:\5\4\3\2:\7\3\2\2"+
+		"\2;<\5\4\3\2<\t\3\2\2\2=>\7\21\2\2>\13\3\2\2\2?D\5\n\6\2@A\7\f\2\2AC\5"+
+		"\n\6\2B@\3\2\2\2CF\3\2\2\2DB\3\2\2\2DE\3\2\2\2E\r\3\2\2\2FD\3\2\2\2\6"+
+		")\64\66D";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

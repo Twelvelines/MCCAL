@@ -1,6 +1,4 @@
-// Generated from CogwedFormulaGrammar.g by ANTLR 4.7.1
-package cogwedmc.formula.formulareader.antlr;
-
+package cogwedmc.formula.formulareader.antlr;// Generated from CogwedFormulaGrammar.g by ANTLR 4.7.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -136,6 +134,16 @@ public interface CogwedFormulaGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAn_formula(CogwedFormulaGrammarParser.An_formulaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CogwedFormulaGrammarParser#ca_formula}.
+	 * @param ctx the parse tree
+	 */
+	void enterCa_formula(CogwedFormulaGrammarParser.Ca_formulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CogwedFormulaGrammarParser#ca_formula}.
+	 * @param ctx the parse tree
+	 */
+	void exitCa_formula(CogwedFormulaGrammarParser.Ca_formulaContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CogwedFormulaGrammarParser#agentid}.
 	 * @param ctx the parse tree

@@ -1,5 +1,4 @@
-// Generated from CogwedFormulaGrammar.g by ANTLR 4.7.1
-package cogwedmc.formula.formulareader.antlr;
+package cogwedmc.formula.formulareader.antlr;// Generated from CogwedFormulaGrammar.g by ANTLR 4.7.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -143,6 +142,18 @@ public class CogwedFormulaGrammarBaseListener implements CogwedFormulaGrammarLis
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAn_formula(CogwedFormulaGrammarParser.An_formulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCa_formula(CogwedFormulaGrammarParser.Ca_formulaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCa_formula(CogwedFormulaGrammarParser.Ca_formulaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

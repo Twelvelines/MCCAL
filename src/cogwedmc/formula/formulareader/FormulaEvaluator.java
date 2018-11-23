@@ -4,6 +4,10 @@ import java.util.*;
 
 import cogwedmc.formula.formulareader.antlr.*;
 import cogwedmc.model.*;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 
 /* Franco 230721
@@ -12,8 +16,7 @@ import cogwedmc.model.*;
    results.
 
 */
-public class FormulaEvaluator
-        extends CogwedFormulaGrammarBaseListener {
+public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
     private CogwedFormulaGrammarParser parser;
 
     // This is the model where we want to evaluate the formula.
@@ -26,7 +29,7 @@ public class FormulaEvaluator
 
     private Stack<Set<String>> aFalseStatesCache;
 
-    private Set<Set<String>> cStrats;
+    private List<Integer> coalitionAgentlistCache;
 
 
     public FormulaEvaluator(CogwedFormulaGrammarParser p) {
@@ -40,11 +43,15 @@ public class FormulaEvaluator
         this.cogwedmodel = m;
     }
 
-    // Basic case: an atom
+    // Basic case: an atom, which is an ID
     @Override
     public void exitId(CogwedFormulaGrammarParser.IdContext ctx) {
         // Nothing special, the model gives us the set of states
-        evalStack.push(new HashSet<>(cogwedmodel.getStatesWhereTrue(ctx.ID().getText())));
+        Set<String> validStates = cogwedmodel.getStatesWhereTrue(ctx.ID().getText());
+        if (validStates == null) {
+            validStates = new HashSet<>();
+        }
+        evalStack.push(validStates);
     }
 
     // Negation: we have to take the complement of the set
@@ -59,7 +66,6 @@ public class FormulaEvaluator
         allStates.removeAll(previous);
         evalStack.push(new HashSet<>(allStates));
     }
-
 
     // For the conjunction we take the intersection of the two elements on top
     // of the stack
@@ -114,12 +120,12 @@ public class FormulaEvaluator
 
         for (String state : previous) {     // for every states in the previous true states
             boolean allRelatedStatesAreInThePreviousTrueStates = true;
-            for (Set<String> rk : cogwedmodel.getESofAgent(agent)) {    // examine all equiv relations
-                if (!rk.contains(state)) {     // rid of the irrelevant
+            for (Set<String> equivClass : cogwedmodel.getEquivClasses(agent)) {    // examine all equiv relations
+                if (!equivClass.contains(state)) {     // rid of the irrelevant
                     continue;
                 }    // the rest relations contains the current state
-                if (!previous.containsAll(rk)) {
-                    // if either states in the relation is not among the previous true states
+                if (!previous.containsAll(equivClass)) {
+                    // if any state in the relation is not among the previous true states
                     allRelatedStatesAreInThePreviousTrueStates = false;
                     break;
                 }
@@ -131,14 +137,6 @@ public class FormulaEvaluator
 
         // Pushing the result to the stack
         evalStack.push(new HashSet<>(result));
-    }
-
-    @Override
-    public void exitAnnouncement(CogwedFormulaGrammarParser.AnnouncementContext ctx) {
-        cogwedmodel = aModelCache;
-        Set<String> result = evalStack.pop();
-        result.addAll(aFalseStatesCache.pop());
-        evalStack.push(result);
     }
 
     @Override
@@ -157,13 +155,93 @@ public class FormulaEvaluator
     }
 
     @Override
-    public void enterCoalitional_announcement(CogwedFormulaGrammarParser.Coalitional_announcementContext ctx) {
+    public void exitAnnouncement(CogwedFormulaGrammarParser.AnnouncementContext ctx) {
+        cogwedmodel = aModelCache;
+        aModelCache = null;
+        Set<String> result = evalStack.pop();
+        result.addAll(aFalseStatesCache.pop());
+        evalStack.push(result);
+    }
 
+    // TODO make a strat class
+    @Override
+    public void exitAgentlist(CogwedFormulaGrammarParser.AgentlistContext ctx) {
+        // get agent list
+        List<Integer> agentlist = new ArrayList<>();
+        for (CogwedFormulaGrammarParser.AgentidContext aCtx  : ctx.agentid()) {
+            agentlist.add(Integer.valueOf(aCtx.getText()));
+        }
+        coalitionAgentlistCache = agentlist;
     }
 
     @Override
-    public void exitAgentlist(CogwedFormulaGrammarParser.AgentlistContext ctx) {
+    public void enterCa_formula(CogwedFormulaGrammarParser.Ca_formulaContext ctx) {
+        String formula = ctx.getText();
+        Set<String> result = new HashSet<>();
+        List<Integer> agentlist = coalitionAgentlistCache;
+        coalitionAgentlistCache = null;
+        for (String state : cogwedmodel.getAllStates()) {
+            System.out.println("CA on state: " + state);
+            System.out.println(cogwedmodel.getRK());
+            List<Set<String>> allStrats = new ArrayList<>(cogwedmodel.getStrategies(state, agentlist));
+            int numStrats = allStrats.size();
+            for (int i = 0; i < numStrats; i++) {
+                Set<String> strat = allStrats.get(i);
+                boolean allParsingReturnsTrue = true;
+                for (int j = i+1; j < numStrats; j++) {
+                    Set<String> oStrat = allStrats.get(j);
+                    System.out.println(cogwedmodel.getRK());
+                    CogwedModel submodel = cogwedmodel.getShrunkModel(CogwedModel.intersect(strat, oStrat));
+                    System.out.println(cogwedmodel.getRK());
+                    if (!subparse(submodel, formula).contains(state)) {
+                        allParsingReturnsTrue = false;
+                        break;
+                    }
+                }
+                if (!allParsingReturnsTrue) {
+                    continue;    // - to the next strat
+                    // the loop will olso be finished here if for every strat, !allParsingReturnsTrue,
+                    // thus break to the next state
+                }
+                // if for the strat, all parsing of formula on the submodel made is true
+                result.add(state);
+                System.out.println("CA on state: " + state + " result: true");
+                break;    // - to the next state
+            }
+        }
+        // push the collected states as result
+        evalStack.push(result);
+        // TODO test this exit rule
+        ctx.exitRule(this);
+    }
 
+    private Set<String> subparse(CogwedModel model, String formula) {
+        ANTLRInputStream finput = new ANTLRInputStream(formula);
+        CogwedFormulaGrammarLexer flexer = new
+                CogwedFormulaGrammarLexer(finput);
+        // create a buffer of tokens pulled from the lexer
+        CommonTokenStream ftokens = new CommonTokenStream(flexer);
+        // create a parser that feeds off the tokens buffer
+        CogwedFormulaGrammarParser fparser = new CogwedFormulaGrammarParser(ftokens);
+        // begin parsing
+        ParseTree ftree = fparser.start();
+        // Just a standard walker
+        ParseTreeWalker fwalker = new ParseTreeWalker();
+        // Now we associate our extractor to the parser.
+        FormulaEvaluator evaluator = new FormulaEvaluator(fparser);
+        evaluator.setModel(model);
+        // and we walk the tree with our extractor.
+        System.out.println("Subparsing formula: " + formula + ", and the model look like: ");
+        System.out.println(model.getAtoms());
+        System.out.println(model.getRK());
+        System.out.println(model.getAllStates());
+        fwalker.walk(evaluator, ftree);
+        return evaluator.getSolution();
+    }
+
+    @Override
+    public void exitCoalitional_announcement(CogwedFormulaGrammarParser.Coalitional_announcementContext ctx) {
+        // TODO get partial parser's result and push it into stack
     }
 
     public CogwedModel getModel() {
@@ -235,7 +313,7 @@ public class FormulaEvaluator
         // operator: the truth value is the same for all the states in the
         // equiv. class.
 
-        for (Set<String> eqClass : this.cogwedmodel.getESofAgent(agentID - 1)) {
+        for (Set<String> eqClass : this.cogwedmodel.getEquivClasses(agentID - 1)) {
 
             // the set of states of the equivalence class in which the
             // formula is true: it's just the intersection:

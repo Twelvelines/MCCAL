@@ -1,24 +1,29 @@
 package cogwedmc;
 
-import java.text.*;
-import java.util.*;
-import java.io.*;
-
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
-
-import cogwedmc.model.*;
-import cogwedmc.model.modelreader.*;
-import cogwedmc.model.modelreader.antlr.*;
-
-import cogwedmc.formula.formulareader.*;
-import cogwedmc.formula.formulareader.antlr.*;
-
 
 /*
  * Franco 130728: This is the main class to invoke the model checker.
  *
  */
+
+import cogwedmc.formula.formulareader.FormulaEvaluator;
+import cogwedmc.formula.formulareader.antlr.CogwedFormulaGrammarLexer;
+import cogwedmc.formula.formulareader.antlr.CogwedFormulaGrammarParser;
+import cogwedmc.model.CogwedModel;
+import cogwedmc.model.modelreader.ExtractCogwedModelListener;
+import cogwedmc.model.modelreader.antlr.CogwedModelGrammarLexer;
+import cogwedmc.model.modelreader.antlr.CogwedModelGrammarParser;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Set;
 
 public class CogwedMC {
 
@@ -135,11 +140,10 @@ public class CogwedMC {
         System.out.println("  Number of states: " + cwmodel.getAllStates().size());
         int numEquivSets = 0;
         for (int i = 0; i < numAgents; i++) {
-            numEquivSets += cwmodel.getESofAgent(i+1).size();
+            numEquivSets += cwmodel.getEquivClasses(i+1).size();
         }
         System.out.println("  Number of equivalence sets: " + numEquivSets);
         cal = Calendar.getInstance();
         System.out.println(dateFormat.format(cal.getTime()) + ": job done, see you soon!");
     }
-
 }

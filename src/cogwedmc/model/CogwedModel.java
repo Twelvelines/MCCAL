@@ -31,62 +31,66 @@ public class CogwedModel {
         this.numAgents = n;
     }
 
-    public Set<String> intersect(Set<String> a, Set<String> b) {
+    public static Set<String> intersect(Set<String> a, Set<String> b) {
         Set<String> intersection = new HashSet<>(a);
         intersection.retainAll(b);
         return intersection;
     }
 
-    // return reference to true class in the model, not the copy of it
-    public Set<String> getTrueClass(String trueState, int agent) {
-        List<Set<String>> classesList = equivRels.get(agent);
-        for (Set<String> aClass : classesList) {
-            if (aClass.contains(trueState)) {
-                return aClass;
-            }
-        }
-        return null;
-    }
-
     // returned references are all to the states and equiv sets in the model, not copies
-    public Set<Set<String>> getStrategies(String trueState, int agent) {
+    public Set<Set<String>> getStrategies(String realState, int agent) {
         Set<Set<String>> strategies = new HashSet<>();
-        Set<String> trueClass = new HashSet<>(getTrueClass(trueState, agent));
-        strategies.add(trueClass);
+        Set<String> realClass = new HashSet<>(getEquivalentStates(agent, realState));
+        //
+        //System.out.println("trueclass for state " + trueState + " and agent " + agent + ": " + trueClass.toString());
+        //
+        strategies.add(realClass);
         // combination of the equiv classes left
-        List<Set<String>> classesLeft = new ArrayList<>(equivRels.get(agent));
-        classesLeft.remove(trueClass);
-        int clSize = classesLeft.size();
-        for (int i = 0; i < clSize; i++) {
-            Set<String> stratI = new HashSet<>(trueClass);
-            stratI.addAll(classesLeft.get(i));
-            strategies.add(new HashSet<>(stratI));
-            for (int j = i+1; j < clSize; j++) {
+        List<Set<String>> restOfClasses = new ArrayList<>(equivRels.get(agent));
+        restOfClasses.remove(realClass);
+        int rocSize = restOfClasses.size();
+        for (int i = 0; i < rocSize; i++) {
+            /*
+            if (trueClass == null) {
+                throw new RuntimeException();
+            }
+            */
+            Set<String> stratI = new HashSet<>(realClass);
+            stratI.addAll(restOfClasses.get(i));
+            strategies.add(stratI);
+            for (int j = i+1; j < rocSize; j++) {
                 Set<String> prev = new HashSet<>(stratI);
-                for (int k = j; k < clSize; k++) {
-                    prev.addAll(classesLeft.get(k));
-                    strategies.add(new HashSet<>(prev));
+                for (int k = j; k < rocSize; k++) {
+                    prev.addAll(restOfClasses.get(k));
+                    //strategies.add(new HashSet<>(prev));
                 }
             }
         }
+
         return strategies;
     }
 
-    public Set<Set<String>> getStrategies(String trueState, List<Integer> agents) {
-        int numAgentsStrat = agents.size();
-        if (numAgentsStrat < 2) {
-            return getStrategies(trueState, agents.get(0));
+    public Set<Set<String>> getStrategies(String realState, List<Integer> agentlist) {
+        int alLength = agentlist.size();
+        if (alLength < 2) {
+            return getStrategies(realState, agentlist.get(0));
         }
         Set<Set<String>> allStrats = new HashSet<>();
-        for (int i = 0; i < numAgentsStrat; i++) {
-            for (int j = i+1; j < numAgentsStrat; j++) {
-                for (Set<String> stratI : getStrategies(trueState, agents.get(i))) {
-                    for (Set<String> stratJ : getStrategies(trueState, agents.get(j))) {
+        for (int i = 0; i < alLength; i++) {
+            for (int j = i+1; j < alLength; j++) {
+                // TODO concise the code
+                Set<Set<String>> strats = getStrategies(realState, agentlist.get(i));
+                //System.out.println("Strategy " + strats + " got: " + i);
+                for (Set<String> stratI : strats) {
+                    Set<Set<String>> strats2 = getStrategies(realState, agentlist.get(j));
+                    //System.out.println("Strategy " + strats2 + " got: \t\t" + i + ", " + j);
+                    for (Set<String> stratJ : strats2) {
                         allStrats.add(intersect(stratI, stratJ));
                     }
                 }
             }
         }
+        //System.out.println("Behold: A list of agent got their strategies!");
         return allStrats;
     }
 
@@ -170,7 +174,7 @@ public class CogwedModel {
         return equivRels;
     }
 
-    public List<Set<String>> getESofAgent(int agent) {
+    public List<Set<String>> getEquivClasses(int agent) {
         // TODO: Add error checking on i
         return equivRels.get(agent);
     }
@@ -192,17 +196,16 @@ public class CogwedModel {
     public Set<String> getStatesWhereTrue(String atom) {
         if (atoms.containsKey(atom)) {
             return atoms.get(atom);
-        } else {
-            return null;
         }
+        return null;
     }
 
 
     // Returns the set of global states epistemically equivalent to
     // aState for agent i
-    public Set<String> getEquivalentStates(int i, String aState) {
+    public Set<String> getEquivalentStates(int agent, String aState) {
         // We get the eq. classes for this agent:
-        List<Set<String>> eqClasses = equivRels.get(i);
+        List<Set<String>> eqClasses = equivRels.get(agent);
 
         // We iterate over the classes to see if there is one that
         // contains aState
@@ -211,6 +214,7 @@ public class CogwedModel {
                 return aClass;
             }
         }
+        System.err.println("Error: nullptr returned");
         return null;
     }
 
@@ -218,29 +222,47 @@ public class CogwedModel {
     // Get a new model shrunk from the original one based on specified valid states
     // TODO better algorithm to speed up the elimination of invalid states?
     public CogwedModel getShrunkModel(Set<String> validStates) {
+        // first shallow copy
         Map<String, Set<String>> shrunkAtoms = new HashMap<>(atoms);
         Map<Integer, List<Set<String>>> shrunkEquivRels = new HashMap<>(equivRels);
+        // deep copy and elimination for atoms
+        List<Map.Entry<String, Set<String>>> regEmptyAtoms = new ArrayList<>();
         for (Map.Entry<String, Set<String>> atom : shrunkAtoms.entrySet()) {
-            // TODO possibly use a filter here?
-            List<String> elimination = new ArrayList<>();
-            for (String state : atom.getValue()) {
-                if (!validStates.contains(state)) {
-                    elimination.add(state);
-                }
+            // implement deep copy
+            Set<String> cloneSet = new HashSet<>(atom.getValue());
+            atom.setValue(cloneSet);
+            // do elimination
+            cloneSet.retainAll(validStates);
+            if (cloneSet.isEmpty()) {    // clear empty set after elimination
+                regEmptyAtoms.add(atom);
             }
-            atom.getValue().removeAll(elimination);
         }
+        shrunkAtoms.entrySet().removeAll(regEmptyAtoms);
+        // deep copy and elimination for equiv rels
+        List<Map.Entry<Integer, List<Set<String>>>> regEmptyEquivRels = new ArrayList<>();
         for (Map.Entry<Integer, List<Set<String>>> equivRel : shrunkEquivRels.entrySet()) {
-            for (Set<String> equivSet : equivRel.getValue()) {
-                List<String> elimination = new ArrayList<>();
-                for (String state : equivSet) {
-                    if (!validStates.contains(state)) {
-                        elimination.add(state);
-                    }
+            // implement deep copy
+            List<Set<String>> cloneList = new ArrayList<>(equivRel.getValue());
+            equivRel.setValue(cloneList);
+            List<Set<String>> regEmptySets = new ArrayList<>();
+            int numSets = cloneList.size();
+            for (int i = 0; i < numSets; i++) {
+                // implement deep copy
+                Set<String> cloneSet = new HashSet<>(cloneList.get(i));
+                cloneList.set(i, cloneSet);
+                // do elimination
+                cloneSet.retainAll(validStates);
+                if (cloneSet.isEmpty()) {    // clear empty set after elimination
+                    regEmptySets.add(cloneSet);
                 }
-                equivSet.removeAll(elimination);
+            }
+            cloneList.removeAll(regEmptySets);
+            if (cloneList.isEmpty()) {    // clear empty set after elimination
+                regEmptyEquivRels.add(equivRel);
             }
         }
+        shrunkEquivRels.entrySet().removeAll(regEmptyEquivRels);
+        // setup shrunk model
         CogwedModel shrunk = new CogwedModel();
         shrunk.numAgents = numAgents;
         shrunk.gStates = new ArrayList<>(validStates);

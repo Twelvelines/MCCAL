@@ -31,11 +31,12 @@ formula:
     | '(' formula ')'               # parens
     | 'K' '(' agentid ',' formula ')'     # Knowledge
     | '[' an_formula ']' formula 		# Announcement
-    | '<<' agentlist '>>' formula   # Coalitional_announcement
+    | '<<' agentlist '>>' ca_formula   # Coalitional_announcement
     | ID                            # id
     ;
 
 an_formula: formula;
+ca_formula: formula;
 
 agentid:  INT;
 agentlist: agentid (',' agentid )* ;
@@ -45,12 +46,12 @@ INT: [0-9]+;
 // We throw away white spaces, tabs and new lines.
 WS: [ \t\r\n]+ -> skip ; 
 
-// We throw away comments, either on a single line or on multipe lines
+// We throw away comments, either on a single line or on multiple lines
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip ; 
 COMMENT: '/*' .*? '*/' -> skip ; 
 
 // C-style IDs
-ID : ID_LETTER (ID_LETTER | DIGIT)* ; 
+ID : ID_LETTER (ID_LETTER | DIGIT)* ;
 // Fragment means that we cannot access it from the parser
 fragment ID_LETTER : 'a'..'z'|'A'..'Z'|'_' ;
 fragment DIGIT : '0'..'9' ;
