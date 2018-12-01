@@ -1,13 +1,12 @@
 package cogwedmc.formula.formulareader;
 
+// TODO tidy up the imports
 import java.util.*;
 
+import cogwedmc.CogwedMC;
+import cogwedmc.exceptions.ForeignComponentException;
 import cogwedmc.formula.formulareader.antlr.*;
 import cogwedmc.model.*;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 
 /* Franco 230721
@@ -179,21 +178,28 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
         String formula = ctx.getText();
         Set<String> result = new HashSet<>();
         List<Integer> agentlist = coalitionAgentlistCache;
+        List<Integer> restAgentlist = new ArrayList<>();
+        // iterate to create a list
+        for (int i = 0; i < cogwedmodel.getNumberOfAgents(); i++) {
+            restAgentlist.add(i+1);
+        }
+        restAgentlist.removeAll(agentlist);
         coalitionAgentlistCache = null;
         for (String state : cogwedmodel.getAllStates()) {
-            System.out.println("CA on state: " + state);
-            System.out.println(cogwedmodel.getRK());
-            List<Set<String>> allStrats = new ArrayList<>(cogwedmodel.getStrategies(state, agentlist));
-            int numStrats = allStrats.size();
-            for (int i = 0; i < numStrats; i++) {
-                Set<String> strat = allStrats.get(i);
+            Set<Set<String>> agentsStrategies;
+            Set<Set<String>> otherAgentsStrategies;
+            try {
+                agentsStrategies = cogwedmodel.getStrategies(state, agentlist);
+                otherAgentsStrategies = cogwedmodel.getStrategies(state, restAgentlist);
+            } catch (ForeignComponentException fe) {
+                // TODO handle ForeignComponentException
+                return;
+            }
+            for (Set<String> strat : agentsStrategies) {
                 boolean allParsingReturnsTrue = true;
-                for (int j = i+1; j < numStrats; j++) {
-                    Set<String> oStrat = allStrats.get(j);
-                    System.out.println(cogwedmodel.getRK());
+                for (Set<String> oStrat : otherAgentsStrategies) {
                     CogwedModel submodel = cogwedmodel.getShrunkModel(CogwedModel.intersect(strat, oStrat));
-                    System.out.println(cogwedmodel.getRK());
-                    if (!subparse(submodel, formula).contains(state)) {
+                    if (!CogwedMC.evalFormula(submodel, formula).contains(state)) {
                         allParsingReturnsTrue = false;
                         break;
                     }
@@ -205,43 +211,17 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
                 }
                 // if for the strat, all parsing of formula on the submodel made is true
                 result.add(state);
-                System.out.println("CA on state: " + state + " result: true");
                 break;    // - to the next state
             }
         }
         // push the collected states as result
         evalStack.push(result);
-        // TODO test this exit rule
-        ctx.exitRule(this);
-    }
-
-    private Set<String> subparse(CogwedModel model, String formula) {
-        ANTLRInputStream finput = new ANTLRInputStream(formula);
-        CogwedFormulaGrammarLexer flexer = new
-                CogwedFormulaGrammarLexer(finput);
-        // create a buffer of tokens pulled from the lexer
-        CommonTokenStream ftokens = new CommonTokenStream(flexer);
-        // create a parser that feeds off the tokens buffer
-        CogwedFormulaGrammarParser fparser = new CogwedFormulaGrammarParser(ftokens);
-        // begin parsing
-        ParseTree ftree = fparser.start();
-        // Just a standard walker
-        ParseTreeWalker fwalker = new ParseTreeWalker();
-        // Now we associate our extractor to the parser.
-        FormulaEvaluator evaluator = new FormulaEvaluator(fparser);
-        evaluator.setModel(model);
-        // and we walk the tree with our extractor.
-        System.out.println("Subparsing formula: " + formula + ", and the model look like: ");
-        System.out.println(model.getAtoms());
-        System.out.println(model.getRK());
-        System.out.println(model.getAllStates());
-        fwalker.walk(evaluator, ftree);
-        return evaluator.getSolution();
     }
 
     @Override
     public void exitCoalitional_announcement(CogwedFormulaGrammarParser.Coalitional_announcementContext ctx) {
-        // TODO get partial parser's result and push it into stack
+        // getting rid of extra parsed result
+        evalStack.pop();
     }
 
     public CogwedModel getModel() {

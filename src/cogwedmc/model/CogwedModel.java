@@ -1,5 +1,7 @@
 package cogwedmc.model;
 
+import cogwedmc.exceptions.ForeignComponentException;
+
 import java.util.*;
 
 /* A class for a cogwed model, nothing special */
@@ -38,23 +40,15 @@ public class CogwedModel {
     }
 
     // returned references are all to the states and equiv sets in the model, not copies
-    public Set<Set<String>> getStrategies(String realState, int agent) {
+    public Set<Set<String>> getStrategies(String realState, int agent) throws ForeignComponentException {
         Set<Set<String>> strategies = new HashSet<>();
         Set<String> realClass = new HashSet<>(getEquivalentStates(agent, realState));
-        //
-        //System.out.println("trueclass for state " + trueState + " and agent " + agent + ": " + trueClass.toString());
-        //
         strategies.add(realClass);
         // combination of the equiv classes left
         List<Set<String>> restOfClasses = new ArrayList<>(equivRels.get(agent));
         restOfClasses.remove(realClass);
         int rocSize = restOfClasses.size();
         for (int i = 0; i < rocSize; i++) {
-            /*
-            if (trueClass == null) {
-                throw new RuntimeException();
-            }
-            */
             Set<String> stratI = new HashSet<>(realClass);
             stratI.addAll(restOfClasses.get(i));
             strategies.add(stratI);
@@ -62,7 +56,6 @@ public class CogwedModel {
                 Set<String> prev = new HashSet<>(stratI);
                 for (int k = j; k < rocSize; k++) {
                     prev.addAll(restOfClasses.get(k));
-                    //strategies.add(new HashSet<>(prev));
                 }
             }
         }
@@ -70,9 +63,13 @@ public class CogwedModel {
         return strategies;
     }
 
-    public Set<Set<String>> getStrategies(String realState, List<Integer> agentlist) {
+    // get the intersection of all strats of all agents
+    public Set<Set<String>> getStrategies(String realState, List<Integer> agentlist) throws ForeignComponentException {
         int alLength = agentlist.size();
-        if (alLength < 2) {
+        if (alLength == 0) {
+            return new HashSet<>();
+        }
+        if (alLength == 1) {
             return getStrategies(realState, agentlist.get(0));
         }
         Set<Set<String>> allStrats = new HashSet<>();
@@ -80,17 +77,14 @@ public class CogwedModel {
             for (int j = i+1; j < alLength; j++) {
                 // TODO concise the code
                 Set<Set<String>> strats = getStrategies(realState, agentlist.get(i));
-                //System.out.println("Strategy " + strats + " got: " + i);
                 for (Set<String> stratI : strats) {
                     Set<Set<String>> strats2 = getStrategies(realState, agentlist.get(j));
-                    //System.out.println("Strategy " + strats2 + " got: \t\t" + i + ", " + j);
                     for (Set<String> stratJ : strats2) {
                         allStrats.add(intersect(stratI, stratJ));
                     }
                 }
             }
         }
-        //System.out.println("Behold: A list of agent got their strategies!");
         return allStrats;
     }
 
@@ -203,9 +197,12 @@ public class CogwedModel {
 
     // Returns the set of global states epistemically equivalent to
     // aState for agent i
-    public Set<String> getEquivalentStates(int agent, String aState) {
+    public Set<String> getEquivalentStates(int agent, String aState) throws ForeignComponentException {
         // We get the eq. classes for this agent:
         List<Set<String>> eqClasses = equivRels.get(agent);
+        if (eqClasses == null) {
+            throw new ForeignComponentException("Error: foreign agent (not existing in the model)");
+        }
 
         // We iterate over the classes to see if there is one that
         // contains aState
@@ -214,8 +211,7 @@ public class CogwedModel {
                 return aClass;
             }
         }
-        System.err.println("Error: nullptr returned");
-        return null;
+        throw new ForeignComponentException("Error: foreign state (not existing in the model)");
     }
 
 
