@@ -1,3 +1,5 @@
+package models.cards;
+
 import java.util.*;
 
 /* A class to generate a simple Cogwed model with N cards.

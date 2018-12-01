@@ -1,3 +1,5 @@
+package models.dincrypt;
+
 import java.util.*;
 
 /* A class to generate the cogwed model for N dining cryptographers
