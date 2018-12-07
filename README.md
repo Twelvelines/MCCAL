@@ -1,5 +1,5 @@
 # MCCAL
-#### *Model Checker for Coalitional Announcement Logic*
+#### *Model Checker for Coalition Announcement Logic*
 Utilising [ANTLR][2] for generating customised parsers
 (ANTLR version: 4.7.1)
 
