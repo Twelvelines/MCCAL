@@ -1,12 +1,12 @@
-package cogwedmc.formula.formulareader;
+package mccal.formula.formulareader;
 
 // TODO tidy up the imports
 import java.util.*;
 
-import cogwedmc.ModelChecker;
-import cogwedmc.exceptions.ForeignComponentException;
-import cogwedmc.formula.formulareader.antlr.*;
-import cogwedmc.model.*;
+import mccal.ModelChecker;
+import mccal.exceptions.ForeignComponentException;
+import mccal.formula.formulareader.antlr.*;
+import mccal.model.*;
 
 
 /* Franco 230721
@@ -238,7 +238,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     // EX is easy: just the pre-image of all the states in which
     // the formula is true.
     @Override
-    public void exitEx(cogwedmc.formula.formulareader.antlr.FormulaGrammarParser.ExContext ctx) {
+    public void exitEx(mccal.formula.formulareader.antlr.FormulaGrammarParser.ExContext ctx) {
         Set<String> tmpResult = new HashSet<String>();
         Set<String> previous = stack.pop();
 
@@ -254,7 +254,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     // EG is computed using a fix-point, based on the idea that
     // EG p = p and (EX EG p)
     @Override
-    public void exitEg(cogwedmc.formula.formulareader.antlr.FormulaGrammarParser.EgContext ctx) {
+    public void exitEg(mccal.formula.formulareader.antlr.FormulaGrammarParser.EgContext ctx) {
 
         Set<String> previous = stack.pop();
 
@@ -273,7 +273,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
 
     // This is the only complicated operator
     @Override
-    public void exitBelief(cogwedmc.formula.formulareader.antlr.FormulaGrammarParser.BeliefContext ctx) {
+    public void exitBelief(mccal.formula.formulareader.antlr.FormulaGrammarParser.BeliefContext ctx) {
         // all the states
         // Set<String> allStates = this.cogwedmodel.getAllStates().keySet();
 

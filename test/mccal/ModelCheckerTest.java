@@ -1,6 +1,6 @@
-package cogwedmc;
+package mccal;
 
-import cogwedmc.model.Model;
+import mccal.model.Model;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;

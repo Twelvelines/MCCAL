@@ -1,4 +1,4 @@
-package cogwedmc;
+package mccal;
 
 
 /*
@@ -6,13 +6,13 @@ package cogwedmc;
  *
  */
 
-import cogwedmc.formula.formulareader.FormulaEvaluator;
-import cogwedmc.formula.formulareader.antlr.FormulaGrammarLexer;
-import cogwedmc.formula.formulareader.antlr.FormulaGrammarParser;
-import cogwedmc.model.Model;
-import cogwedmc.model.modelreader.ModelExtractor;
-import cogwedmc.model.modelreader.antlr.ModelGrammarLexer;
-import cogwedmc.model.modelreader.antlr.ModelGrammarParser;
+import mccal.formula.formulareader.FormulaEvaluator;
+import mccal.formula.formulareader.antlr.FormulaGrammarLexer;
+import mccal.formula.formulareader.antlr.FormulaGrammarParser;
+import mccal.model.Model;
+import mccal.model.modelreader.ModelExtractor;
+import mccal.model.modelreader.antlr.ModelGrammarLexer;
+import mccal.model.modelreader.antlr.ModelGrammarParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;

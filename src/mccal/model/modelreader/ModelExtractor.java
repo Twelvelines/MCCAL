@@ -1,11 +1,11 @@
-package cogwedmc.model.modelreader;
+package mccal.model.modelreader;
 
 import java.util.*;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import cogwedmc.model.*;
-import cogwedmc.model.modelreader.antlr.*;
+import mccal.model.*;
+import mccal.model.modelreader.antlr.*;
 
 /* Franco 130721
    A Listener to generate a Model object from the parse tree.
@@ -70,7 +70,7 @@ public class ModelExtractor
     /*
     // Entering the definition of a list of local states
     @Override
-    public void enterLstateslist(cogwedmc.model.modelreader.antlr.ModelGrammarParser.LstateslistContext ctx) {
+    public void enterLstateslist(mccal.model.modelreader.antlr.ModelGrammarParser.LstateslistContext ctx) {
         for (TerminalNode id : ctx.ID()) {
             curLStateList.add(id.getText());
         }
@@ -78,7 +78,7 @@ public class ModelExtractor
 
     // Exiting the definition of a global state
     @Override
-    public void exitStatedef(cogwedmc.model.modelreader.antlr.ModelGrammarParser.StatedefContext ctx) {
+    public void exitStatedef(mccal.model.modelreader.antlr.ModelGrammarParser.StatedefContext ctx) {
         cogwedmodel.addGlobalState(new String(curGStateID), new ArrayList<String>(curLStateList));
     }
     // All done with global states

@@ -1,4 +1,4 @@
-package cogwedmc.model.modelreader.antlr;// Generated from ModelGrammar.g by ANTLR 4.7.1
+package mccal.model.modelreader.antlr;// Generated from ModelGrammar.g4 by ANTLR 4.7.1
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATN;
@@ -70,7 +70,7 @@ public class ModelGrammarParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "ModelGrammar.g"; }
+	public String getGrammarFileName() { return "ModelGrammar.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }

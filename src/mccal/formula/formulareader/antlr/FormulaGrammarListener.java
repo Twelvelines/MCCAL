@@ -1,4 +1,4 @@
-package cogwedmc.formula.formulareader.antlr;// Generated from FormulaGrammar.g by ANTLR 4.7.1
+package mccal.formula.formulareader.antlr;// Generated from FormulaGrammar.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**

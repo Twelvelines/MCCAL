@@ -32,11 +32,11 @@
 </target>
 
 <target name="CogwedModelGrammar">
-  <antlr4 grammar.name="src/grammars/CogwedModelGrammar.g" package.name="cogwedmc.model.modelreader.antlr" outputdirectory="./src/cogwedmc/model/modelreader/antlr"/>
+  <antlr4 grammar.name="src/grammars/CogwedModelGrammar.g" package.name="mccal.model.modelreader.antlr" outputdirectory="./src/mccal/model/modelreader/antlr"/>
 </target>
 
 <target name="CogwedFormulaGrammar">
-  <antlr4 grammar.name="./src/grammars/CogwedFormulaGrammar.g" package.name="cogwedmc.formula.formulareader.antlr" outputdirectory="./src/cogwedmc/formula/formulareader/antlr" />
+  <antlr4 grammar.name="./src/grammars/CogwedFormulaGrammar.g" package.name="mccal.formula.formulareader.antlr" outputdirectory="./src/mccal/formula/formulareader/antlr" />
 </target>
 
  <target name="compile" depends="-init,CogwedModelGrammar,CogwedFormulaGrammar">

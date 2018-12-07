@@ -26,7 +26,7 @@
 
  **/
 
-grammar CogwedModelGrammar;
+grammar ModelGrammar;
 
 // A model is just a sequence of definitions:
 cogwed_model_file: nofagents statesdef reldef atomsdef;

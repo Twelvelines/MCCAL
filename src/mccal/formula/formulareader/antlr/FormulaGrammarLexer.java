@@ -1,4 +1,4 @@
-package cogwedmc.formula.formulareader.antlr;// Generated from FormulaGrammar.g by ANTLR 4.7.1
+package mccal.formula.formulareader.antlr;// Generated from FormulaGrammar.g4 by ANTLR 4.7.1
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATN;
@@ -80,7 +80,7 @@ public class FormulaGrammarLexer extends Lexer {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "FormulaGrammar.g"; }
+	public String getGrammarFileName() { return "FormulaGrammar.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }

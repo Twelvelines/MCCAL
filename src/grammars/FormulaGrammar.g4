@@ -18,7 +18,7 @@ No group modalities for the moment. Also, two temporal operators only.
 
  **/
 
-grammar CogwedFormulaGrammar;
+grammar FormulaGrammar;
 
 // This is because there is some recursion.
 start: formula;
@@ -27,11 +27,11 @@ formula:
     ('!'|'not') formula             # Negation
     | formula 'and' formula         # Conjunction
     | formula 'or' formula          # Disjunction
-    | formula ('implies'|'->') formula           # Implication
+    | formula ('implies'|'->') formula      # Implication
     | '(' formula ')'               # parens
-    | 'K' '(' agentid ',' formula ')'     # Knowledge
-    | '[' an_formula ']' formula 		# Announcement
-    | '<<' agentlist '>>' ca_formula   # Coalitional_announcement
+    | 'K' '(' agentid ',' formula ')'       # Knowledge
+    | '[' an_formula ']' formula    # Announcement
+    | '<<' agentlist '>>' ca_formula        # Coalitional_announcement
     | ID                            # id
     ;
 

@@ -1,6 +1,6 @@
-package cogwedmc.model;
+package mccal.model;
 
-import cogwedmc.exceptions.ForeignComponentException;
+import mccal.exceptions.ForeignComponentException;
 
 import java.util.*;
 

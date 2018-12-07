@@ -1,5 +1,5 @@
-package cogwedmc.model.modelreader.antlr;
-// Generated from ModelGrammar.g by ANTLR 4.7.1
+package mccal.model.modelreader.antlr;
+// Generated from ModelGrammar.g4 by ANTLR 4.7.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
