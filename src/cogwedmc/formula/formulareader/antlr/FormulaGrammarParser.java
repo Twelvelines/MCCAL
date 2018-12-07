@@ -1,4 +1,4 @@
-package cogwedmc.formula.formulareader.antlr;// Generated from CogwedFormulaGrammar.g by ANTLR 4.7.1
+package cogwedmc.formula.formulareader.antlr;// Generated from FormulaGrammar.g by ANTLR 4.7.1
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATN;
@@ -12,7 +12,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.List;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class CogwedFormulaGrammarParser extends Parser {
+public class FormulaGrammarParser extends Parser {
 	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -71,7 +71,7 @@ public class CogwedFormulaGrammarParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "CogwedFormulaGrammar.g"; }
+	public String getGrammarFileName() { return "FormulaGrammar.g"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -82,7 +82,7 @@ public class CogwedFormulaGrammarParser extends Parser {
 	@Override
 	public ATN getATN() { return _ATN; }
 
-	public CogwedFormulaGrammarParser(TokenStream input) {
+	public FormulaGrammarParser(TokenStream input) {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
@@ -96,11 +96,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_start; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterStart(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterStart(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitStart(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitStart(this);
 		}
 	}
 
@@ -143,11 +143,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public ParensContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterParens(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterParens(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitParens(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitParens(this);
 		}
 	}
 	public static class DisjunctionContext extends FormulaContext {
@@ -160,11 +160,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public DisjunctionContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterDisjunction(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterDisjunction(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitDisjunction(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitDisjunction(this);
 		}
 	}
 	public static class NegationContext extends FormulaContext {
@@ -174,11 +174,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public NegationContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterNegation(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterNegation(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitNegation(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitNegation(this);
 		}
 	}
 	public static class AnnouncementContext extends FormulaContext {
@@ -191,11 +191,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public AnnouncementContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterAnnouncement(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterAnnouncement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitAnnouncement(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitAnnouncement(this);
 		}
 	}
 	public static class ConjunctionContext extends FormulaContext {
@@ -208,23 +208,23 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public ConjunctionContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterConjunction(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterConjunction(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitConjunction(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitConjunction(this);
 		}
 	}
 	public static class IdContext extends FormulaContext {
-		public TerminalNode ID() { return getToken(CogwedFormulaGrammarParser.ID, 0); }
+		public TerminalNode ID() { return getToken(FormulaGrammarParser.ID, 0); }
 		public IdContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterId(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterId(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitId(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitId(this);
 		}
 	}
 	public static class KnowledgeContext extends FormulaContext {
@@ -237,11 +237,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public KnowledgeContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterKnowledge(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterKnowledge(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitKnowledge(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitKnowledge(this);
 		}
 	}
 	public static class Coalitional_announcementContext extends FormulaContext {
@@ -254,11 +254,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public Coalitional_announcementContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterCoalitional_announcement(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterCoalitional_announcement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitCoalitional_announcement(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitCoalitional_announcement(this);
 		}
 	}
 	public static class ImplicationContext extends FormulaContext {
@@ -271,11 +271,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		public ImplicationContext(FormulaContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterImplication(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterImplication(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitImplication(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitImplication(this);
 		}
 	}
 
@@ -479,11 +479,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_an_formula; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterAn_formula(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterAn_formula(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitAn_formula(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitAn_formula(this);
 		}
 	}
 
@@ -518,11 +518,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_ca_formula; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterCa_formula(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterCa_formula(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitCa_formula(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitCa_formula(this);
 		}
 	}
 
@@ -548,18 +548,18 @@ public class CogwedFormulaGrammarParser extends Parser {
 	}
 
 	public static class AgentidContext extends ParserRuleContext {
-		public TerminalNode INT() { return getToken(CogwedFormulaGrammarParser.INT, 0); }
+		public TerminalNode INT() { return getToken(FormulaGrammarParser.INT, 0); }
 		public AgentidContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_agentid; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterAgentid(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterAgentid(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitAgentid(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitAgentid(this);
 		}
 	}
 
@@ -597,11 +597,11 @@ public class CogwedFormulaGrammarParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_agentlist; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).enterAgentlist(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).enterAgentlist(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CogwedFormulaGrammarListener) ((CogwedFormulaGrammarListener)listener).exitAgentlist(this);
+			if ( listener instanceof FormulaGrammarListener) ((FormulaGrammarListener)listener).exitAgentlist(this);
 		}
 	}
 

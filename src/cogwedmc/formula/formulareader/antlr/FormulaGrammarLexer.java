@@ -1,4 +1,4 @@
-package cogwedmc.formula.formulareader.antlr;// Generated from CogwedFormulaGrammar.g by ANTLR 4.7.1
+package cogwedmc.formula.formulareader.antlr;// Generated from FormulaGrammar.g by ANTLR 4.7.1
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATN;
@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class CogwedFormulaGrammarLexer extends Lexer {
+public class FormulaGrammarLexer extends Lexer {
 	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -74,13 +74,13 @@ public class CogwedFormulaGrammarLexer extends Lexer {
 	}
 
 
-	public CogwedFormulaGrammarLexer(CharStream input) {
+	public FormulaGrammarLexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
 	@Override
-	public String getGrammarFileName() { return "CogwedFormulaGrammar.g"; }
+	public String getGrammarFileName() { return "FormulaGrammar.g"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }

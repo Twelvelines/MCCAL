@@ -8,18 +8,18 @@ import cogwedmc.model.*;
 import cogwedmc.model.modelreader.antlr.*;
 
 /* Franco 130721
-   A Listener to generate a CogwedModel object from the parse tree.
+   A Listener to generate a Model object from the parse tree.
    This is the only complicated part. There is a walker traversing
    the parse tree and we need to listen to the various events 
    (entering/exiting rules).
 
 */
-public class ExtractCogwedModelListener
-        extends CogwedModelGrammarBaseListener {
-    private CogwedModelGrammarParser parser;
+public class ModelExtractor
+        extends ModelGrammarBaseListener {
+    private ModelGrammarParser parser;
 
     // This is the model we want to build.
-    private CogwedModel cogwedmodel;
+    private Model cogwedmodel;
 
     // Temporarily storing number of agents
     //private int numAgent;
@@ -40,10 +40,10 @@ public class ExtractCogwedModelListener
     private Set<String> curGStateList = new HashSet<String>();
 
 
-    public ExtractCogwedModelListener(CogwedModelGrammarParser p) {
+    public ModelExtractor(ModelGrammarParser p) {
         this.parser = p;
         // In the constructor we create an empty model.
-        cogwedmodel = new CogwedModel();
+        cogwedmodel = new Model();
     }
 
     // Just setting the number of agents: this is easy, when the parser enter
@@ -51,7 +51,7 @@ public class ExtractCogwedModelListener
     // we need to get the context and then extract the value from this, but the
     // idea is simple).
     @Override
-    public void enterNofagents(CogwedModelGrammarParser.NofagentsContext ctx) {
+    public void enterNofagents(ModelGrammarParser.NofagentsContext ctx) {
         cogwedmodel.setNumberOfAgents(Integer.parseInt(ctx.NONZEROINT().getText()));
     }
 
@@ -60,7 +60,7 @@ public class ExtractCogwedModelListener
     // This is to store global states.
     // Entering the definition of a global state
     @Override
-    public void enterStatesdef(cogwedmc.model.modelreader.antlr.CogwedModelGrammarParser.StatesdefContext ctx) {
+    public void enterStatesdef(ModelGrammarParser.StatesdefContext ctx) {
         for (TerminalNode i : ctx.ID()) {
             String curState = i.getText();
             cogwedmodel.addGlobalState(curState);
@@ -70,7 +70,7 @@ public class ExtractCogwedModelListener
     /*
     // Entering the definition of a list of local states
     @Override
-    public void enterLstateslist(cogwedmc.model.modelreader.antlr.CogwedModelGrammarParser.LstateslistContext ctx) {
+    public void enterLstateslist(cogwedmc.model.modelreader.antlr.ModelGrammarParser.LstateslistContext ctx) {
         for (TerminalNode id : ctx.ID()) {
             curLStateList.add(id.getText());
         }
@@ -78,7 +78,7 @@ public class ExtractCogwedModelListener
 
     // Exiting the definition of a global state
     @Override
-    public void exitStatedef(cogwedmc.model.modelreader.antlr.CogwedModelGrammarParser.StatedefContext ctx) {
+    public void exitStatedef(cogwedmc.model.modelreader.antlr.ModelGrammarParser.StatedefContext ctx) {
         cogwedmodel.addGlobalState(new String(curGStateID), new ArrayList<String>(curLStateList));
     }
     // All done with global states
@@ -87,7 +87,7 @@ public class ExtractCogwedModelListener
 
     // Add the relation to rk
     @Override
-    public void enterEdge(CogwedModelGrammarParser.EdgeContext ctx) {
+    public void enterEdge(ModelGrammarParser.EdgeContext ctx) {
         Integer agent = Integer.parseInt(ctx.NONZEROINT().getText());
         cogwedmodel.addRelation(agent, ctx.ID().get(0).getText(), ctx.ID().get(1).getText());
     }
@@ -95,7 +95,7 @@ public class ExtractCogwedModelListener
     // Add implicit relations
 
     @Override
-    public void exitReldef(CogwedModelGrammarParser.ReldefContext ctx) {
+    public void exitReldef(ModelGrammarParser.ReldefContext ctx) {
         List<String> states = cogwedmodel.getAllStates();
         for (String s : states) {
             for (int agent = 1; agent <= cogwedmodel.getNumberOfAgents(); agent++) {
@@ -109,25 +109,25 @@ public class ExtractCogwedModelListener
     // The relevant rules are: atoms, singledef, and gstateslist.
 
     @Override
-    public void enterSingledef(CogwedModelGrammarParser.SingledefContext ctx) {
+    public void enterSingledef(ModelGrammarParser.SingledefContext ctx) {
         curAtom = ctx.ID().getText();
         curGStateList.clear();
     }
 
     @Override
-    public void enterGstateslist(CogwedModelGrammarParser.GstateslistContext ctx) {
+    public void enterGstateslist(ModelGrammarParser.GstateslistContext ctx) {
         for (TerminalNode id : ctx.ID()) {
             curGStateList.add(id.getText());
         }
     }
 
     @Override
-    public void exitSingledef(CogwedModelGrammarParser.SingledefContext ctx) {
+    public void exitSingledef(ModelGrammarParser.SingledefContext ctx) {
         cogwedmodel.addAtom(new String(curAtom), new HashSet<String>(curGStateList));
     }
 
     // A simple getter to retrieve the model.
-    public CogwedModel getModel() {
+    public Model getModel() {
         return cogwedmodel;
     }
 

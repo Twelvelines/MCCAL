@@ -5,7 +5,7 @@ import cogwedmc.exceptions.ForeignComponentException;
 import java.util.*;
 
 /* A class for a cogwed model, nothing special */
-public class CogwedModel {
+public class Model {
 
     // The number of agents in the model.
     private int numAgents;
@@ -21,14 +21,14 @@ public class CogwedModel {
     private Map<Integer, List<Set<String>>> equivRels;
 
     // Standard constructor;
-    public CogwedModel() {
+    public Model() {
         gStates = new ArrayList<>();
         atoms = new HashMap<>();
         equivRels = new HashMap<>();
     }
 
     // Constructor with number of agents
-    public CogwedModel(int n) {
+    public Model(int n) {
         this();
         this.numAgents = n;
     }
@@ -91,7 +91,7 @@ public class CogwedModel {
     // Set the number of agents
     public void setNumberOfAgents(int n) {
         if (numAgents != 0) {
-            System.err.print("CogwedModel: Number of agent already set\n");
+            System.err.print("Model: Number of agent already set\n");
             return;
         }
         numAgents = n;
@@ -217,7 +217,7 @@ public class CogwedModel {
 
     // Get a new model shrunk from the original one based on specified valid states
     // TODO better algorithm to speed up the elimination of invalid states?
-    public CogwedModel getShrunkModel(Set<String> validStates) {
+    public Model getShrunkModel(Set<String> validStates) {
         // first shallow copy
         Map<String, Set<String>> shrunkAtoms = new HashMap<>(atoms);
         Map<Integer, List<Set<String>>> shrunkEquivRels = new HashMap<>(equivRels);
@@ -259,7 +259,7 @@ public class CogwedModel {
         }
         shrunkEquivRels.entrySet().removeAll(regEmptyEquivRels);
         // setup shrunk model
-        CogwedModel shrunk = new CogwedModel();
+        Model shrunk = new Model();
         shrunk.numAgents = numAgents;
         shrunk.gStates = new ArrayList<>(validStates);
         shrunk.atoms = shrunkAtoms;

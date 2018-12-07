@@ -7,12 +7,12 @@ package cogwedmc;
  */
 
 import cogwedmc.formula.formulareader.FormulaEvaluator;
-import cogwedmc.formula.formulareader.antlr.CogwedFormulaGrammarLexer;
-import cogwedmc.formula.formulareader.antlr.CogwedFormulaGrammarParser;
-import cogwedmc.model.CogwedModel;
-import cogwedmc.model.modelreader.ExtractCogwedModelListener;
-import cogwedmc.model.modelreader.antlr.CogwedModelGrammarLexer;
-import cogwedmc.model.modelreader.antlr.CogwedModelGrammarParser;
+import cogwedmc.formula.formulareader.antlr.FormulaGrammarLexer;
+import cogwedmc.formula.formulareader.antlr.FormulaGrammarParser;
+import cogwedmc.model.Model;
+import cogwedmc.model.modelreader.ModelExtractor;
+import cogwedmc.model.modelreader.antlr.ModelGrammarLexer;
+import cogwedmc.model.modelreader.antlr.ModelGrammarParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -25,16 +25,16 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Set;
 
-public class CogwedMC {
+public class ModelChecker {
 
     // The filename for the model and the formula we want to verify
     private String filename;
     private String formula;
 
     // The model resulting from parsing filename
-    private CogwedModel cwmodel;
+    private Model cwmodel;
 
-    public CogwedMC(String filename, String formula) {
+    public ModelChecker(String filename, String formula) {
         this.filename = filename;
         this.formula = formula;
     }
@@ -44,14 +44,14 @@ public class CogwedMC {
             // TODO: we should improve error checking (file exists, etc);
             System.err.println("You need to provide a model file and a formula, ");
             System.err.println("\tExample: ");
-            System.out.println("\t$ java CogwedMC sample.gwm \"K(1,p1win)\"");
+            System.out.println("\t$ java ModelChecker sample.gwm \"K(1,p1win)\"");
             System.err.println("Or, an extra state, ");
             System.err.println("\tExample: ");
-            System.out.println("\t$ java CogwedMC sample.gwm \"K(1,p1win)\" S1");
+            System.out.println("\t$ java ModelChecker sample.gwm \"K(1,p1win)\" S1");
             System.exit(1);
         }
 
-        CogwedMC mc = new CogwedMC(args[0], args[1]);
+        ModelChecker mc = new ModelChecker(args[0], args[1]);
         boolean isStateProvided = false;
         String providedState = null;
         if (args.length == 3) {
@@ -105,14 +105,14 @@ public class CogwedMC {
         System.out.println(dateFormat.format(cal.getTime()) + ": job done, see you soon!");
     }
 
-    public static Set<String> evalFormula(CogwedModel model, String formula) {
+    public static Set<String> evalFormula(Model model, String formula) {
         ANTLRInputStream finput = new ANTLRInputStream(formula);
-        CogwedFormulaGrammarLexer flexer = new
-                CogwedFormulaGrammarLexer(finput);
+        FormulaGrammarLexer flexer = new
+                FormulaGrammarLexer(finput);
         // create a buffer of tokens pulled from the lexer
         CommonTokenStream ftokens = new CommonTokenStream(flexer);
         // create a parser that feeds off the tokens buffer
-        CogwedFormulaGrammarParser fparser = new CogwedFormulaGrammarParser(ftokens);
+        FormulaGrammarParser fparser = new FormulaGrammarParser(ftokens);
         // begin parsing
         ParseTree ftree = fparser.start();
         // Just a standard walker
@@ -125,7 +125,7 @@ public class CogwedMC {
         return evaluator.getSolution();
     }
 
-    public static CogwedModel readModel(String filename) {
+    public static Model readModel(String filename) {
         // read formula
         // TODO: improve exception handling :-)!
         ANTLRInputStream input;
@@ -136,18 +136,18 @@ public class CogwedMC {
             return null;
         }
         // create a lexer that feeds off of input CharStream
-        CogwedModelGrammarLexer lexer = new CogwedModelGrammarLexer(input);
+        ModelGrammarLexer lexer = new ModelGrammarLexer(input);
         // create a buffer of tokens pulled from the lexer
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         // create a parser that feeds off the tokens buffer
-        CogwedModelGrammarParser parser = new CogwedModelGrammarParser(tokens);
+        ModelGrammarParser parser = new ModelGrammarParser(tokens);
         // begin parsing at cogwed_model_file rule
         ParseTree tree = parser.cogwed_model_file();
         // Just a standard walker
         ParseTreeWalker walker = new ParseTreeWalker();
         // Now we associate our extractor to the parser.
-        ExtractCogwedModelListener extractor =
-                new ExtractCogwedModelListener(parser);
+        ModelExtractor extractor =
+                new ModelExtractor(parser);
         // and we walk the tree with our extractor.
         walker.walk(extractor, tree);
         // End of model parsing

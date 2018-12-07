@@ -3,7 +3,7 @@ package cogwedmc.formula.formulareader;
 // TODO tidy up the imports
 import java.util.*;
 
-import cogwedmc.CogwedMC;
+import cogwedmc.ModelChecker;
 import cogwedmc.exceptions.ForeignComponentException;
 import cogwedmc.formula.formulareader.antlr.*;
 import cogwedmc.model.*;
@@ -15,13 +15,13 @@ import cogwedmc.model.*;
    results.
 
 */
-public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
-    private CogwedFormulaGrammarParser parser;
+public class FormulaEvaluator extends FormulaGrammarBaseListener {
+    private FormulaGrammarParser parser;
 
     // This is the model where we want to evaluate the formula.
-    private CogwedModel cogwedmodel;
+    private Model cogwedmodel;
     // announcement cache
-    private CogwedModel aModelCache;
+    private Model aModelCache;
 
     // This is the stack where we store temporary results.
     private Stack<Set<String>> evalStack;
@@ -31,20 +31,20 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
     private List<Integer> coalitionAgentlistCache;
 
 
-    public FormulaEvaluator(CogwedFormulaGrammarParser p) {
+    public FormulaEvaluator(FormulaGrammarParser p) {
         this.parser = p;
         // In the constructor we create an empty stack.
         evalStack = new Stack<>();
         aFalseStatesCache = new Stack<>();
     }
 
-    public void setModel(CogwedModel m) {
+    public void setModel(Model m) {
         this.cogwedmodel = m;
     }
 
     // Basic case: an atom, which is an ID
     @Override
-    public void exitId(CogwedFormulaGrammarParser.IdContext ctx) {
+    public void exitId(FormulaGrammarParser.IdContext ctx) {
         // Nothing special, the model gives us the set of states
         Set<String> validStates = cogwedmodel.getStatesWhereTrue(ctx.ID().getText());
         if (validStates == null) {
@@ -56,7 +56,7 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
     // Negation: we have to take the complement of the set
     @Override
 
-    public void exitNegation(CogwedFormulaGrammarParser.NegationContext ctx) {
+    public void exitNegation(FormulaGrammarParser.NegationContext ctx) {
         Set<String> allStates = new HashSet<>(this.cogwedmodel.getAllStates());
         Set<String> previous = evalStack.pop();
 
@@ -69,7 +69,7 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
     // For the conjunction we take the intersection of the two elements on top
     // of the stack
     @Override
-    public void exitConjunction(CogwedFormulaGrammarParser.ConjunctionContext ctx) {
+    public void exitConjunction(FormulaGrammarParser.ConjunctionContext ctx) {
         Set<String> left = evalStack.pop();
         Set<String> right = evalStack.pop();
         // retainAll is the intersection.
@@ -80,7 +80,7 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
 
     // This is similar to conjunction above
     @Override
-    public void exitDisjunction(CogwedFormulaGrammarParser.DisjunctionContext ctx) {
+    public void exitDisjunction(FormulaGrammarParser.DisjunctionContext ctx) {
         Set<String> left = evalStack.pop();
         Set<String> right = evalStack.pop();
         // addAll is the union.
@@ -90,7 +90,7 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
 
     // (a -> b) is (!a or b)
     @Override
-    public void exitImplication(CogwedFormulaGrammarParser.ImplicationContext ctx) {
+    public void exitImplication(FormulaGrammarParser.ImplicationContext ctx) {
         // Arguments are swapped on top of stack!
         // (bug fixed)
         Set<String> right = evalStack.pop();
@@ -111,7 +111,7 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
 
 
     @Override
-    public void exitKnowledge(CogwedFormulaGrammarParser.KnowledgeContext ctx) {
+    public void exitKnowledge(FormulaGrammarParser.KnowledgeContext ctx) {
         // List<String> allStates = this.cogwedmodel.getAllStates();    // all the states
         Set<String> previous = evalStack.pop();    // The set of states where the inner formula is true
         int agent = Integer.valueOf(ctx.agentid().getText());
@@ -139,7 +139,7 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
     }
 
     @Override
-    public void exitAn_formula(CogwedFormulaGrammarParser.An_formulaContext ctx) {
+    public void exitAn_formula(FormulaGrammarParser.An_formulaContext ctx) {
         // states where the announcement is true
         Set<String> trueStates = evalStack.pop();
         Set<String> falseStates;
@@ -154,7 +154,7 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
     }
 
     @Override
-    public void exitAnnouncement(CogwedFormulaGrammarParser.AnnouncementContext ctx) {
+    public void exitAnnouncement(FormulaGrammarParser.AnnouncementContext ctx) {
         cogwedmodel = aModelCache;
         aModelCache = null;
         Set<String> result = evalStack.pop();
@@ -164,17 +164,17 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
 
     // TODO make a strat class
     @Override
-    public void exitAgentlist(CogwedFormulaGrammarParser.AgentlistContext ctx) {
+    public void exitAgentlist(FormulaGrammarParser.AgentlistContext ctx) {
         // get agent list
         List<Integer> agentlist = new ArrayList<>();
-        for (CogwedFormulaGrammarParser.AgentidContext aCtx  : ctx.agentid()) {
+        for (FormulaGrammarParser.AgentidContext aCtx  : ctx.agentid()) {
             agentlist.add(Integer.valueOf(aCtx.getText()));
         }
         coalitionAgentlistCache = agentlist;
     }
 
     @Override
-    public void enterCa_formula(CogwedFormulaGrammarParser.Ca_formulaContext ctx) {
+    public void enterCa_formula(FormulaGrammarParser.Ca_formulaContext ctx) {
         String formula = ctx.getText();
         Set<String> result = new HashSet<>();
         List<Integer> agentlist = coalitionAgentlistCache;
@@ -198,8 +198,8 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
             for (Set<String> strat : agentsStrategies) {
                 boolean allParsingReturnsTrue = true;
                 for (Set<String> oStrat : otherAgentsStrategies) {
-                    CogwedModel submodel = cogwedmodel.getShrunkModel(CogwedModel.intersect(strat, oStrat));
-                    if (!CogwedMC.evalFormula(submodel, formula).contains(state)) {
+                    Model submodel = cogwedmodel.getShrunkModel(Model.intersect(strat, oStrat));
+                    if (!ModelChecker.evalFormula(submodel, formula).contains(state)) {
                         allParsingReturnsTrue = false;
                         break;
                     }
@@ -219,12 +219,12 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
     }
 
     @Override
-    public void exitCoalitional_announcement(CogwedFormulaGrammarParser.Coalitional_announcementContext ctx) {
+    public void exitCoalitional_announcement(FormulaGrammarParser.Coalitional_announcementContext ctx) {
         // getting rid of extra parsed result
         evalStack.pop();
     }
 
-    public CogwedModel getModel() {
+    public Model getModel() {
         return cogwedmodel;
     }
 
@@ -238,7 +238,7 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
     // EX is easy: just the pre-image of all the states in which
     // the formula is true.
     @Override
-    public void exitEx(cogwedmc.formula.formulareader.antlr.CogwedFormulaGrammarParser.ExContext ctx) {
+    public void exitEx(cogwedmc.formula.formulareader.antlr.FormulaGrammarParser.ExContext ctx) {
         Set<String> tmpResult = new HashSet<String>();
         Set<String> previous = stack.pop();
 
@@ -254,7 +254,7 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
     // EG is computed using a fix-point, based on the idea that
     // EG p = p and (EX EG p)
     @Override
-    public void exitEg(cogwedmc.formula.formulareader.antlr.CogwedFormulaGrammarParser.EgContext ctx) {
+    public void exitEg(cogwedmc.formula.formulareader.antlr.FormulaGrammarParser.EgContext ctx) {
 
         Set<String> previous = stack.pop();
 
@@ -273,7 +273,7 @@ public class FormulaEvaluator extends CogwedFormulaGrammarBaseListener {
 
     // This is the only complicated operator
     @Override
-    public void exitBelief(cogwedmc.formula.formulareader.antlr.CogwedFormulaGrammarParser.BeliefContext ctx) {
+    public void exitBelief(cogwedmc.formula.formulareader.antlr.FormulaGrammarParser.BeliefContext ctx) {
         // all the states
         // Set<String> allStates = this.cogwedmodel.getAllStates().keySet();
 

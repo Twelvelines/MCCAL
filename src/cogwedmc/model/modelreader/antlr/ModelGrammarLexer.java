@@ -1,4 +1,4 @@
-package cogwedmc.model.modelreader.antlr;// Generated from CogwedModelGrammar.g by ANTLR 4.7.1
+package cogwedmc.model.modelreader.antlr;// Generated from ModelGrammar.g by ANTLR 4.7.1
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATN;
@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class CogwedModelGrammarLexer extends Lexer {
+public class ModelGrammarLexer extends Lexer {
 	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -72,13 +72,13 @@ public class CogwedModelGrammarLexer extends Lexer {
 	}
 
 
-	public CogwedModelGrammarLexer(CharStream input) {
+	public ModelGrammarLexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
 	@Override
-	public String getGrammarFileName() { return "CogwedModelGrammar.g"; }
+	public String getGrammarFileName() { return "ModelGrammar.g"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }

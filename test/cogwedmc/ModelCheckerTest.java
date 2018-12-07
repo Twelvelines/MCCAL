@@ -1,18 +1,18 @@
 package cogwedmc;
 
-import cogwedmc.model.CogwedModel;
+import cogwedmc.model.Model;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CogwedMCTest {
+class ModelCheckerTest {
     private final String MFP = "test/models/";
 
     private Set<String> solutionForSample(String sampleFilename, String formula) {
-        CogwedModel model = CogwedMC.readModel(sampleFilename);
-        return CogwedMC.evalFormula(model, formula);
+        Model model = ModelChecker.readModel(sampleFilename);
+        return ModelChecker.evalFormula(model, formula);
     }
 
     @Test
