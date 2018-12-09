@@ -1,3 +1,4 @@
+
 // The number of agents
 N = 3;
 
@@ -9,3 +10,5 @@ R = { (3, S1, S2), (2, S1, S3) };
 
 // This tells that atom1 is true in S1 and S3, etc.
 atom1 = { S1 };
+atom2 = { S1, S2 };
+atom3 = { S3 };

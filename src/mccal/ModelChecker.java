@@ -141,8 +141,8 @@ public class ModelChecker {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         // create a parser that feeds off the tokens buffer
         ModelGrammarParser parser = new ModelGrammarParser(tokens);
-        // begin parsing at cogwed_model_file rule
-        ParseTree tree = parser.cogwed_model_file();
+        // begin parsing at model_file rule
+        ParseTree tree = parser.model_file();
         // Just a standard walker
         ParseTreeWalker walker = new ParseTreeWalker();
         // Now we associate our extractor to the parser.

@@ -7,15 +7,15 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface ModelGrammarListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link ModelGrammarParser#cogwed_model_file}.
+	 * Enter a parse tree produced by {@link ModelGrammarParser#model_file}.
 	 * @param ctx the parse tree
 	 */
-	void enterCogwed_model_file(ModelGrammarParser.Cogwed_model_fileContext ctx);
+	void enterModel_file(ModelGrammarParser.model_fileContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ModelGrammarParser#cogwed_model_file}.
+	 * Exit a parse tree produced by {@link ModelGrammarParser#model_file}.
 	 * @param ctx the parse tree
 	 */
-	void exitCogwed_model_file(ModelGrammarParser.Cogwed_model_fileContext ctx);
+	void exitModel_file(ModelGrammarParser.model_fileContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ModelGrammarParser#nofagents}.
 	 * @param ctx the parse tree

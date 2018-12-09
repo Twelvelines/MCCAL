@@ -1,26 +1,20 @@
-/**
- Franco 220720: This is the grammar for a cogwed /formula/
- 
- Simple examples:
+/** This is the grammar for a string of formula
 
-a or b; // A simple disjunction
+    Simple examples:
 
-// not ready implies there exists in the future ready
-!ready -> (EF(ready)) 
+    a or b; // A simple disjunction
 
-// p implies that, with certainty < 0.2, agent 1 believes q
-p -> B[<0.2](1,q);
+    // p implies that agent 1 knows q
+    p -> K(1, q);
 
-// Other possible formulas:
-B[=.8](2,(a -> EG(b)))
+    // Other possible formulas:
+    <<3>> ! K(1, atom1)
 
-No group modalities for the moment. Also, two temporal operators only.
-
- **/
+    */
 
 grammar FormulaGrammar;
 
-// This is because there is some recursion.
+// This is based on recursion in formula.
 start: formula;
 
 formula:

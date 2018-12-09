@@ -22,10 +22,10 @@ public class ModelGrammarParser extends Parser {
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
 		T__9=10, NONZEROINT=11, INT=12, WS=13, LINE_COMMENT=14, COMMENT=15, ID=16;
 	public static final int
-		RULE_cogwed_model_file = 0, RULE_nofagents = 1, RULE_statesdef = 2, RULE_reldef = 3, 
+			RULE_model_file = 0, RULE_nofagents = 1, RULE_statesdef = 2, RULE_reldef = 3,
 		RULE_edge = 4, RULE_atomsdef = 5, RULE_singledef = 6, RULE_gstateslist = 7;
 	public static final String[] ruleNames = {
-		"cogwed_model_file", "nofagents", "statesdef", "reldef", "edge", "atomsdef", 
+		"model_file", "nofagents", "statesdef", "reldef", "edge", "atomsdef",
 		"singledef", "gstateslist"
 	};
 
@@ -85,7 +85,7 @@ public class ModelGrammarParser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
-	public static class Cogwed_model_fileContext extends ParserRuleContext {
+	public static class model_fileContext extends ParserRuleContext {
 		public NofagentsContext nofagents() {
 			return getRuleContext(NofagentsContext.class,0);
 		}
@@ -98,23 +98,23 @@ public class ModelGrammarParser extends Parser {
 		public AtomsdefContext atomsdef() {
 			return getRuleContext(AtomsdefContext.class,0);
 		}
-		public Cogwed_model_fileContext(ParserRuleContext parent, int invokingState) {
+		public model_fileContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_cogwed_model_file; }
+		@Override public int getRuleIndex() { return RULE_model_file; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ModelGrammarListener) ((ModelGrammarListener)listener).enterCogwed_model_file(this);
+			if ( listener instanceof ModelGrammarListener) ((ModelGrammarListener)listener).enterModel_file(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ModelGrammarListener) ((ModelGrammarListener)listener).exitCogwed_model_file(this);
+			if ( listener instanceof ModelGrammarListener) ((ModelGrammarListener)listener).exitModel_file(this);
 		}
 	}
 
-	public final Cogwed_model_fileContext cogwed_model_file() throws RecognitionException {
-		Cogwed_model_fileContext _localctx = new Cogwed_model_fileContext(_ctx, getState());
-		enterRule(_localctx, 0, RULE_cogwed_model_file);
+	public final model_fileContext model_file() throws RecognitionException {
+		model_fileContext _localctx = new model_fileContext(_ctx, getState());
+		enterRule(_localctx, 0, RULE_model_file);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{

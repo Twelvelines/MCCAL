@@ -16,13 +16,13 @@ public class ModelGrammarBaseListener implements ModelGrammarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCogwed_model_file(ModelGrammarParser.Cogwed_model_fileContext ctx) { }
+	@Override public void enterModel_file(ModelGrammarParser.model_fileContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCogwed_model_file(ModelGrammarParser.Cogwed_model_fileContext ctx) { }
+	@Override public void exitModel_file(ModelGrammarParser.model_fileContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

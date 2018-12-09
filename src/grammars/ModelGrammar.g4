@@ -1,69 +1,51 @@
-/**
- TODO: refactor the docs
- Franco 130720: This is the grammar for a cogwed /model/.
- cogwed models are essentially interpreted systems. This grammar
- is very simplified: no structures for local states; global states are
- tuples of local states.
- The temporal relation is provided a list of pairs (of global states).
+/** This is the grammar for a model file.
+    models are essentially interpreted systems.
 
- Simple example:
+    A minimal example:
 
- ----- cut here -----
+    ----- cut here -----
 
- // This is a single line comment
- // (Multiple line comments are possible as well)
+    // The number of agents
+    N = 2;
 
- // The number of agents
- N = 3;
+    // The list of states.
+    S1; S2;
 
- // The list of global states.
- S1; S2; S3; S4; S5; S6;
+    // The epistemic relation is a list of triples (agent, state, state)
+    R = { (1, S1, S2) };
 
- // This tells that atom1 is true in S1 and S3, etc.
- atom1 = { S1, S3 };
- atom2 = { S3, S4, S5};
------ cut here -----
+    // This tells that atom1 is true in S1 and S3, etc.
+    atom1 = { S1 };
 
- **/
+    ----- cut here -----
+
+    */
 
 grammar ModelGrammar;
 
 // A model is just a sequence of definitions:
-cogwed_model_file: nofagents statesdef reldef atomsdef;
-
-
-
-// Let's define the various parts
-
-
+// TODO ->modelfile
+model_file: nofagents statesdef reldef atomsdef;
 
 // The number of agents (must be > 0)
 nofagents: ('N'|'n') '=' NONZEROINT ';' ;
-
-
-/* This is the definition of global states. */
+// This is the definition of states.
+// TODO ->statesetdef
 statesdef: (ID ';')+;
-// End of statesdef
-
-
-/* The epistemic relation is a list of triples (agent, state, state) */
+// The epistemic relations are a list of triples (agent, state, state)
 reldef: 'R' '=' '{' edge (',' edge)* '}' ';';
-// Just an INT and two IDs
 edge: '(' NONZEROINT ',' ID ',' ID ')';
-// End of reldef
-
-
-/* Definition of the propositional atoms (i.e.: what is true where?) 
-   This section could be empty (i.e., no atoms)
-*/
+// Definition of the propositional atoms (i.e.: what is true where?)
+// This section could be empty i.e. no atoms
+// TODO atomsdef->atomsetdef
 atomsdef: (singledef ';')*;
+// TODO singledef->atomdef
+// TODO gstate->state
 singledef: ID '=' '{' gstateslist '}';
-// gstatelist is  alist of global states (at least one):
+// gstatelist is  alist of states (at least one):
 gstateslist: ID (',' ID)*;
 
-
-
-/* **** Lexer rules ****** */
+/* ------ Lexer rules ------ */
 
 NONZEROINT: [1-9] ([0-9])*;
 INT: [0-9]+;

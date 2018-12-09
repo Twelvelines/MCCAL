@@ -19,7 +19,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     private FormulaGrammarParser parser;
 
     // This is the model where we want to evaluate the formula.
-    private Model cogwedmodel;
+    private Model model;
     // announcement cache
     private Model aModelCache;
 
@@ -39,14 +39,14 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     }
 
     public void setModel(Model m) {
-        this.cogwedmodel = m;
+        this.model = m;
     }
 
     // Basic case: an atom, which is an ID
     @Override
     public void exitId(FormulaGrammarParser.IdContext ctx) {
         // Nothing special, the model gives us the set of states
-        Set<String> validStates = cogwedmodel.getStatesWhereTrue(ctx.ID().getText());
+        Set<String> validStates = model.getStatesWhereTrue(ctx.ID().getText());
         if (validStates == null) {
             validStates = new HashSet<>();
         }
@@ -57,7 +57,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     @Override
 
     public void exitNegation(FormulaGrammarParser.NegationContext ctx) {
-        Set<String> allStates = new HashSet<>(this.cogwedmodel.getAllStates());
+        Set<String> allStates = new HashSet<>(this.model.getAllStates());
         Set<String> previous = evalStack.pop();
 
         // removeAll is the set difference
@@ -97,7 +97,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         Set<String> left = evalStack.pop();
 
         // These are all the states
-        Set<String> allStates = new HashSet<>(this.cogwedmodel.getAllStates());
+        Set<String> allStates = new HashSet<>(this.model.getAllStates());
 
         // We compute !a:
         allStates.removeAll(left);
@@ -112,14 +112,14 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
 
     @Override
     public void exitKnowledge(FormulaGrammarParser.KnowledgeContext ctx) {
-        // List<String> allStates = this.cogwedmodel.getAllStates();    // all the states
+        // List<String> allStates = this.model.getAllStates();    // all the states
         Set<String> previous = evalStack.pop();    // The set of states where the inner formula is true
         int agent = Integer.valueOf(ctx.agentid().getText());
         Set<String> result = new HashSet<>();
 
         for (String state : previous) {     // for every states in the previous true states
             boolean allRelatedStatesAreInThePreviousTrueStates = true;
-            for (Set<String> equivClass : cogwedmodel.getEquivClasses(agent)) {    // examine all equiv relations
+            for (Set<String> equivClass : model.getEquivClasses(agent)) {    // examine all equiv relations
                 if (!equivClass.contains(state)) {     // rid of the irrelevant
                     continue;
                 }    // the rest relations contains the current state
@@ -144,18 +144,18 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         Set<String> trueStates = evalStack.pop();
         Set<String> falseStates;
         // check if it is currently in a sub-formula (local formula)
-        falseStates = evalStack.empty() ? new HashSet<>(cogwedmodel.getAllStates()) : evalStack.pop();
+        falseStates = evalStack.empty() ? new HashSet<>(model.getAllStates()) : evalStack.pop();
         // states where the announcement is false
         falseStates.removeAll(trueStates);
         // cache false states in which the evaluation are always true. Used when announcement exits
         aFalseStatesCache.push(falseStates);
-        aModelCache = cogwedmodel;
-        cogwedmodel = cogwedmodel.getShrunkModel(trueStates);
+        aModelCache = model;
+        model = model.getShrunkModel(trueStates);
     }
 
     @Override
     public void exitAnnouncement(FormulaGrammarParser.AnnouncementContext ctx) {
-        cogwedmodel = aModelCache;
+        model = aModelCache;
         aModelCache = null;
         Set<String> result = evalStack.pop();
         result.addAll(aFalseStatesCache.pop());
@@ -180,17 +180,17 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         List<Integer> agentlist = coalitionAgentlistCache;
         List<Integer> restAgentlist = new ArrayList<>();
         // iterate to create a list
-        for (int i = 0; i < cogwedmodel.getNumberOfAgents(); i++) {
+        for (int i = 0; i < model.getNumberOfAgents(); i++) {
             restAgentlist.add(i+1);
         }
         restAgentlist.removeAll(agentlist);
         coalitionAgentlistCache = null;
-        for (String state : cogwedmodel.getAllStates()) {
+        for (String state : model.getAllStates()) {
             Set<Set<String>> agentsStrategies;
             Set<Set<String>> otherAgentsStrategies;
             try {
-                agentsStrategies = cogwedmodel.getStrategies(state, agentlist);
-                otherAgentsStrategies = cogwedmodel.getStrategies(state, restAgentlist);
+                agentsStrategies = model.getStrategies(state, agentlist);
+                otherAgentsStrategies = model.getStrategies(state, restAgentlist);
             } catch (ForeignComponentException fe) {
                 // TODO handle ForeignComponentException
                 return;
@@ -198,7 +198,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
             for (Set<String> strat : agentsStrategies) {
                 boolean allParsingReturnsTrue = true;
                 for (Set<String> oStrat : otherAgentsStrategies) {
-                    Model submodel = cogwedmodel.getShrunkModel(Model.intersect(strat, oStrat));
+                    Model submodel = model.getShrunkModel(Model.intersect(strat, oStrat));
                     if (!ModelChecker.evalFormula(submodel, formula).contains(state)) {
                         allParsingReturnsTrue = false;
                         break;
@@ -225,114 +225,10 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     }
 
     public Model getModel() {
-        return cogwedmodel;
+        return model;
     }
 
     public Set<String> getSolution() {
         return evalStack.peek();
     }
-
-
-    /*
-
-    // EX is easy: just the pre-image of all the states in which
-    // the formula is true.
-    @Override
-    public void exitEx(mccal.formula.formulareader.antlr.FormulaGrammarParser.ExContext ctx) {
-        Set<String> tmpResult = new HashSet<String>();
-        Set<String> previous = stack.pop();
-
-        // We iterate over all states in which the formula is true
-        // and we add the predecessors to tmpResult
-        for (String aState : previous) {
-            tmpResult.addAll(this.cogwedmodel.getPredecessors(aState));
-        }
-        stack.push(new HashSet<String>(tmpResult));
-    }
-
-    // TODO: implement EG (fix-point etc.)
-    // EG is computed using a fix-point, based on the idea that
-    // EG p = p and (EX EG p)
-    @Override
-    public void exitEg(mccal.formula.formulareader.antlr.FormulaGrammarParser.EgContext ctx) {
-
-        Set<String> previous = stack.pop();
-
-        // Two temporary variables
-        Set<String> tmp = new HashSet<String>();
-        Set<String> q = new HashSet<String>(previous);
-
-        while (!tmp.equals(q)) {
-            tmp = new HashSet<String>(q);
-            Set<String> x = new HashSet<String>(this.cogwedmodel.getPredecessors(tmp));
-            x.retainAll(previous);
-        }
-
-        stack.push(new HashSet<String>(q));
-    }
-
-    // This is the only complicated operator
-    @Override
-    public void exitBelief(mccal.formula.formulareader.antlr.FormulaGrammarParser.BeliefContext ctx) {
-        // all the states
-        // Set<String> allStates = this.cogwedmodel.getAllStates().keySet();
-
-        // The set of states where the inner formula is true:
-        Set<String> previous = stack.pop();
-
-        float value = Float.parseFloat(ctx.comparisonexpr().comparisonvalue().getText());
-        int agentID = Integer.valueOf(ctx.agentid().getText());
-
-        String operator = ctx.comparisonexpr().comparisonoperator().getText();
-
-        Set<String> tmpResult = new HashSet<String>();
-
-        // IDEA!
-        // We don't need to iterate over all states, it is enough
-        // to check the ratio of the equiv. class w.r.t. the comparison
-        // operator: the truth value is the same for all the states in the
-        // equiv. class.
-
-        for (Set<String> eqClass : this.cogwedmodel.getEquivClasses(agentID - 1)) {
-
-            // the set of states of the equivalence class in which the
-            // formula is true: it's just the intersection:
-            Set<String> whereTrue = new HashSet<String>(eqClass);
-            whereTrue.retainAll(previous);
-
-            float ratio = ((float) whereTrue.size()) /
-                    ((float) eqClass.size());
-
-            // Now we have to compare this ratio with the value passed.
-            // We have to go through the possible cases.
-            boolean addSet = false;
-            if (operator.equals("=")) {
-                if (ratio == value) {
-                    addSet = true;
-                }
-            } else if (operator.equals("<")) {
-                if (ratio < value) {
-                    addSet = true;
-                }
-            } else if (operator.equals(">")) {
-                if (ratio > value) {
-                    addSet = true;
-                }
-            } else {
-                System.err.println("Unknown operator: " + operator + ". Exiting now");
-                System.exit(1);
-            }
-
-            // If the comparison was successful, we add the equiv. class
-            // to the set of states where the formula is true
-            if (addSet) {
-                tmpResult.addAll(new HashSet<String>(eqClass));
-            }
-        } // end of loop over equivalence classes for agent.
-
-        // Pushing the result to the stack
-        stack.push(new HashSet<String>(tmpResult));
-    }
-    */
-
 }
