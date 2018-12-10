@@ -26,9 +26,10 @@ formula:
     | 'K' '(' agentid ',' formula ')'       # Knowledge
     | '[' an_formula ']' formula    # Announcement
     | '<<' agentlist '>>' ca_formula        # Coalitional_announcement
-    | ID                            # id
+    | ID                            # id // TODO maybe change this to Proposition? ; define atom := map (agent -> proposition) and review
     ;
 
+// TODO maybe eliminate the underscore
 an_formula: formula;
 ca_formula: formula;
 

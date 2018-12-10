@@ -75,4 +75,14 @@ class ModelCheckerTest {
         assertTrue(solutionForSample(MFP + "sample2.gwm", "<<1, 2>>K(1, atom1)").contains("S1"));
     }
 
+    @Test
+    void test4EvalFormulaSample2S1() {
+        assertTrue(solutionForSample(MFP + "sample2.gwm", "[atom1][atom2][atom3] K(1, atom1)").contains("S1"));
+    }
+
+    @Test
+    void test5EvalFormulaSample2S1() {
+        assertTrue(solutionForSample(MFP + "sample2.gwm", "[atom1][atom2][atom3] K(1, atom3)").contains("S1"));
+        // as nonsense announcement always results to return true
+    }
 }

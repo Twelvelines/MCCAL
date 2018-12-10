@@ -1,7 +1,6 @@
 package mccal.model;
 
 import mccal.exceptions.ForeignComponentException;
-
 import java.util.*;
 
 /* A class for a cogwed model, nothing special */

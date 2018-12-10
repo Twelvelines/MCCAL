@@ -1,27 +1,26 @@
 package mccal.model.modelreader;
 
-import java.util.*;
+import mccal.model.Model;
+import mccal.model.modelreader.antlr.ModelGrammarBaseListener;
+import mccal.model.modelreader.antlr.ModelGrammarParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import mccal.model.*;
-import mccal.model.modelreader.antlr.*;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * ModelExtractor is a Listener that generates a Model object from the parse tree.
+ * A Listener that generates a Model object from the parse tree.
  * There is a walker traversing the parse tree while the ModelExtractor listens to the various events happening,
  * i.e when entering/exiting the rules.
  */
-
 public class ModelExtractor extends ModelGrammarBaseListener {
-    private ModelGrammarParser parser;
-    // the model to build
-    private Model model = new Model();
-    // the id of the current atom being parsed
-    private String curAtom;
-    // a list of states that the current atom points to
-    private Set<String> curStateSet;
+    private Model model;    // the model to build
+    private String curAtom;    // the id of the current atom being parsed
+    private Set<String> curStateSet;    // a list of states that the current atom points to
 
-    public ModelExtractor(ModelGrammarParser p) {
-        this.parser = p;
+    public ModelExtractor() {
+        model = new Model();
     }
 
     /**

@@ -1,11 +1,5 @@
 package mccal;
 
-
-/*
- * Franco 130728: This is the main class to invoke the model checker.
- *
- */
-
 import mccal.formula.formulareader.FormulaEvaluator;
 import mccal.formula.formulareader.antlr.FormulaGrammarLexer;
 import mccal.formula.formulareader.antlr.FormulaGrammarParser;
@@ -26,13 +20,12 @@ import java.util.Calendar;
 import java.util.Set;
 
 public class ModelChecker {
-
     // The filename for the model and the formula we want to verify
     private String filename;
     private String formula;
 
     // The model resulting from parsing filename
-    private Model cwmodel;
+    private Model model;
 
     public ModelChecker(String filename, String formula) {
         this.filename = filename;
@@ -71,15 +64,15 @@ public class ModelChecker {
         System.out.println("FRANCO: Filename is: " + this.filename);
 
         // Read in model
-        this.cwmodel = readModel(this.filename);
-        if (cwmodel == null) {
+        this.model = readModel(this.filename);
+        if (model == null) {
             return;
         }
         cal = Calendar.getInstance();
         System.out.println(dateFormat.format(cal.getTime()) + ": model generated");
 
         // We begin to parse the formula:
-        Set<String> solution = evalFormula(cwmodel, formula);
+        Set<String> solution = evalFormula(model, formula);
 
         // Et voila, job done
         // Printing output
@@ -93,12 +86,12 @@ public class ModelChecker {
         }
         // Model info
         System.out.println("Model size: ");
-        int numAgents = cwmodel.getNumberOfAgents();
+        int numAgents = model.getNumberOfAgents();
         System.out.println("  Number of agents: " + numAgents);
-        System.out.println("  Number of states: " + cwmodel.getAllStates().size());
+        System.out.println("  Number of states: " + model.getAllStates().size());
         int numEquivSets = 0;
         for (int i = 0; i < numAgents; i++) {
-            numEquivSets += cwmodel.getEquivClasses(i+1).size();
+            numEquivSets += model.getEquivClasses(i+1).size();
         }
         System.out.println("  Number of equivalence sets: " + numEquivSets);
         cal = Calendar.getInstance();
@@ -118,8 +111,7 @@ public class ModelChecker {
         // Just a standard walker
         ParseTreeWalker fwalker = new ParseTreeWalker();
         // Now we associate our extractor to the parser.
-        FormulaEvaluator evaluator = new FormulaEvaluator(fparser);
-        evaluator.setModel(model);
+        FormulaEvaluator evaluator = new FormulaEvaluator(model);
         // and we walk the tree with our extractor.
         fwalker.walk(evaluator, ftree);
         return evaluator.getSolution();
@@ -146,8 +138,7 @@ public class ModelChecker {
         // Just a standard walker
         ParseTreeWalker walker = new ParseTreeWalker();
         // Now we associate our extractor to the parser.
-        ModelExtractor extractor =
-                new ModelExtractor(parser);
+        ModelExtractor extractor = new ModelExtractor();
         // and we walk the tree with our extractor.
         walker.walk(extractor, tree);
         // End of model parsing
