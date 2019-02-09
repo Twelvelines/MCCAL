@@ -3,32 +3,25 @@ package mccal.model;
 import mccal.exceptions.ForeignComponentException;
 import java.util.*;
 
-/* A class for a cogwed model, nothing special */
+/**
+ * A class for an epistemic model.
+ */
 public class Model {
+    private int numAgents;    // they are named by index
+    private List<String> states = new ArrayList<>();    // all states in the model
+    // maps every proposition to the set of states where it is true
+    private Map<String, Set<String>> atoms = new HashMap<>();
+    // represents the epistemic relations via mapping every agent to a list of equivalence classes which are sets of
+    // indistinct states for the agent
+    private Map<Integer, List<Set<String>>> equivRels = new HashMap<>();
 
-    // The number of agents in the model.
-    private int numAgents;
-
-    // The list of global states
-    private List<String> gStates;
-
-    // A map from the string to the set of states where the atom is true.
-    private Map<String, Set<String>> atoms;
-
-    // These are the epistemic relations.
-    // The idea is that to each agent (identified by a number) we associate a list of equivalence sets.
-    private Map<Integer, List<Set<String>>> equivRels;
-
-    // Standard constructor;
     public Model() {
-        gStates = new ArrayList<>();
-        atoms = new HashMap<>();
-        equivRels = new HashMap<>();
     }
 
-    // Constructor with number of agents
+    /**
+     * Constructor with number of agents.
+     */
     public Model(int n) {
-        this();
         this.numAgents = n;
     }
 
@@ -38,7 +31,10 @@ public class Model {
         return intersection;
     }
 
-    // returned references are all to the states and equiv sets in the model, not copies
+    /**
+     * Be noted that returned references are all to the states and equiv sets in the model, not copies.
+     * TODO are they?
+     */
     public Set<Set<String>> getStrategies(String realState, int agent) throws ForeignComponentException {
         Set<Set<String>> strategies = new HashSet<>();
         Set<String> realClass = new HashSet<>(getEquivalentStates(agent, realState));
@@ -52,28 +48,30 @@ public class Model {
             stratI.addAll(restOfClasses.get(i));
             strategies.add(stratI);
             for (int j = i+1; j < rocSize; j++) {
-                Set<String> prev = new HashSet<>(stratI);
+                Set<String> prev = new HashSet<>(stratI);  // TODO revise
                 for (int k = j; k < rocSize; k++) {
                     prev.addAll(restOfClasses.get(k));
                 }
             }
         }
-
         return strategies;
     }
 
-    // get the intersection of all strats of all agents
+    /**
+     * Gets intersections on all pairs of strategies for all agents.
+     * TODO revise on throwing this exception - maybe only evaluator should throw, or maybe other methods in model should as well
+     */
     public Set<Set<String>> getStrategies(String realState, List<Integer> agentlist) throws ForeignComponentException {
-        int alLength = agentlist.size();
-        if (alLength == 0) {
+        int noAgentlist = agentlist.size();
+        if (noAgentlist == 0) {
             return new HashSet<>();
         }
-        if (alLength == 1) {
+        if (noAgentlist == 1) {
             return getStrategies(realState, agentlist.get(0));
         }
         Set<Set<String>> allStrats = new HashSet<>();
-        for (int i = 0; i < alLength; i++) {
-            for (int j = i+1; j < alLength; j++) {
+        for (int i = 0; i < noAgentlist; i++) {
+            for (int j = i+1; j < noAgentlist; j++) {
                 // TODO concise the code
                 Set<Set<String>> strats = getStrategies(realState, agentlist.get(i));
                 for (Set<String> stratI : strats) {
@@ -104,8 +102,8 @@ public class Model {
     // TODO: fail if we try to add an existing state? For the moment
     // we just ignore existing states.
     public void addGlobalState(String id) {
-        if (!gStates.contains(id)) {
-            gStates.add(id);
+        if (!states.contains(id)) {
+            states.add(id);
         }
     }
 
@@ -156,7 +154,7 @@ public class Model {
     }
 
     public List<String> getAllStates() {
-        return gStates;
+        return states;
     }
 
     public Map<String, Set<String>> getAtoms() {
@@ -175,7 +173,7 @@ public class Model {
     // Get the tuple of local states for a given global state ID
     // TODO: we return null for non-existing id: shall we fail?
     public String getGlobalStateDetails(String id) {
-        for (String s : gStates) {
+        for (String s : states) {
             if (s.equals(id)) {
                 return s;
             }
@@ -260,7 +258,7 @@ public class Model {
         // setup shrunk model
         Model shrunk = new Model();
         shrunk.numAgents = numAgents;
-        shrunk.gStates = new ArrayList<>(validStates);
+        shrunk.states = new ArrayList<>(validStates);
         shrunk.atoms = shrunkAtoms;
         shrunk.equivRels = shrunkEquivRels;
         return shrunk;
