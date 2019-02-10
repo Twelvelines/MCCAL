@@ -7,7 +7,7 @@ import java.util.*;
  * A class for an epistemic model.
  */
 public class Model {
-    private int numAgents;    // they are named by index
+    private int numAgents;    // they are named by index, conventionally starting from 1
     private List<String> states = new ArrayList<>();    // all states in the model
     // maps every proposition to the set of states where it is true
     private Map<String, Set<String>> atoms = new HashMap<>();
@@ -32,12 +32,80 @@ public class Model {
     }
 
     /**
+     * Bisimulation contraction of the model.
+     */
+    public Model bisumContract() {
+        Set<Set<String>> buckets = new HashSet<>();
+        buckets.add(new HashSet<>(states));    // a copy of all states
+
+        // partition by atoms
+        for (Set<String> atom : atoms.values()) {
+            List<Set<String>> newBuckets = new ArrayList<>();
+            List<Set<String>> splitBuckets = new ArrayList<>();
+            for (Set<String> aBucket : buckets) {
+                Set<String> conjunct = intersect(aBucket, atom);
+                Set<String> disjunct = new HashSet<>(aBucket);
+                disjunct.removeAll(conjunct);
+                if (!conjunct.isEmpty() && !disjunct.isEmpty()) {
+                    newBuckets.add(conjunct);
+                    newBuckets.add(disjunct);
+                    splitBuckets.add(aBucket);
+                }
+            }
+            buckets.removeAll(splitBuckets);
+            buckets.addAll(newBuckets);
+        }
+
+        // partition by neighbors/equivalences/edges
+        do {
+            Set<Set<String>> postbuckets = new HashSet<>(buckets);
+            for (Set<String> aPrebucket : buckets) {
+                for (int i = 0; i < numAgents; i++) {
+                    int agent = i + 1;
+                    List<Set<String>> newBuckets = new ArrayList<>();
+                    List<Set<String>> splitBuckets = new ArrayList<>();
+                    for (Set<String> aBucket : postbuckets) {
+                        Set<String> equivStates;
+                        try {
+                            equivStates = getEquivStates(agent, aPrebucket);
+                        } catch (ForeignComponentException e) {
+                            // should not be happening, as the agent is from model's internal list
+                            System.err.println(e.toString());
+                            return null;
+                        }
+                        Set<String> conjunct = intersect(aBucket, equivStates);
+                        Set<String> disjunct = new HashSet<>(aBucket);
+                        disjunct.removeAll(conjunct);
+                        if (!conjunct.isEmpty() && !disjunct.isEmpty()) {
+                            newBuckets.add(conjunct);
+                            newBuckets.add(disjunct);
+                            splitBuckets.add(aBucket);
+                        }
+                    }
+                    postbuckets.removeAll(splitBuckets);
+                    postbuckets.addAll(newBuckets);
+                }
+            }
+            if (postbuckets.size() == buckets.size())
+                break;
+            buckets = postbuckets;
+        } while (true);
+
+        Set<String> union = new HashSet<>();
+        for (Set<String> aBucket : buckets) {
+            List<String> abList = new ArrayList<>(aBucket);
+            union.add(abList.get(0));
+        }
+        return getShrunkModel(union);
+    }
+
+    /**
      * Be noted that returned references are all to the states and equiv sets in the model, not copies.
      * TODO are they?
      */
     public Set<Set<String>> getStrategies(String realState, int agent) throws ForeignComponentException {
         Set<Set<String>> strategies = new HashSet<>();
-        Set<String> realClass = new HashSet<>(getEquivalentStates(agent, realState));
+        Set<String> realClass = new HashSet<>(getEquivStates(agent, realState));
         strategies.add(realClass);
         // combination of the equiv classes left
         List<Set<String>> restOfClasses = new ArrayList<>(equivRels.get(agent));
@@ -62,16 +130,16 @@ public class Model {
      * TODO revise on throwing this exception - maybe only evaluator should throw, or maybe other methods in model should as well
      */
     public Set<Set<String>> getStrategies(String realState, List<Integer> agentlist) throws ForeignComponentException {
-        int noAgentlist = agentlist.size();
-        if (noAgentlist == 0) {
+        int sizeAgentlist = agentlist.size();
+        if (sizeAgentlist == 0) {
             return new HashSet<>();
         }
-        if (noAgentlist == 1) {
+        if (sizeAgentlist == 1) {
             return getStrategies(realState, agentlist.get(0));
         }
         Set<Set<String>> allStrats = new HashSet<>();
-        for (int i = 0; i < noAgentlist; i++) {
-            for (int j = i+1; j < noAgentlist; j++) {
+        for (int i = 0; i < sizeAgentlist; i++) {
+            for (int j = i+1; j < sizeAgentlist; j++) {
                 // TODO concise the code
                 Set<Set<String>> strats = getStrategies(realState, agentlist.get(i));
                 for (Set<String> stratI : strats) {
@@ -192,9 +260,23 @@ public class Model {
     }
 
 
-    // Returns the set of global states epistemically equivalent to
-    // aState for agent i
-    public Set<String> getEquivalentStates(int agent, String aState) throws ForeignComponentException {
+    // foreign state resilient
+    public Set<String> getEquivStates(int agent, Set<String> theStates) throws ForeignComponentException {
+        Set<String> union = new HashSet<>();
+        List<Set<String>> eqClasses = equivRels.get(agent);
+        if (eqClasses == null) {
+            throw new ForeignComponentException("Error: foreign agent (not existing in the model)");
+        }
+        for (Set<String> aClass : eqClasses) {
+            if (!intersect(aClass, theStates).isEmpty())
+                union.addAll(aClass);
+        }
+        return union;
+    }
+
+
+    // Returns the set of global states epistemically equivalent to state for agent
+    public Set<String> getEquivStates(int agent, String state) throws ForeignComponentException {
         // We get the eq. classes for this agent:
         List<Set<String>> eqClasses = equivRels.get(agent);
         if (eqClasses == null) {
@@ -202,9 +284,9 @@ public class Model {
         }
 
         // We iterate over the classes to see if there is one that
-        // contains aState
+        // contains the state
         for (Set<String> aClass : eqClasses) {
-            if (aClass.contains(aState)) {
+            if (aClass.contains(state)) {
                 return aClass;
             }
         }
@@ -264,7 +346,4 @@ public class Model {
         return shrunk;
     }
 
-    public void bisimulationContract() {
-        // TODO
-    }
 }
