@@ -41,7 +41,7 @@ Utilising [ANTLR][2] for generating customised parsers
 
 
 
-###### *Special thanks go to Prof. Franco Raimondi ([fraimondi][1]) for his MCCOGWED project which MCCAL was initially forked from and had given me many food for thought when designing the model checker. Also to Dr. Natasha Alechina for the great effort in supervision, and Dr. Brian Logan for advising support.* 
+###### *Special thanks to Prof. Franco Raimondi ([fraimondi][1]) for his MCCOGWED project which MCCAL was initially forked from and had given me many food for thought when designing the model checker. Also to Dr. Natasha Alechina for the great effort in supervision, and Dr. Brian Logan for advising support.* 
 
 [1]:	https://github.com/fraimondi/mccogwed
 [2]:    https://www.antlr.org
