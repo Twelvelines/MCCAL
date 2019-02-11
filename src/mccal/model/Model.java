@@ -8,8 +8,9 @@ import java.util.*;
  */
 public class Model {
     private int numAgents;    // they are named by index, conventionally starting from 1
-    private List<String> states = new ArrayList<>();    // all states in the model
+    private Set<String> states = new HashSet<>();    // all states in the model
     // maps every proposition to the set of states where it is true
+    // TODO distinguish atom and proposition
     private Map<String, Set<String>> atoms = new HashMap<>();
     // represents the epistemic relations via mapping every agent to a list of equivalence classes which are sets of
     // indistinct states for the agent
@@ -221,7 +222,7 @@ public class Model {
         return numAgents;
     }
 
-    public List<String> getAllStates() {
+    public Set<String> getAllStates() {
         return states;
     }
 
@@ -340,7 +341,7 @@ public class Model {
         // setup shrunk model
         Model shrunk = new Model();
         shrunk.numAgents = numAgents;
-        shrunk.states = new ArrayList<>(validStates);
+        shrunk.states = new HashSet<>(validStates);
         shrunk.atoms = shrunkAtoms;
         shrunk.equivRels = shrunkEquivRels;
         return shrunk;

@@ -1,12 +1,12 @@
 package mccal;
 
-import mccal.formula.formulareader.FormulaEvaluator;
-import mccal.formula.formulareader.antlr.FormulaGrammarLexer;
-import mccal.formula.formulareader.antlr.FormulaGrammarParser;
+import mccal.formula.FormulaEvaluator;
+import mccal.antlr.formula.FormulaGrammarLexer;
+import mccal.antlr.formula.FormulaGrammarParser;
 import mccal.model.Model;
-import mccal.model.modelreader.ModelExtractor;
-import mccal.model.modelreader.antlr.ModelGrammarLexer;
-import mccal.model.modelreader.antlr.ModelGrammarParser;
+import mccal.model.ModelExtractor;
+import mccal.antlr.model.ModelGrammarLexer;
+import mccal.antlr.model.ModelGrammarParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -106,8 +106,8 @@ public class ModelChecker {
         CommonTokenStream ftokens = new CommonTokenStream(flexer);
         // create a parser that feeds off the tokens buffer
         FormulaGrammarParser fparser = new FormulaGrammarParser(ftokens);
-        // begin parsing
-        ParseTree ftree = fparser.start();
+        // begin parsing from formula rule; TODO keep an eye on this if anything
+        ParseTree ftree = fparser.formula();
         // Just a standard walker
         ParseTreeWalker fwalker = new ParseTreeWalker();
         // Now we associate our extractor to the parser.
@@ -133,8 +133,8 @@ public class ModelChecker {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         // create a parser that feeds off the tokens buffer
         ModelGrammarParser parser = new ModelGrammarParser(tokens);
-        // begin parsing at model_file rule
-        ParseTree tree = parser.model_file();
+        // begin parsing at modelfile rule
+        ParseTree tree = parser.modelfile();
         // Just a standard walker
         ParseTreeWalker walker = new ParseTreeWalker();
         // Now we associate our extractor to the parser.

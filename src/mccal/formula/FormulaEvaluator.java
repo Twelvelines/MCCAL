@@ -1,11 +1,12 @@
-package mccal.formula.formulareader;
+package mccal.formula;
 
 // TODO tidy up the imports
 // TODO rearrange the methods
+// TODO modifiers/access
 import mccal.ModelChecker;
 import mccal.exceptions.ForeignComponentException;
-import mccal.formula.formulareader.antlr.FormulaGrammarBaseListener;
-import mccal.formula.formulareader.antlr.FormulaGrammarParser;
+import mccal.antlr.formula.FormulaGrammarBaseListener;
+import mccal.antlr.formula.FormulaGrammarParser;
 import mccal.model.*;
 
 import java.util.*;
@@ -32,7 +33,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
      * a set of states where the proposition holds is pushed into the return stack evalStack.
      */
     @Override
-    public void exitId(FormulaGrammarParser.IdContext ctx) {
+    public void exitAtom(FormulaGrammarParser.AtomContext ctx) {
         Set<String> validStates = model.getStatesWhereTrue(ctx.ID().getText());
         if (validStates == null) {
             validStates = new HashSet<>();
@@ -123,7 +124,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     }
 
     @Override
-    public void exitAn_formula(FormulaGrammarParser.An_formulaContext ctx) {
+    public void exitGalformula(FormulaGrammarParser.GalformulaContext ctx) {
         // states where the announcement is true
         Set<String> trueStates = evalStack.pop();
         Set<String> falseStates = new HashSet<>(model.getAllStates());
@@ -147,12 +148,12 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     // TODO maybe make a strat class
 
     @Override
-    public void enterCoalitional_announcement(FormulaGrammarParser.Coalitional_announcementContext ctx) {
+    public void enterCoAnnouncement(FormulaGrammarParser.CoAnnouncementContext ctx) {
         List<Integer> agentlist = new ArrayList<>();
         for (FormulaGrammarParser.AgentidContext aCtx : ctx.agentlist().agentid()) {
             agentlist.add(Integer.valueOf(aCtx.getText()));
         }
-        String formula = ctx.ca_formula().getText();
+        String formula = ctx.calformula().getText();
         Set<String> result = new HashSet<>();
         List<Integer> restAgentlist = new ArrayList<>();
         // iterate to create a list
@@ -194,7 +195,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     }
 
     @Override
-    public void exitCoalitional_announcement(FormulaGrammarParser.Coalitional_announcementContext ctx) {
+    public void exitCoAnnouncement(FormulaGrammarParser.CoAnnouncementContext ctx) {
         // getting rid of extra parsed result
         evalStack.pop();
     }

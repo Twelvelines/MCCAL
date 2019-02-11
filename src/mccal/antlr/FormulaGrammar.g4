@@ -2,21 +2,15 @@
 
     Simple examples:
 
-    a or b; // A simple disjunction
-
-    // p implies that agent 1 knows q
-    p -> K(1, q);
-
-    // Other possible formulas:
+    a or b;  // A simple disjunction
+    p -> K(1, q);  // p implies that agent 1 knows q
     <<3>> ! K(1, atom1)
 
     */
 
 grammar FormulaGrammar;
 
-// This is based on recursion in formula.
-start: formula;
-
+// recursion in formula
 formula:
     ('!'|'not') formula             # Negation
     | formula 'and' formula         # Conjunction
@@ -24,30 +18,30 @@ formula:
     | formula ('implies'|'->') formula      # Implication
     | '(' formula ')'               # parens
     | 'K' '(' agentid ',' formula ')'       # Knowledge
-    | '[' an_formula ']' formula    # Announcement
-    | '<<' agentlist '>>' ca_formula        # Coalitional_announcement
-    | ID                            # id // TODO maybe change this to Proposition? ; define atom := map (agent -> proposition) and review
+    | '[' galformula ']' formula    # Announcement
+    | '<<' agentlist '>>' calformula        # CoAnnouncement
+    | ID                            # Atom
     ;
 
-// TODO maybe eliminate the underscore
-an_formula: formula;
-ca_formula: formula;
+galformula: formula;
+calformula: formula;
 
 agentid:  INT;
 agentlist: agentid (',' agentid )* ;
 
+/* ------ Lexer rules ------ */
+
 INT: [0-9]+;
 
-// We throw away white spaces, tabs and new lines.
+// White spaces, tabs and new lines are ignored/skipped
 WS: [ \t\r\n]+ -> skip ; 
 
-// We throw away comments, either on a single line or on multiple lines
+// Comments, either on a single line or on multipe lines, are ignored/skipped
 LINE_COMMENT: '//' .*? '\r'? '\n' -> skip ; 
 COMMENT: '/*' .*? '*/' -> skip ; 
 
 // C-style IDs
 ID : ID_LETTER (ID_LETTER | DIGIT)* ;
-// Fragment means that we cannot access it from the parser
+// Fragment cannot be accessed from the parser
 fragment ID_LETTER : 'a'..'z'|'A'..'Z'|'_' ;
 fragment DIGIT : '0'..'9' ;
-

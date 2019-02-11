@@ -1,12 +1,11 @@
-package mccal.model.modelreader;
+package mccal.model;
 
 import mccal.model.Model;
-import mccal.model.modelreader.antlr.ModelGrammarBaseListener;
-import mccal.model.modelreader.antlr.ModelGrammarParser;
+import mccal.antlr.model.ModelGrammarBaseListener;
+import mccal.antlr.model.ModelGrammarParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,7 +27,7 @@ public class ModelExtractor extends ModelGrammarBaseListener {
      * Accesses the node from the context and then extract the value
      */
     @Override
-    public void enterNofagents(ModelGrammarParser.NofagentsContext ctx) {
+    public void enterNumagents(ModelGrammarParser.NumagentsContext ctx) {
         model.setNumberOfAgents(Integer.parseInt(ctx.NONZEROINT().getText()));
     }
 
@@ -37,7 +36,7 @@ public class ModelExtractor extends ModelGrammarBaseListener {
      * Iterates through the nodes(tokens) to extract each state
      */
     @Override
-    public void enterStatesdef(ModelGrammarParser.StatesdefContext ctx) {
+    public void enterAllstates(ModelGrammarParser.AllstatesContext ctx) {
         for (TerminalNode i : ctx.ID()) {
             String curState = i.getText();
             model.addGlobalState(curState);
@@ -60,7 +59,7 @@ public class ModelExtractor extends ModelGrammarBaseListener {
      */
     @Override
     public void exitReldef(ModelGrammarParser.ReldefContext ctx) {
-        List<String> states = model.getAllStates();
+        Set<String> states = model.getAllStates();
         for (String s : states) {
             for (int agent = 1; agent <= model.getNumberOfAgents(); agent++) {
                 model.addRelation(agent, s, s);
@@ -69,13 +68,13 @@ public class ModelExtractor extends ModelGrammarBaseListener {
     }
 
     @Override
-    public void enterSingledef(ModelGrammarParser.SingledefContext ctx) {
-        curAtom = ctx.ID().getText();
+    public void enterProp(ModelGrammarParser.PropContext ctx) {
+        curAtom = ctx.atoms().ID().getText();
         curStateSet = new HashSet<>();
     }
 
     @Override
-    public void enterGstateslist(ModelGrammarParser.GstateslistContext ctx) {
+    public void enterStatelist(ModelGrammarParser.StatelistContext ctx) {
         for (TerminalNode id : ctx.ID()) {
             curStateSet.add(id.getText());
         }
@@ -87,7 +86,7 @@ public class ModelExtractor extends ModelGrammarBaseListener {
      * registration of a state into the set respectively
      */
     @Override
-    public void exitSingledef(ModelGrammarParser.SingledefContext ctx) {
+    public void exitProp(ModelGrammarParser.PropContext ctx) {
         model.addAtoms(curAtom, curStateSet);
     }
 
