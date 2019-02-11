@@ -1,8 +1,5 @@
 package mccal.formula;
 
-// TODO tidy up the imports
-// TODO rearrange the methods
-// TODO modifiers/access
 import mccal.ModelChecker;
 import mccal.exceptions.ForeignComponentException;
 import mccal.antlr.formula.FormulaGrammarBaseListener;
@@ -10,6 +7,8 @@ import mccal.antlr.formula.FormulaGrammarParser;
 import mccal.model.*;
 
 import java.util.*;
+
+// TODO rearrange the methods
 
 /**
  * A Listener that computes the set of states in which a given formula holds in a model.

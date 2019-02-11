@@ -19,6 +19,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Set;
 
+// TODO tidy up the imports
+// TODO modifiers/access
+
 public class ModelChecker {
     // The filename for the model and the formula we want to verify
     private String filename;

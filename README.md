@@ -11,7 +11,7 @@ Utilising [ANTLR][2] for generating customised parsers
 
 1. Make sure you have installed ANTLR (preferably 4.7.1 or later).
 
-2. Make changes to the formula and/or model grammar files as desired. The two grammar files are located at src/grammars. 
+2. Make changes to the formula and/or model grammar files as desired. The two grammar files are located at `src/mccal/antlr`. 
 
 3. In command line, use ANTLR to generate new parser code from the modified grammar files:
 
@@ -19,22 +19,24 @@ Utilising [ANTLR][2] for generating customised parsers
    antlr FormulaGrammar.g
    antlr ModelGrammar.g
    ```
+   
+   *You may want to run the two lines above separately, so that you can move the generated files one line at a time, and thus prevent dragging the wrong file into the directory.*
 
-4. Add the generated files into the package. For formula grammar related files, the package is 
-  `package mccal.formula.formulareader.antlr`; for model grammar related, 
-  `package mccal.model.modelreader.antlr`. Note that this requires not only moving the files into the directory, but also refactoring them, i.e. adding package declaration in each file, as ANTLR does not generate package related code in the java files. 
+4. Add the generated files into the corresponding working packages, which are just under current directory, namely`formula` and `model`. 
+   Note that this requires not only moving the files into the directory, but also refactoring them, i.e. adding package declaration in each file, as ANTLR does not generate package related code in the java files.
+   For formula grammar related files, the declaration should be `package mccal.antlr.formula;`; for model grammar related, `package mccal.antlr.model;`. 
 
-  In the IDE (at least in Intellij IDEA), copying and pasting into the package in the project view do just that. 
+   In the IDE (at least in Intellij IDEA), copying and pasting into the package in the project view do just that. 
 
-  Alternatively you move the files manually via other file browsers that the operating system provides, or using the command line commands as below. However these do not ensure the package declaration of the generated java files, which means you have to declare the package manually in each file.
+   Alternatively you move the files manually via other file browsers that the operating system provides, or using the command line commands as below. However these do not ensure the package declaration of the generated java files, which means you have to declare the package manually in each file.
 
    ```shell
-   mv FormulaGrammar.g tmp.g
-   mv FormulaGrammar* ../mccal/formula/formulareader/antlr
-   mv tmp.g FormulaGrammar.g
-   mv ModelGrammar.g tmp2.g
-   mv ModelGrammar* ../mccal/model/modelreader/antlr
-   mv tmp2.g ModelGrammar.g
+   mv FormulaGrammar.g4 tmp.g4
+   mv FormulaGrammar* formula/
+   mv tmp.g FormulaGrammar.g4
+   mv ModelGrammar.g4 tmp2.g4
+   mv ModelGrammar* model/
+   mv tmp2.g ModelGrammar.g4
    ```
 
 5. Rebuild the project. The modification should now take effect on the parser. You can do further work to utilise the parsed elements.
