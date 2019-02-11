@@ -77,26 +77,18 @@ public class ModelChecker {
         // We begin to parse the formula:
         Set<String> solution = evalFormula(model, formula);
 
-        // Et voila, job done
         // Printing output
-        System.out.println("The formula is true in " + solution.size() + " states");
         if (isStateProvided) {
             System.out.println("Under the provided state " + providedState + " the formula is " +
                     solution.contains(providedState)
             );
         } else {
+            System.out.println("The formula is true in " + solution.size() + " states");
             System.out.println("These are the states: "+ solution);
         }
         // Model info
-        System.out.println("Model size: ");
-        int numAgents = model.getNumberOfAgents();
-        System.out.println("  Number of agents: " + numAgents);
-        System.out.println("  Number of states: " + model.getAllStates().size());
-        int numEquivSets = 0;
-        for (int i = 0; i < numAgents; i++) {
-            numEquivSets += model.getEquivClasses(i+1).size();
-        }
-        System.out.println("  Number of equivalence sets: " + numEquivSets);
+        System.out.println("Model info: ");
+        System.out.println(model.toString());
         cal = Calendar.getInstance();
         System.out.println(dateFormat.format(cal.getTime()) + ": job done, see you soon!");
     }

@@ -6,6 +6,7 @@ import java.util.*;
 /**
  * A class for an epistemic model.
  */
+// TODO rearrange methods
 public class Model {
     private int numAgents;    // they are named by index, conventionally starting from 1
     private Set<String> states = new HashSet<>();    // all states in the model
@@ -30,6 +31,42 @@ public class Model {
         Set<String> intersection = new HashSet<>(a);
         intersection.retainAll(b);
         return intersection;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append("Number of agents: ").append(numAgents).append("\n");
+        result.append("States:\n").append(stringArrangeStates(states, 4, 0)).append("\n");
+        result.append("Equivalences:\n");
+        for (int agent = 1; agent <= numAgents; agent++) {
+            result.append("For Agent ").append(agent).append(" ");
+            List<Set<String>> equivs = equivRels.get(agent);
+            int equivsSize = equivs.size();
+            for (int i = 0; i < equivsSize; i++) {
+                result.append("{\n");
+                result.append(stringArrangeStates(equivs.get(i), 3, 1));
+                result.append(i == equivsSize - 1 ? "}\n" : "} and ");
+            }
+        }
+        return result.toString();
+    }
+
+    private String stringArrangeStates(Set<String> sSet, int column, int indentNum) {
+        StringBuilder result = new StringBuilder();
+        StringBuilder indent = new StringBuilder();
+        for (int i = 0; i < indentNum; i++) {
+            indent.append("\t");
+        }
+        int sSize = sSet.size();
+        int i = 0;
+        for (String s : sSet) {
+            i++;
+            result.append(indent).append(s).append(i == sSize ? "" : ",").append(i % column == 0 ? "\n" : "\t");
+        }
+        if (sSize % 8 != 0)
+            result.append("\n");
+        return result.toString();
     }
 
     /**
