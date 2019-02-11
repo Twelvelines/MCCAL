@@ -33,10 +33,10 @@ Utilising [ANTLR][2] for generating customised parsers
    ```shell
    mv FormulaGrammar.g4 tmp.g4
    mv FormulaGrammar* formula/
-   mv tmp.g FormulaGrammar.g4
+   mv tmp.g4 FormulaGrammar.g4
    mv ModelGrammar.g4 tmp2.g4
    mv ModelGrammar* model/
-   mv tmp2.g ModelGrammar.g4
+   mv tmp2.g4 ModelGrammar.g4
    ```
 
 5. Rebuild the project. The modification should now take effect on the parser. You can do further work to utilise the parsed elements.
