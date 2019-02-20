@@ -3,16 +3,59 @@ package mccal;
 import mccal.model.Model;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ModelCheckerTest {
+    // Model Filename Prefix
     private final String MFP = "test/models/";
+    // Burglar model Filename Prefix
+    private final String BFP = "test/models/burglars/burglars";
+
+    private String readFileIntoString(String filename) throws IOException {
+        StringBuilder str = new StringBuilder();
+        /*
+        // Scanner version
+        try (Scanner s = new Scanner(new BufferedReader(new FileReader(filename)))) {
+            while (s.hasNext()) {
+                str.append(s.next());
+            }
+        }
+        */
+
+        // BufferedReader version
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            for (String l = br.readLine(); l != null; l = br.readLine()) {
+                str.append(l);
+            }
+        }
+        return str.toString();
+    }
 
     private Set<String> solutionForSample(String sampleFilename, String formula) {
         Model model = ModelChecker.readModel(sampleFilename);
         return ModelChecker.evalFormula(model, formula);
+    }
+
+    @Test
+    void test1EvalFormulaBurglar1() {
+        String atomsS0101 = "!p1 and p2 and !p3 and p4";
+        assertTrue(solutionForSample(
+                BFP + "1",
+                "!(K(1, "+atomsS0101+") or K(2, "+atomsS0101+") or K(3, "+atomsS0101+") or K(4, "+atomsS0101+"))"
+        ).contains("S0101"));
+    }
+
+    @Test
+    void test2EvalFormulaBurglar1() {
+        assertTrue(solutionForSample(
+                BFP + "1",
+                "K(3, !p3) and K(3, p2) and K(3, p4) and !(K(3, !p1) or K(K3, p1))"
+        ).contains("S0101"));
     }
 
     @Test
