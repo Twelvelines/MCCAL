@@ -77,21 +77,8 @@ public class Model {
         buckets.add(new HashSet<>(states));    // a copy of all states
 
         // partition by atoms
-        for (Set<String> atom : atoms.values()) {
-            List<Set<String>> newBuckets = new ArrayList<>();
-            List<Set<String>> splitBuckets = new ArrayList<>();
-            for (Set<String> aBucket : buckets) {
-                Set<String> conjunct = intersect(aBucket, atom);
-                Set<String> disjunct = new HashSet<>(aBucket);
-                disjunct.removeAll(conjunct);
-                if (!conjunct.isEmpty() && !disjunct.isEmpty()) {
-                    newBuckets.add(conjunct);
-                    newBuckets.add(disjunct);
-                    splitBuckets.add(aBucket);
-                }
-            }
-            buckets.removeAll(splitBuckets);
-            buckets.addAll(newBuckets);
+        for (Set<String> atomStates : atoms.values()) {
+            splitBuckets(buckets, atomStates);
         }
 
         // partition by neighbors/equivalences/edges
@@ -100,28 +87,15 @@ public class Model {
             for (Set<String> aPrebucket : buckets) {
                 for (int i = 0; i < numAgents; i++) {
                     int agent = i + 1;
-                    List<Set<String>> newBuckets = new ArrayList<>();
-                    List<Set<String>> splitBuckets = new ArrayList<>();
-                    for (Set<String> aBucket : postbuckets) {
-                        Set<String> equivStates;
-                        try {
-                            equivStates = getEquivStates(agent, aPrebucket);
-                        } catch (ForeignComponentException e) {
-                            // should not be happening, as the agent is from model's internal list
-                            System.err.println(e.toString());
-                            return null;
-                        }
-                        Set<String> conjunct = intersect(aBucket, equivStates);
-                        Set<String> disjunct = new HashSet<>(aBucket);
-                        disjunct.removeAll(conjunct);
-                        if (!conjunct.isEmpty() && !disjunct.isEmpty()) {
-                            newBuckets.add(conjunct);
-                            newBuckets.add(disjunct);
-                            splitBuckets.add(aBucket);
-                        }
+                    Set<String> equivStates;
+                    try {
+                        equivStates = getEquivStates(agent, aPrebucket);
+                    } catch (ForeignComponentException e) {
+                        // should not be happening, as the agent is from model's internal list
+                        System.err.println(e.toString());
+                        return null;
                     }
-                    postbuckets.removeAll(splitBuckets);
-                    postbuckets.addAll(newBuckets);
+                    splitBuckets(postbuckets, equivStates);
                 }
             }
             if (postbuckets.size() == buckets.size())
@@ -132,10 +106,29 @@ public class Model {
         Set<String> union = new HashSet<>();
         for (Set<String> aBucket : buckets) {
             List<String> abList = new ArrayList<>(aBucket);
+            // TODO state concat (not easy)
             union.add(abList.get(0));
         }
         return getShrunkModel(union);
     }
+
+    private void splitBuckets(Set<Set<String>> buckets, Set<String> compareBucket) {
+        List<Set<String>> newBuckets = new ArrayList<>();
+        List<Set<String>> oldBuckets = new ArrayList<>();
+        for (Set<String> aBucket : buckets) {
+            Set<String> conjunct = intersect(aBucket, compareBucket);
+            Set<String> disjunct = new HashSet<>(aBucket);
+            disjunct.removeAll(conjunct);
+            if (!conjunct.isEmpty() && !disjunct.isEmpty()) {
+                newBuckets.add(conjunct);
+                newBuckets.add(disjunct);
+                oldBuckets.add(aBucket);
+            }
+        }
+        buckets.removeAll(oldBuckets);
+        buckets.addAll(newBuckets);
+    }
+
 
     /**
      * Be noted that returned references are all to the states and equiv sets in the model, not copies.
@@ -246,9 +239,15 @@ public class Model {
     }
 
 
-    // TODO compare with existing classes
-    public void addEquivClass(int agent, Set<String> sset) {
-        equivRels.get(agent).add(sset);
+    public void addEquivClass(int agent, Set<String> newClass) {
+        List<Set<String>> classes = equivRels.get(agent);
+        for (Set<String> c : classes) {
+            if (!intersect(newClass, c).isEmpty()) {
+                c.addAll(newClass);
+                return;
+            }
+        }  // else
+        classes.add(newClass);
     }
 
 
@@ -281,17 +280,6 @@ public class Model {
     public List<Set<String>> getEquivClasses(int agent) {
         // TODO: Add error checking on i
         return equivRels.get(agent);
-    }
-
-    // Get the tuple of local states for a given global state ID
-    // TODO: we return null for non-existing id: shall we fail?
-    public String getGlobalStateDetails(String id) {
-        for (String s : states) {
-            if (s.equals(id)) {
-                return s;
-            }
-        }
-        return null;
     }
 
 
