@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,19 +19,21 @@ class ModelCheckerTest {
 
     private String readFileIntoString(String filename) throws IOException {
         StringBuilder str = new StringBuilder();
-        /*
-        // Scanner version
-        try (Scanner s = new Scanner(new BufferedReader(new FileReader(filename)))) {
-            while (s.hasNext()) {
-                str.append(s.next());
-            }
-        }
-        */
 
-        // BufferedReader version
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            for (String l = br.readLine(); l != null; l = br.readLine()) {
-                str.append(l);
+        boolean sv = false;
+        if (sv) {
+            // Scanner version
+            try (Scanner s = new Scanner(new BufferedReader(new FileReader(filename)))) {
+                while (s.hasNext()) {
+                    str.append(s.next()).append(' ');
+                }
+            }
+        } else {
+            // BufferedReader version
+            try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+                for (String l = br.readLine(); l != null; l = br.readLine()) {
+                    str.append(l);
+                }
             }
         }
         return str.toString();
@@ -56,6 +59,26 @@ class ModelCheckerTest {
                 BFP + "1",
                 "K(3, !p3) and K(3, p2) and K(3, p4) and !(K(3, !p1) or K(K3, p1))"
         ).contains("S0101"));
+    }
+
+    @Test
+    void testEvalFormulaBurglar1MisSofa() {
+        String mis;
+        String sofa;
+        try {
+            mis = readFileIntoString(BFP + "1_mis");
+            sofa = readFileIntoString(BFP + "1_sofa");
+        } catch (IOException e) {
+            System.err.println(e.toString());
+            fail();
+            return;
+        }
+        assertTrue(solutionForSample(BFP + "1", "["+mis+"]" + sofa).contains("S0101"));
+    }
+
+    @Test
+    void test0EvalFormulaSample1S1() {
+        assertTrue(solutionForSample(MFP + "sample1.gwm", "(atom1)or(atom2)").contains("S1"));
     }
 
     @Test

@@ -1,0 +1,13 @@
+(
+  (p1 and p2 and !p3 and !p4) or
+    (p1 and !p2 and p3 and !p4) or
+    (p1 and !p2 and !p3 and p4) or
+    (!p1 and p2 and p3 and !p4) or
+    (!p1 and p2 and !p3 and p4) or
+    (!p1 and !p2 and p3 and p4)
+) and !(
+  (K(5, p1) or K(5, !p1)) or
+    (K(5, p2) or K(5, !p2)) or
+    (K(5, p3) or K(5, !p3)) or
+    (K(5, p4) or K(5, !p4))
+)

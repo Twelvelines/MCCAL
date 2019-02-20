@@ -5,7 +5,9 @@ import mccal.antlr.model.ModelGrammarBaseListener;
 import mccal.antlr.model.ModelGrammarParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -45,12 +47,22 @@ public class ModelExtractor extends ModelGrammarBaseListener {
 
     /**
      * Registers a explicit equivalence relation i.e. specified in the model file.
-     * TODO revision needed - replicated method with addRelation?
      */
     @Override
     public void enterEdge(ModelGrammarParser.EdgeContext ctx) {
         Integer agent = Integer.parseInt(ctx.NONZEROINT().getText());
-        model.addRelation(agent, ctx.ID().get(0).getText(), ctx.ID().get(1).getText());
+        List<TerminalNode> nodeList = ctx.ID();
+        if (nodeList.size() < 2) {
+            System.err.println("incorrect number of states; edge ignored");
+            return;
+        } else if (nodeList.size() == 2)
+            model.addRelation(agent, nodeList.get(0).getText(), nodeList.get(1).getText());
+        // else (.size > 2)
+        Set<String> sset = new HashSet<>();
+        for (TerminalNode n : nodeList) {
+            sset.add(n.getText());
+        }
+        model.addEquivClass(agent, sset);
     }
 
     /**

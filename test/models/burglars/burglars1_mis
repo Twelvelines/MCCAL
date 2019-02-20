@@ -1,0 +1,4 @@
+K(1, ((!p1 -> (p4 or p2))) and (p1 -> !(p4 and p2))) and
+  K(2, ((!p2 -> (p1 or p3))) and (p2 -> !(p1 and p3))) and
+  K(3, ((!p3 -> (p2 or p4))) and (p3 -> !(p2 and p4))) and
+  K(4, ((!p4 -> (p3 or p1))) and (p4 -> !(p3 and p1)))

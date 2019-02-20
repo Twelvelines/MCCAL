@@ -245,6 +245,13 @@ public class Model {
         }
     }
 
+
+    // TODO compare with existing classes
+    public void addEquivClass(int agent, Set<String> sset) {
+        equivRels.get(agent).add(sset);
+    }
+
+
     // Add an atom to the set of atoms.
     // TODO: as above, we ignore repeated atoms for the moment.
     public void addAtoms(String atom, Set<String> states) {
@@ -267,7 +274,7 @@ public class Model {
         return atoms;
     }
 
-    public Map<Integer, List<Set<String>>> getRK() {
+    public Map<Integer, List<Set<String>>> getEquivs() {
         return equivRels;
     }
 

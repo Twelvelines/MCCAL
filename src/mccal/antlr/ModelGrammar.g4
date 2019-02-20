@@ -34,9 +34,9 @@ allstates: (ID ';')+;
 
 // The epistemic relations are a list of relations/edges (agent, state, state)
 reldef: 'R' '=' '{' edge (',' edge)* '}' ';';
-edge: '(' NONZEROINT ',' ID ',' ID ')';
+edge: '(' NONZEROINT ',' ID ',' ID (',' ID)* ')';
 
-// Definition of each atom with a list of states where it holds true; could be empty i.e. no atoms
+// Definition of each atom with a list of states where it holds true; could be non-existing i.e. no atoms
 propositions: (prop ';')*;
 prop: atoms '=' '{' statelist '}';
 atoms: ID;
