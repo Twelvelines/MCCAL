@@ -185,6 +185,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                     // thus break to the next state
                 }
                 // if for the strat, all parsing of formula on the submodel made is true
+                System.out.println("- Coalition: strategy "+strat.toString()+" is valid on state "+state);
                 result.add(state);
                 break;    // - to the next state
             }
