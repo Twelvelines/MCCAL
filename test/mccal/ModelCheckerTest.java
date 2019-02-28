@@ -15,7 +15,9 @@ class ModelCheckerTest {
     // Model Filename Prefix
     private final String MFP = "test/models/";
     // Burglar model Filename Prefix
-    private final String BFP = "test/models/burglars/burglars";
+    private final String BFP = "test/models/burglars/";
+    // Chain model Filename Prefix
+    private final String CFP = "test/models/chains/";
 
     private String readFileIntoString(String filename) throws IOException {
         StringBuilder str = new StringBuilder();
@@ -45,35 +47,81 @@ class ModelCheckerTest {
     }
 
     @Test
-    void test1EvalFormulaBurglar1() {
+    void test1EvalFormulaChain1() {
+
+    }
+
+    @Test
+    void test1EvalFormulaBurglars1() {
         String atomsS0101 = "!p1 and p2 and !p3 and p4";
         assertTrue(solutionForSample(
-                BFP + "1",
+                BFP + "burglars1",
                 "!(K(1, "+atomsS0101+") or K(2, "+atomsS0101+") or K(3, "+atomsS0101+") or K(4, "+atomsS0101+"))"
         ).contains("S0101"));
     }
 
     @Test
-    void test2EvalFormulaBurglar1() {
+    void test2EvalFormulaBurglars1() {
         assertTrue(solutionForSample(
-                BFP + "1",
+                BFP + "burglars1",
                 "K(3, !p3) and K(3, p2) and K(3, p4) and !(K(3, !p1) or K(K3, p1))"
         ).contains("S0101"));
     }
 
     @Test
-    void testEvalFormulaBurglar1MisSofa() {
+    void testEvalFormulaBurglars1MisSofa() {
         String mis;
         String sofa;
         try {
-            mis = readFileIntoString(BFP + "1_mis");
-            sofa = readFileIntoString(BFP + "1_sofa");
+            mis = readFileIntoString(BFP + "burglars1_mis");
+            sofa = readFileIntoString(BFP + "burglars1_sofa");
         } catch (IOException e) {
             System.err.println(e.toString());
             fail();
             return;
         }
-        assertTrue(solutionForSample(BFP + "1", "["+mis+"]" + sofa).contains("S0101"));
+        assertTrue(solutionForSample(BFP + "burglars1", "["+mis+"]" + sofa).contains("S0101"));
+    }
+
+    @Test
+    void testEvalFormulaBurglars1CalSofa1() {
+        String sofa;
+        try {
+            sofa = readFileIntoString(BFP + "burglars1_sofa");
+        } catch (IOException e) {
+            System.err.println(e.toString());
+            fail();
+            return;
+        }
+        System.out.println(solutionForSample(BFP + "burglars1", "<<1,2,3,4>>("+sofa+")"));
+        assertTrue(solutionForSample(BFP + "burglars1", "<<1,2,3,4>>("+sofa+")").contains("S0101"));
+    }
+
+    @Test
+    void testEvalFormulaBurglars1CalSofa2() {
+        String sofa;
+        try {
+            sofa = readFileIntoString(BFP + "burglars1_sofa");
+        } catch (IOException e) {
+            System.err.println(e.toString());
+            fail();
+            return;
+        }
+        System.out.println(solutionForSample(BFP + "burglars1", "<<1,2>>("+sofa+")"));
+        assertTrue(solutionForSample(BFP + "burglars1", "<<1,2>>("+sofa+")").contains("S0101"));
+    }
+
+    @Test
+    void testEvalFormulaBurglars1Sofa1() {
+        String sofa1;
+        try {
+            sofa1 = readFileIntoString(BFP + "burglars1_sofa1");
+        } catch (IOException e) {
+            System.err.println(e.toString());
+            fail();
+            return;
+        }
+        assertTrue(solutionForSample(BFP + "burglars1", "<<1>>("+sofa1+")").contains("S0101"));
     }
 
     @Test

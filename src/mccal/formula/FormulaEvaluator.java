@@ -173,7 +173,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
             for (Set<String> strat : agentsStrategies) {
                 boolean allParsingReturnsTrue = true;
                 for (Set<String> oStrat : otherAgentsStrategies) {
-                    Model submodel = model.getShrunkModel(Model.intersect(strat, oStrat)).bisumContract();
+                    Model submodel = model.getShrunkModel(Model.intersect(strat, oStrat));
                     if (!ModelChecker.evalFormula(submodel, formula).contains(state)) {
                         allParsingReturnsTrue = false;
                         break;
