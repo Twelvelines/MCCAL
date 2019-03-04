@@ -8,6 +8,8 @@ import java.util.*;
  */
 // TODO rearrange methods
 public class Model {
+    private static int PRINT_STATES_COLUMNS = 10;
+
     private int numAgents;    // they are named by index, conventionally starting from 1
     private Set<String> states = new HashSet<>();    // all states in the model
     // maps every proposition to the set of states where it is true
@@ -24,8 +26,20 @@ public class Model {
         }
     }
 
-    public static Set<String> intersect(Set<String> a, Set<String> b) {
-        Set<String> intersection = new HashSet<>(a);
+    public static <T> Set<T> intersect(Collection<Set<T>> sets) {
+        Iterator<Set<T>> it = sets.iterator();
+        if (!it.hasNext()) {
+            return new HashSet<>();
+        }
+        Set<T> result = new HashSet<>(it.next());
+        while (it.hasNext()) {
+            result.retainAll(it.next());
+        }
+        return result;
+    }
+
+    public static <T> Set<T> intersect(Set<T> a, Set<T> b) {
+        Set<T> intersection = new HashSet<>(a);
         intersection.retainAll(b);
         return intersection;
     }
@@ -33,37 +47,43 @@ public class Model {
     // TODO
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append("Number of agents: ").append(numAgents).append("\n");
-        result.append("States:\n").append(formatStateStrings(states, 4, 0)).append("\n");
-        result.append("Equivalences:\n");
+        StringBuilder result = new StringBuilder("Number of agents: ").append(numAgents).append("\n")
+                .append("States:").append(formatStateStrings(states, 0, false)).append("\n")
+                .append("Equivalences:\n");
         for (int agent = 1; agent <= numAgents; agent++) {
             result.append("For Agent ").append(agent).append(" ");
             List<Set<String>> equivs = equivRels.get(agent);
             int equivsSize = equivs.size();
             for (int i = 0; i < equivsSize; i++) {
-                result.append("{\n");
-                result.append(formatStateStrings(equivs.get(i), 3, 1));
-                result.append(i == equivsSize - 1 ? "}\n" : "} and ");
+                Set<String> equiv = equivs.get(i);
+                result.append("{")
+                        .append(formatStateStrings(equiv, 1, true))
+                        .append("}").append(i != equivsSize - 1 ? " and " : (agent != numAgents ? "\n" : ""));  // end of agent? end of all?
             }
         }
         return result.toString();
     }
 
-    private String formatStateStrings(Set<String> sSet, int column, int indentNum) {
+    private String formatStateStrings(Set<String> sSet, int indentNum, boolean isNewlineEndForMultilines) {
         StringBuilder result = new StringBuilder();
-        StringBuilder indent = new StringBuilder();
-        for (int i = 0; i < indentNum; i++) {
-            indent.append("\t");
-        }
         int sSize = sSet.size();
-        int i = 0;
-        for (String s : sSet) {
-            i++;
-            result.append(indent).append(s).append(i == sSize ? "" : ",").append(i % column == 0 ? "\n" : "\t");
+        if (sSize <= PRINT_STATES_COLUMNS) {
+            result.append(" ").append(sSet).append(" ");
+        } else {
+            StringBuilder newlineindent = new StringBuilder("\n");
+            for (int i = 0; i < indentNum; i++) {
+                newlineindent.append("\t");
+            }
+            result.append(newlineindent);
+            int i = 0;
+            for (String s : sSet) {
+                i++;
+                // end ? nought : (end of line ? newline : continue the line)
+                result.append(s).append(i == sSize ? "" : (i % PRINT_STATES_COLUMNS == 0 ? "," + newlineindent : ",\t"));
+            }
+            if (isNewlineEndForMultilines)
+                result.append("\n");
         }
-        if (sSize % 8 != 0)
-            result.append("\n");
         return result.toString();
     }
 
@@ -156,6 +176,39 @@ public class Model {
     /**
      * Returns intersections on all pairs of strategies for all agents.
      */
+    public Set<Map<Integer, Set<String>>> getIndiStrategies(String realState, List<Integer> agentlist) throws ForeignComponentException {
+        Set<Map<Integer, Set<String>>> result = new HashSet<>();
+        int sizeAgentlist = agentlist.size();
+        if (sizeAgentlist == 0)
+            return result;
+        if (sizeAgentlist == 1) {
+            int agent = agentlist.get(0);
+            Set<Set<String>> strats = getStrategies(realState, agent);
+            for (Set<String> strat : strats) {
+                Map<Integer, Set<String>> singleAgentStrat = new HashMap<>();
+                singleAgentStrat.put(agent, strat);
+                result.add(singleAgentStrat);
+            }
+            return result;
+        }
+        for (int i = 0; i < sizeAgentlist; i++) {
+            Set<Set<String>> stratsI = getStrategies(realState, agentlist.get(i));
+            for (int j = i+1; j < sizeAgentlist; j++) {
+                // TODO optimisation?
+                Set<Set<String>> stratsJ = getStrategies(realState, agentlist.get(j));
+                for (Set<String> stratI : stratsI) {
+                    for (Set<String> stratJ : stratsJ) {
+                        Map<Integer, Set<String>> costrats = new HashMap<>();
+                        costrats.put(agentlist.get(i), stratI);
+                        costrats.put(agentlist.get(j), stratJ);
+                        result.add(costrats);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     public Set<Set<String>> getStrategies(String realState, List<Integer> agentlist) throws ForeignComponentException {
         int sizeAgentlist = agentlist.size();
         if (sizeAgentlist == 0) {
@@ -166,12 +219,11 @@ public class Model {
         }
         Set<Set<String>> allStrats = new HashSet<>();
         for (int i = 0; i < sizeAgentlist; i++) {
+            Set<Set<String>> stratsI = getStrategies(realState, agentlist.get(i));
             for (int j = i+1; j < sizeAgentlist; j++) {
-                // TODO concise the code
-                Set<Set<String>> strats = getStrategies(realState, agentlist.get(i));
-                for (Set<String> stratI : strats) {
-                    Set<Set<String>> strats2 = getStrategies(realState, agentlist.get(j));
-                    for (Set<String> stratJ : strats2) {
+                Set<Set<String>> stratsJ = getStrategies(realState, agentlist.get(j));
+                for (Set<String> stratI : stratsI) {
+                    for (Set<String> stratJ : stratsJ) {
                         allStrats.add(intersect(stratI, stratJ));
                     }
                 }
@@ -233,6 +285,7 @@ public class Model {
         return shrunk;
     }
 
+    // getters
 
     public int getNumberOfAgents() {
         return numAgents;
@@ -295,6 +348,7 @@ public class Model {
         throw new ForeignComponentException("Error: foreign state (not existing in the model)");
     }
 
+    // setters
 
     // TODO if fail when try to add an existing state?
     public void addState(String id) {

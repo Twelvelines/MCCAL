@@ -18,7 +18,7 @@ import java.util.*;
  * return its result for via pushing it into the return stack so as for the outer (super)formula to receive them.
  */
 public class FormulaEvaluator extends FormulaGrammarBaseListener {
-    private boolean verbose = false;
+    private boolean verbose;
     private Model model;    // the model where the formula is evaluated
     // the stack for caching results corresponding to the formula recursion; see javadoc for the class
     private Stack<Set<String>> evalStack = new Stack<>();
@@ -142,17 +142,18 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         Set<String> result = new HashSet<>();
 
         for (String state : model.getAllStates()) {
-            Set<Set<String>> strats;
+            Set<Map<Integer, Set<String>>> strats;
             try {
-                strats = model.getStrategies(state, agentlist);
+                strats = model.getIndiStrategies(state, agentlist);
             } catch (ForeignComponentException fe) {
                 // TODO handle ForeignComponentException
                 return;
             }
-            for (Set<String> strat : strats) {
+            for (Map<Integer, Set<String>> rawstrat : strats) {
+                Set<String> strat = Model.intersect(rawstrat.values());
                 Model submodel = model.getShrunkModel(strat);
                 if (ModelChecker.evalFormula(submodel, formula).contains(state)) {
-                    System.out.println("- GAL: strategy "+strat.toString()+" of agents "+agentlist.toString()+"is valid on state "+state);
+                    printValidStrat(strat, rawstrat, agentlist, state);
                     result.add(state);
                     break;
                 }
@@ -185,16 +186,18 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         restAgentlist.removeAll(agentlist);
 
         for (String state : model.getAllStates()) {
-            Set<Set<String>> agentsStrategies;
+            Set<Map<Integer, Set<String>>> agentsStrategies;
             Set<Set<String>> otherAgentsStrategies;
             try {
-                agentsStrategies = model.getStrategies(state, agentlist);
+                agentsStrategies = model.getIndiStrategies(state, agentlist);
                 otherAgentsStrategies = model.getStrategies(state, restAgentlist);
             } catch (ForeignComponentException fe) {
                 // TODO handle ForeignComponentException
                 return;
             }
-            for (Set<String> strat : agentsStrategies) {
+            // TODO Model.getStrat pushed forward a map instead of intersection
+            for (Map<Integer, Set<String>> rawstrat : agentsStrategies) {
+                Set<String> strat = Model.intersect(rawstrat.values());
                 boolean allParsingReturnsTrue = true;
                 for (Set<String> oStrat : otherAgentsStrategies) {
                     Model submodel = model.getShrunkModel(Model.intersect(strat, oStrat));
@@ -209,7 +212,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                     // thus break to the next state
                 }
                 // if for the strat, all parsing of formula on the submodel made is true
-                System.out.println("- CAL: strategy "+strat.toString()+" of agents "+agentlist.toString()+" is valid on state "+state);
+                printValidStrat(strat, rawstrat, agentlist, state);
                 result.add(state);
                 break;    // - to the next state
             }
@@ -224,6 +227,15 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         evalStack.pop();
     }
 
+
+    private void printValidStrat(Set<String> strat, Map<Integer, Set<String>> rawstrat, List<Integer> agentlist, String state) {
+        System.out.println("- CAL: strategy "+strat.toString()+" of agents "+agentlist.toString()+" is valid on state "+state);
+        for (int agent : rawstrat.keySet()) {
+            System.out.println("\t"+agent+": "+rawstrat.get(agent).toString());
+        }
+    }
+
+    // TODO encapsulation
     public Model getModel() {
         return model;
     }
@@ -231,6 +243,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     public Set<String> getSolution() {
         return evalStack.peek();
     }
+
 
     //debugging tool - formula: eval result (set of states)
     @Override

@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Set;
 
-// TODO tidy up the imports
 // TODO modifiers/access
 
 public class ModelChecker {
@@ -30,20 +29,21 @@ public class ModelChecker {
     // The model resulting from parsing filename
     private Model model;
 
+    // TODO really needed?
     public ModelChecker(String filename, String formula) {
         this.filename = filename;
         this.formula = formula;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         if (args.length < 2 || args.length > 3) {
             // TODO: we should improve error checking (file exists, etc);
             System.err.println("You need to provide a model file and a formula, ");
             System.err.println("\tExample: ");
-            System.out.println("\t$ java ModelChecker sample.gwm \"K(1,p1win)\"");
+            System.err.println("\t$ java ModelChecker sample.gwm \"K(1,p1win)\"");
             System.err.println("Or, an extra state, ");
             System.err.println("\tExample: ");
-            System.out.println("\t$ java ModelChecker sample.gwm \"K(1,p1win)\" S1");
+            System.err.println("\t$ java ModelChecker sample.gwm \"K(1,p1win)\" S1");
             System.exit(1);
         }
 
@@ -57,25 +57,19 @@ public class ModelChecker {
         mc.start(isStateProvided, providedState);
     }
 
-    public void start(boolean isStateProvided, String providedState) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
-        Calendar cal = Calendar.getInstance();
-        System.out.println(dateFormat.format(cal.getTime()) + ": job started");
-        // Begin model parsing procedure:
-        // create a CharStream that reads from in (either a file or
-        // standard input, see above)
-        System.out.println("FRANCO: Filename is: " + this.filename);
+    private void start(boolean isStateProvided, String providedState) {
+        System.out.println("-- Model file: " + this.filename + " --");
 
         // Read in model
         this.model = readModel(this.filename);
         if (model == null) {
             return;
         }
-        cal = Calendar.getInstance();
-        System.out.println(dateFormat.format(cal.getTime()) + ": model generated");
+        System.out.println("-- Model successfully generated, proceeding to evaluation --");
 
         // We begin to parse the formula:
         Set<String> solution = evalFormula(model, formula);
+        System.out.println("-- Evaluation complete --");
 
         // Printing output
         if (isStateProvided) {
@@ -87,10 +81,9 @@ public class ModelChecker {
             System.out.println("These are the states: "+ solution);
         }
         // Model info
-        System.out.println("Model info: ");
+        System.out.println("\nModel info:");
         System.out.println(model.toString());
-        cal = Calendar.getInstance();
-        System.out.println(dateFormat.format(cal.getTime()) + ": job done, see you soon!");
+        System.out.println("-- Model checking finished --");
     }
 
     public static Set<String> evalFormula(Model model, String formula) {

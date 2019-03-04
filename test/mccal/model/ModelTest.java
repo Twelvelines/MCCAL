@@ -24,27 +24,27 @@ class ModelTest {
     }
 
     @Test
-    void bisumContract() {
+    void bisimContract() {
         Set<String> actual = new HashSet<>();
         actual.add("S2");
-        assertEquals(bisumContractPrune("bisumSample"), actual);
+        assertEquals(bisumContractPrune("bisimSample"), actual);
     }
 
     // TODO bucketise n test refactor
     // TODO dename states within the model, using incremental identifier instead? it helps with comparing
     @Test
-    void bisumContract1() {
+    void bisimContract1() {
         Set<String> actual = new HashSet<>();
         actual.add("S2");
-        assertEquals(bisumContractPrune("bisumSample1"), actual);
+        assertEquals(bisumContractPrune("bisimSample1"), actual);
     }
 
     @Test
-    void bisumContract2() {
+    void bisimContract2() {
         Set<String> actual = new HashSet<>();
         actual.add("S1");
         actual.add("S2");
-        assertEquals(bisumContractPrune("bisumSample2"), actual);
+        assertEquals(bisumContractPrune("bisimSample2"), actual);
     }
 
     @Test
@@ -55,5 +55,19 @@ class ModelTest {
     @Test
     void getCoStrategies1() {
         //TODO
+    }
+
+    @Test
+    void modelToStringSmall() {
+        Model m = ModelChecker.readModel(MFP+"bisimSample1");
+        assert m != null;
+        System.out.println(m.toString());
+    }
+
+    @Test
+    void modelToStringBig() {
+        Model m = ModelChecker.readModel(MFP+"burglars/burglars1");
+        assert m != null;
+        System.out.println(m.toString());
     }
 }

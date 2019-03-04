@@ -289,77 +289,77 @@ class ModelCheckerTest {
 
     @Test
     void evalSample1S1t0() {
-        assertTrue(eval(MFP + "sample1.gwm", "atom1|atom2").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "atom1|atom2").contains("S1"));
     }
 
     @Test
     void evalSample1S1t1() {
-        assertTrue(eval(MFP + "sample1.gwm", "<<2>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "<<2>>K(1, atom1)").contains("S1"));
     }
 
     @Test
     void evalSample1S1t2() {
-        assertTrue(eval(MFP + "sample1.gwm", "<<2>>!K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "<<2>>!K(1, atom1)").contains("S1"));
     }
 
     @Test
     void evalSample1S1t3() {
-        assertTrue(eval(MFP + "sample1.gwm", "!<<1>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "!<<1>>K(1, atom1)").contains("S1"));
     }
 
     @Test
     void evalSample1S1t4() {
-        assertTrue(eval(MFP + "sample1.gwm", "<<1>>K(2, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "<<1>>K(2, atom1)").contains("S1"));
     }
 
     @Test
     void evalSample1S1t5() {
-        assertTrue(eval(MFP + "sample1.gwm", "<<1, 2>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "<<1, 2>>K(1, atom1)").contains("S1"));
     }
 
     @Test
     void evalSample1S1t6() {
-        assertTrue(eval(MFP + "sample1.gwm", "<<2>><<1>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "<<2>><<1>>K(1, atom1)").contains("S1"));
     }
 
     @Test
     void evalSample1S2t1() {
-        assertTrue(eval(MFP + "sample1.gwm", "!<<2>>K(1, atom1)").contains("S2"));
+        assertTrue(eval(MFP + "sample1", "!<<2>>K(1, atom1)").contains("S2"));
     }
 
     @Test
     void evalSample1S2t2() {
-        assertTrue(eval(MFP + "sample1.gwm", "<<2>>K(1, !atom1)").contains("S2"));
+        assertTrue(eval(MFP + "sample1", "<<2>>K(1, !atom1)").contains("S2"));
     }
 
     @Test
     void evalSample1S2t3() {
-        assertTrue(eval(MFP + "sample1.gwm", "!<<1>>K(1, atom1)").contains("S2"));
+        assertTrue(eval(MFP + "sample1", "!<<1>>K(1, atom1)").contains("S2"));
     }
 
     @Test
     void evalSample2S1t1() {
-        assertTrue(eval(MFP + "sample2.gwm", "<<3>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample2", "<<3>>K(1, atom1)").contains("S1"));
     }
 
     @Test
     void evalSample2S1t2() {
-        assertFalse(eval(MFP + "sample2.gwm", "<<3>>!K(1, atom1)").contains("S1"));
+        assertFalse(eval(MFP + "sample2", "<<3>>!K(1, atom1)").contains("S1"));
     }
 
     @Test
     void evalSample2S1t3() {
-        assertTrue(eval(MFP + "sample2.gwm", "<<1, 2>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample2", "<<1, 2>>K(1, atom1)").contains("S1"));
     }
 
     @Test
     void evalSample2S1t4() {
-        assertTrue(eval(MFP + "sample2.gwm", "[atom1][atom2][atom3] K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample2", "[atom1][atom2][atom3] K(1, atom1)").contains("S1"));
     }
 
     @Test
     void evalSample2S1t5() {
-        assertTrue(eval(MFP + "sample2.gwm", "[atom1][atom2][atom3] K(1, atom3)").contains("S1"));
+        assertTrue(eval(MFP + "sample2", "[atom1][atom2][atom3] K(1, atom3)").contains("S1"));
         // as nonsense announcement always results to return true
     }
 }
