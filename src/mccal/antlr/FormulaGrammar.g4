@@ -13,16 +13,18 @@ grammar FormulaGrammar;
 // recursion in formula
 formula:
     ('!'|'not') formula             # Negation
-    | formula 'and' formula         # Conjunction
-    | formula 'or' formula          # Disjunction
+    | formula ('&'|'and') formula         # Conjunction
+    | formula ('|'|'or') formula          # Disjunction
     | formula ('implies'|'->') formula      # Implication
     | '(' formula ')'               # parens
-    | 'K' '(' agentid ',' formula ')'       # Knowledge
-    | '[' galformula ']' formula    # Announcement
+    | ('/<'|'K') '(' agentid ',' formula ')'       # Knowledge
+    | '[' palformula ']' formula    # PuAnnouncement
+    | '<' agentlist '>' galformula    # GrAnnouncement
     | '<<' agentlist '>>' calformula        # CoAnnouncement
     | ID                            # Atom
     ;
 
+palformula: formula;
 galformula: formula;
 calformula: formula;
 

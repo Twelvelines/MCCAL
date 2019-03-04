@@ -5,6 +5,7 @@ import mccal.exceptions.ForeignComponentException;
 import mccal.antlr.formula.FormulaGrammarBaseListener;
 import mccal.antlr.formula.FormulaGrammarParser;
 import mccal.model.*;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.*;
 
@@ -17,14 +18,16 @@ import java.util.*;
  * return its result for via pushing it into the return stack so as for the outer (super)formula to receive them.
  */
 public class FormulaEvaluator extends FormulaGrammarBaseListener {
+    private boolean verbose = false;
     private Model model;    // the model where the formula is evaluated
     // the stack for caching results corresponding to the formula recursion; see javadoc for the class
     private Stack<Set<String>> evalStack = new Stack<>();
     // model caching slot for announcement logic
     private Stack<Model> aModelsCache = new Stack<>();
 
-    public FormulaEvaluator(Model model) {
+    public FormulaEvaluator(Model model, boolean verbose) {
         this.model = model;
+        this.verbose = verbose;
     }
 
     /**
@@ -33,10 +36,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
      */
     @Override
     public void exitAtom(FormulaGrammarParser.AtomContext ctx) {
-        Set<String> validStates = model.getStatesWhereTrue(ctx.ID().getText());
-        if (validStates == null) {
-            validStates = new HashSet<>();
-        }
+        Set<String> validStates = model.getStates(ctx.ID().getText());
         evalStack.push(validStates);
     }
 
@@ -59,11 +59,9 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
      */
     @Override
     public void exitConjunction(FormulaGrammarParser.ConjunctionContext ctx) {
-        Set<String> left = evalStack.pop();
         Set<String> right = evalStack.pop();
-        left.retainAll(right);    // losing part of the left is alright because copies from the model were stored
-        // FIXME: check that everything is OK with an empty intersection
-        evalStack.push(new HashSet<>(left));
+        Set<String> left = evalStack.pop();
+        evalStack.push(Model.intersect(left, right));
     }
 
     /**
@@ -91,39 +89,27 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         result.removeAll(a);
         // !a or b:
         result.addAll(b);
-        evalStack.push(new HashSet<>(result));
+        evalStack.push(result);
     }
 
 
     @Override
     public void exitKnowledge(FormulaGrammarParser.KnowledgeContext ctx) {
-        Set<String> previous = evalStack.pop();    // The set of states where the inner formula is true
+        Set<String> innerTrueZone = evalStack.pop();
         int agent = Integer.valueOf(ctx.agentid().getText());
         Set<String> result = new HashSet<>();
 
-        for (String state : previous) {     // for every states in the previous true states
-            boolean allRelatedStatesAreInThePreviousTrueStates = true;
-            for (Set<String> equivClass : model.getEquivClasses(agent)) {    // examine all equiv relations
-                if (!equivClass.contains(state)) {     // rid of the irrelevant
-                    continue;
-                }    // the rest relations contains the current state
-                if (!previous.containsAll(equivClass)) {
-                    // if any state in the relation is not among the previous true states
-                    allRelatedStatesAreInThePreviousTrueStates = false;
-                    break;
-                }
-            }
-            if (allRelatedStatesAreInThePreviousTrueStates) {
-                result.add(state);
-            }
+        for (Set<String> equivClass : model.getEquivClasses(agent)) {
+            if (innerTrueZone.containsAll(equivClass))    // if all state in the cluster is in the true states zone
+                result.addAll(equivClass);
         }
 
-        // Pushing the result to the stack
-        evalStack.push(new HashSet<>(result));
+        // push the result to the stack
+        evalStack.push(result);
     }
 
     @Override
-    public void exitGalformula(FormulaGrammarParser.GalformulaContext ctx) {
+    public void exitPalformula(FormulaGrammarParser.PalformulaContext ctx) {
         // states where the announcement is true
         Set<String> trueStates = evalStack.pop();
         Set<String> falseStates = new HashSet<>(model.getAllStates());
@@ -136,7 +122,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     }
 
     @Override
-    public void exitAnnouncement(FormulaGrammarParser.AnnouncementContext ctx) {
+    public void exitPuAnnouncement(FormulaGrammarParser.PuAnnouncementContext ctx) {
         model = aModelsCache.pop();
         Set<String> result = evalStack.pop();
         // adding up the false states of announcement formula stored when exiting it
@@ -145,6 +131,43 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     }
 
     // TODO maybe make a strat class
+
+    @Override
+    public void enterGrAnnouncement(FormulaGrammarParser.GrAnnouncementContext ctx) {
+        List<Integer> agentlist = new ArrayList<>();
+        for (FormulaGrammarParser.AgentidContext aCtx : ctx.agentlist().agentid()) {
+            agentlist.add(Integer.valueOf(aCtx.getText()));
+        }
+        String formula = ctx.galformula().getText();
+        Set<String> result = new HashSet<>();
+
+        for (String state : model.getAllStates()) {
+            Set<Set<String>> strats;
+            try {
+                strats = model.getStrategies(state, agentlist);
+            } catch (ForeignComponentException fe) {
+                // TODO handle ForeignComponentException
+                return;
+            }
+            for (Set<String> strat : strats) {
+                Model submodel = model.getShrunkModel(strat);
+                if (ModelChecker.evalFormula(submodel, formula).contains(state)) {
+                    System.out.println("- GAL: strategy "+strat.toString()+" of agents "+agentlist.toString()+"is valid on state "+state);
+                    result.add(state);
+                    break;
+                }
+            }
+        }
+
+        // push the collected states as result
+        evalStack.push(result);
+    }
+
+    @Override
+    public void exitGalformula(FormulaGrammarParser.GalformulaContext ctx) {
+        // getting rid of extra parsed result
+        evalStack.pop();
+    }
 
     @Override
     public void enterCoAnnouncement(FormulaGrammarParser.CoAnnouncementContext ctx) {
@@ -160,6 +183,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
             restAgentlist.add(i+1);
         }
         restAgentlist.removeAll(agentlist);
+
         for (String state : model.getAllStates()) {
             Set<Set<String>> agentsStrategies;
             Set<Set<String>> otherAgentsStrategies;
@@ -185,7 +209,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                     // thus break to the next state
                 }
                 // if for the strat, all parsing of formula on the submodel made is true
-                System.out.println("- Coalition: strategy "+strat.toString()+" is valid on state "+state);
+                System.out.println("- CAL: strategy "+strat.toString()+" of agents "+agentlist.toString()+" is valid on state "+state);
                 result.add(state);
                 break;    // - to the next state
             }
@@ -195,7 +219,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     }
 
     @Override
-    public void exitCoAnnouncement(FormulaGrammarParser.CoAnnouncementContext ctx) {
+    public void exitCalformula(FormulaGrammarParser.CalformulaContext ctx) {
         // getting rid of extra parsed result
         evalStack.pop();
     }
@@ -206,5 +230,19 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
 
     public Set<String> getSolution() {
         return evalStack.peek();
+    }
+
+    //debugging tool - formula: eval result (set of states)
+    @Override
+    public void exitEveryRule(ParserRuleContext ctx) {
+        if (verbose && evalStack.size() != 0) {
+            String formula = ctx.getText();
+            int stacksize = evalStack.size();
+            Set<String> top = evalStack.peek();
+            System.out.println(formula+":\t(stack size: "+stacksize+")\n\t" +
+                    top.toString() + "\t" +
+                    top.size() + " states"
+            );
+        }
     }
 }

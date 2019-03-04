@@ -1,11 +1,9 @@
 package mccal.model;
 
-import mccal.model.Model;
 import mccal.antlr.model.ModelGrammarBaseListener;
 import mccal.antlr.model.ModelGrammarParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,17 +18,13 @@ public class ModelExtractor extends ModelGrammarBaseListener {
     private String curAtom;    // the id of the current atom being parsed
     private Set<String> curStateSet;    // a list of states that the current atom points to
 
-    public ModelExtractor() {
-        model = new Model();
-    }
-
     /**
      * Sets the number of agents when the parser enter the nofagents rule.
      * Accesses the node from the context and then extract the value
      */
     @Override
     public void enterNumagents(ModelGrammarParser.NumagentsContext ctx) {
-        model.setNumberOfAgents(Integer.parseInt(ctx.NONZEROINT().getText()));
+        model = new Model(Integer.parseInt(ctx.NONZEROINT().getText()));
     }
 
     /**
@@ -41,7 +35,7 @@ public class ModelExtractor extends ModelGrammarBaseListener {
     public void enterAllstates(ModelGrammarParser.AllstatesContext ctx) {
         for (TerminalNode i : ctx.ID()) {
             String curState = i.getText();
-            model.addGlobalState(curState);
+            model.addState(curState);
         }
     }
 
@@ -50,13 +44,13 @@ public class ModelExtractor extends ModelGrammarBaseListener {
      */
     @Override
     public void enterEdge(ModelGrammarParser.EdgeContext ctx) {
-        Integer agent = Integer.parseInt(ctx.NONZEROINT().getText());
+        int agent = Integer.parseInt(ctx.NONZEROINT().getText());
         List<TerminalNode> nodeList = ctx.ID();
         if (nodeList.size() < 2) {
             System.err.println("incorrect number of states; edge ignored");
             return;
         } else if (nodeList.size() == 2)
-            model.addRelation(agent, nodeList.get(0).getText(), nodeList.get(1).getText());
+            model.addEquivRelation(agent, nodeList.get(0).getText(), nodeList.get(1).getText());
         // else (.size > 2)
         Set<String> sset = new HashSet<>();
         for (TerminalNode n : nodeList) {
@@ -74,7 +68,7 @@ public class ModelExtractor extends ModelGrammarBaseListener {
         Set<String> states = model.getAllStates();
         for (String s : states) {
             for (int agent = 1; agent <= model.getNumberOfAgents(); agent++) {
-                model.addRelation(agent, s, s);
+                model.addEquivRelation(agent, s, s);
             }
         }
     }
@@ -99,7 +93,7 @@ public class ModelExtractor extends ModelGrammarBaseListener {
      */
     @Override
     public void exitProp(ModelGrammarParser.PropContext ctx) {
-        model.addAtoms(curAtom, curStateSet);
+        model.addAtom(curAtom, curStateSet);
     }
 
     public Model getModel() {

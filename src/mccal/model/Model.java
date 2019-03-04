@@ -11,20 +11,17 @@ public class Model {
     private int numAgents;    // they are named by index, conventionally starting from 1
     private Set<String> states = new HashSet<>();    // all states in the model
     // maps every proposition to the set of states where it is true
-    // TODO distinguish atom and proposition
     private Map<String, Set<String>> atoms = new HashMap<>();
     // represents the epistemic relations via mapping every agent to a list of equivalence classes which are sets of
     // indistinct states for the agent
     private Map<Integer, List<Set<String>>> equivRels = new HashMap<>();
 
-    public Model() {
-    }
-
-    /**
-     * Constructor with number of agents.
-     */
-    public Model(int n) {
-        this.numAgents = n;
+    public Model(int numAgents) {
+        this.numAgents = numAgents;
+        while (numAgents != 0) {
+            equivRels.put(numAgents, new ArrayList<>());
+            numAgents--;
+        }
     }
 
     public static Set<String> intersect(Set<String> a, Set<String> b) {
@@ -33,11 +30,12 @@ public class Model {
         return intersection;
     }
 
+    // TODO
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("Number of agents: ").append(numAgents).append("\n");
-        result.append("States:\n").append(stringArrangeStates(states, 4, 0)).append("\n");
+        result.append("States:\n").append(formatStateStrings(states, 4, 0)).append("\n");
         result.append("Equivalences:\n");
         for (int agent = 1; agent <= numAgents; agent++) {
             result.append("For Agent ").append(agent).append(" ");
@@ -45,14 +43,14 @@ public class Model {
             int equivsSize = equivs.size();
             for (int i = 0; i < equivsSize; i++) {
                 result.append("{\n");
-                result.append(stringArrangeStates(equivs.get(i), 3, 1));
+                result.append(formatStateStrings(equivs.get(i), 3, 1));
                 result.append(i == equivsSize - 1 ? "}\n" : "} and ");
             }
         }
         return result.toString();
     }
 
-    private String stringArrangeStates(Set<String> sSet, int column, int indentNum) {
+    private String formatStateStrings(Set<String> sSet, int column, int indentNum) {
         StringBuilder result = new StringBuilder();
         StringBuilder indent = new StringBuilder();
         for (int i = 0; i < indentNum; i++) {
@@ -70,7 +68,7 @@ public class Model {
     }
 
     /**
-     * Bisimulation contraction of the model.
+     * Returns bisimulation contraction of the model.
      */
     public Model bisumContract() {
         Set<Set<String>> buckets = new HashSet<>();
@@ -106,7 +104,7 @@ public class Model {
         Set<String> union = new HashSet<>();
         for (Set<String> aBucket : buckets) {
             List<String> abList = new ArrayList<>(aBucket);
-            // TODO state concat (not easy)
+            // TODO state id concat (not easy)
             union.add(abList.get(0));
         }
         return getShrunkModel(union);
@@ -128,7 +126,6 @@ public class Model {
         buckets.removeAll(oldBuckets);
         buckets.addAll(newBuckets);
     }
-
 
     /**
      * Be noted that returned references are all to the states and equiv sets in the model, not copies.
@@ -157,8 +154,7 @@ public class Model {
     }
 
     /**
-     * Gets intersections on all pairs of strategies for all agents.
-     * TODO revise on throwing this exception - maybe only evaluator should throw, or maybe other methods in model should as well
+     * Returns intersections on all pairs of strategies for all agents.
      */
     public Set<Set<String>> getStrategies(String realState, List<Integer> agentlist) throws ForeignComponentException {
         int sizeAgentlist = agentlist.size();
@@ -184,150 +180,9 @@ public class Model {
         return allStrats;
     }
 
-    // Set the number of agents
-    public void setNumberOfAgents(int n) {
-        if (numAgents != 0) {
-            System.err.print("Model: Number of agent already set\n");
-            return;
-        }
-        numAgents = n;
-        while (n != 0) {
-            equivRels.put(n, new ArrayList<>());
-            n--;
-        }
-    }
-
-    // add a global state to the map.
-    // TODO: fail if we try to add an existing state? For the moment
-    // we just ignore existing states.
-    public void addGlobalState(String id) {
-        if (!states.contains(id)) {
-            states.add(id);
-        }
-    }
-
-    // add a relation to the equiv. sets
-    // state 1 and 2 are a pair of indistinguishable states specified in input model file
-    // the two states are possibly identical, thus no need for any state to be added
-    public void addRelation(Integer agent, String state1, String state2) {
-        boolean belongingClusterFound = false;
-        for (Set<String> equivSet : equivRels.get(agent)) {
-            if (equivSet.contains(state1)) {
-                if (!state1.equals(state2)) {
-                    equivSet.add(state2);
-                }
-                belongingClusterFound = true;
-                break;
-            }
-            if (equivSet.contains(state2)) {
-                if (!state1.equals(state2)) {
-                    equivSet.add(state1);
-                }
-                belongingClusterFound = true;
-                break;
-            }
-        }
-        if (!belongingClusterFound) {
-            // add a brand new equiv. set
-            Set<String> newSet = new HashSet<>();
-            newSet.add(state1);
-            if (!state1.equals(state2)) {
-                newSet.add(state2);
-            }
-            equivRels.get(agent).add(newSet);
-        }
-    }
-
-
-    public void addEquivClass(int agent, Set<String> newClass) {
-        List<Set<String>> classes = equivRels.get(agent);
-        for (Set<String> c : classes) {
-            if (!intersect(newClass, c).isEmpty()) {
-                c.addAll(newClass);
-                return;
-            }
-        }  // else
-        classes.add(newClass);
-    }
-
-
-    // Add an atom to the set of atoms.
-    // TODO: as above, we ignore repeated atoms for the moment.
-    public void addAtoms(String atom, Set<String> states) {
-        if (!atoms.containsKey(atom)) {
-            atoms.put(atom, states);
-        }
-    }
-
-
-    // Simple getters
-    public int getNumberOfAgents() {
-        return numAgents;
-    }
-
-    public Set<String> getAllStates() {
-        return states;
-    }
-
-    public Map<String, Set<String>> getAtoms() {
-        return atoms;
-    }
-
-    public Map<Integer, List<Set<String>>> getEquivs() {
-        return equivRels;
-    }
-
-    public List<Set<String>> getEquivClasses(int agent) {
-        // TODO: Add error checking on i
-        return equivRels.get(agent);
-    }
-
-
-    // Get the set of states in which an atom is true
-    // TODO: we return null if the atom doesn't exist. This is probably OK
-    public Set<String> getStatesWhereTrue(String atom) {
-        if (atoms.containsKey(atom)) {
-            return atoms.get(atom);
-        }
-        return null;
-    }
-
-
-    // foreign state resilient
-    public Set<String> getEquivStates(int agent, Set<String> theStates) throws ForeignComponentException {
-        Set<String> union = new HashSet<>();
-        List<Set<String>> eqClasses = equivRels.get(agent);
-        if (eqClasses == null) {
-            throw new ForeignComponentException("Error: foreign agent (not existing in the model)");
-        }
-        for (Set<String> aClass : eqClasses) {
-            if (!intersect(aClass, theStates).isEmpty())
-                union.addAll(aClass);
-        }
-        return union;
-    }
-
-
-    // Returns the set of global states epistemically equivalent to state for agent
-    public Set<String> getEquivStates(int agent, String state) throws ForeignComponentException {
-        // We get the eq. classes for this agent:
-        List<Set<String>> eqClasses = equivRels.get(agent);
-        if (eqClasses == null) {
-            throw new ForeignComponentException("Error: foreign agent (not existing in the model)");
-        }
-
-        // We iterate over the classes to see if there is one that
-        // contains the state
-        for (Set<String> aClass : eqClasses) {
-            if (aClass.contains(state)) {
-                return aClass;
-            }
-        }
-        throw new ForeignComponentException("Error: foreign state (not existing in the model)");
-    }
-
-
-    // Get a new model shrunk from the original one based on specified valid states
+    /**
+     * Returns a new model shrunk from the original one based on specified valid states.
+     */
     // TODO better algorithm to speed up the elimination of invalid states?
     public Model getShrunkModel(Set<String> validStates) {
         // first shallow copy
@@ -371,12 +226,132 @@ public class Model {
         }
         shrunkEquivRels.entrySet().removeAll(regEmptyEquivRels);
         // setup shrunk model
-        Model shrunk = new Model();
-        shrunk.numAgents = numAgents;
+        Model shrunk = new Model(numAgents);
         shrunk.states = new HashSet<>(validStates);
         shrunk.atoms = shrunkAtoms;
         shrunk.equivRels = shrunkEquivRels;
         return shrunk;
+    }
+
+
+    public int getNumberOfAgents() {
+        return numAgents;
+    }
+
+    public Set<String> getAllStates() {
+        return new HashSet<>(states);
+    }
+
+    /**
+     * Returns the set of states in which an atom is true.
+     */
+    public Set<String> getStates(String atom) {
+        if (atoms.containsKey(atom))
+            return new HashSet<>(atoms.get(atom));
+        return new HashSet<>();
+    }
+
+    // TODO foreign agent?
+    public List<Set<String>> getEquivClasses(int agent) {
+        List<Set<String>> result = new ArrayList<>();
+        if (equivRels.containsKey(agent)) {
+            for (Set<String> aClass : equivRels.get(agent)) {
+                result.add(new HashSet<>(aClass));
+            }
+        }
+        return result;
+    }
+
+    // TODO foreign state resilient?
+    public Set<String> getEquivStates(int agent, Set<String> theStates) throws ForeignComponentException {
+        Set<String> result = new HashSet<>();
+        List<Set<String>> eqClasses = equivRels.get(agent);
+        if (eqClasses == null) {
+            throw new ForeignComponentException("Error: foreign agent (not existing in the model)");
+        }
+        for (Set<String> aClass : eqClasses) {
+            if (!intersect(aClass, theStates).isEmpty())
+                result.addAll(aClass);
+        }
+        return result;
+    }
+
+    /**
+     *  Returns the set of states epistemically equivalent to the one provided for agent.
+     */
+    public Set<String> getEquivStates(int agent, String state) throws ForeignComponentException {
+        // get the equiv classes for this agent:
+        List<Set<String>> eqClasses = equivRels.get(agent);
+        if (eqClasses == null) {
+            throw new ForeignComponentException("Error: foreign agent (not existing in the model)");
+        }
+
+        // iterate over the classes to find the one that contains the state
+        for (Set<String> aClass : eqClasses) {
+            if (aClass.contains(state)) {
+                return new HashSet<>(aClass);
+            }
+        }
+        throw new ForeignComponentException("Error: foreign state (not existing in the model)");
+    }
+
+
+    // TODO if fail when try to add an existing state?
+    public void addState(String id) {
+        states.add(id);
+    }
+
+    public void addAtom(String atom, Set<String> states) {
+        if (atoms.containsKey(atom)) {
+            System.err.println("addAtom: atom already exists");
+            return;
+        }
+        atoms.put(atom, states);
+    }
+
+    public void addEquivClass(int agent, Set<String> newClass) {
+        List<Set<String>> classes = equivRels.get(agent);
+        for (Set<String> c : classes) {
+            if (!intersect(newClass, c).isEmpty()) {
+                c.addAll(newClass);
+                return;
+            }
+        }  // else
+        classes.add(newClass);
+    }
+
+    /**
+     * Adds a relation to the equiv map.
+     * States 1 and 2 are a pair of indistinguishable states specified in input model file.
+     * Sometimes the two states are identical, in which case no need for any state to be added.
+     */
+    public void addEquivRelation(Integer agent, String state1, String state2) {
+        boolean belongingClusterFound = false;
+        for (Set<String> equivSet : equivRels.get(agent)) {
+            if (equivSet.contains(state1)) {
+                if (!state1.equals(state2)) {
+                    equivSet.add(state2);
+                }
+                belongingClusterFound = true;
+                break;
+            }
+            if (equivSet.contains(state2)) {
+                if (!state1.equals(state2)) {
+                    equivSet.add(state1);
+                }
+                belongingClusterFound = true;
+                break;
+            }
+        }
+        if (!belongingClusterFound) {
+            // add a brand new equiv. set
+            Set<String> newSet = new HashSet<>();
+            newSet.add(state1);
+            if (!state1.equals(state2)) {
+                newSet.add(state2);
+            }
+            equivRels.get(agent).add(newSet);
+        }
     }
 
 }

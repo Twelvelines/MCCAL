@@ -94,6 +94,10 @@ public class ModelChecker {
     }
 
     public static Set<String> evalFormula(Model model, String formula) {
+        return evalFormula(model, formula, false);
+    }
+
+    public static Set<String> evalFormula(Model model, String formula, boolean verbose) {
         ANTLRInputStream finput = new ANTLRInputStream(formula);
         FormulaGrammarLexer flexer = new
                 FormulaGrammarLexer(finput);
@@ -101,12 +105,12 @@ public class ModelChecker {
         CommonTokenStream ftokens = new CommonTokenStream(flexer);
         // create a parser that feeds off the tokens buffer
         FormulaGrammarParser fparser = new FormulaGrammarParser(ftokens);
-        // begin parsing from formula rule; TODO keep an eye on this if anything
+        // begin parsing from formula rule;
         ParseTree ftree = fparser.formula();
         // Just a standard walker
         ParseTreeWalker fwalker = new ParseTreeWalker();
         // Now we associate our extractor to the parser.
-        FormulaEvaluator evaluator = new FormulaEvaluator(model);
+        FormulaEvaluator evaluator = new FormulaEvaluator(model, verbose);
         // and we walk the tree with our extractor.
         fwalker.walk(evaluator, ftree);
         return evaluator.getSolution();
