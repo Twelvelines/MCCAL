@@ -3,7 +3,7 @@
 Utilising [ANTLR][2] for generating customised parsers
 (ANTLR version: 4.7.1)
 
-*(This project has an IDEA project structure, thus it is preferred to be checked out in Intellij IDEA. Export/import may be needed if opened from other development environment (such as Eclipse) as a whole project. It is also advisable to install the [ANTLR v4 Grammar Plugin for Intellij][3] that allows a set of benefits for editing grammar files including syntax highlighting. ANTLR installation on your computer may be needed.)*
+*(This project has an IDEA project structure, thus it is preferred to be checked out in Intellij IDEA. Export/import may be needed if opened from other development environment (such as Eclipse) as a whole project. It is also advisable to install the [ANTLR v4 Grammar Plugin for Intellij][3] that allows a set of benefits for editing grammar files including syntax highlighting. ANTLR installation on your computer may be needed for this.)*
 
 ### Modifying the grammar
 
@@ -36,6 +36,8 @@ Utilising [ANTLR][2] for generating customised parsers
    mv ModelGrammar* model/
    mv tmp2.g4 ModelGrammar.g4
    ```
+
+   If you are working the project under a git environment, do not forget to add the files into git.
 
 4. Rebuild the project. The modification should now take effect on the parser. You can do further work to utilise the parsed elements.
 

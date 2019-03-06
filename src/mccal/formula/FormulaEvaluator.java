@@ -1,15 +1,14 @@
 package mccal.formula;
 
+import mccal.Intersection;
 import mccal.ModelChecker;
-import mccal.exceptions.ForeignComponentException;
+import mccal.exceptions.UnknownAgentException;
 import mccal.antlr.formula.FormulaGrammarBaseListener;
 import mccal.antlr.formula.FormulaGrammarParser;
 import mccal.model.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.*;
-
-// TODO rearrange the methods
 
 /**
  * A Listener that computes the set of states in which a given formula holds in a model.
@@ -30,113 +29,71 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         this.verbose = verbose;
     }
 
-    /**
-     * The base case method, where a proposition (an ID in terms of token) is examined, and
-     * a set of states where the proposition holds is pushed into the return stack evalStack.
-     */
+    // TODO maybe make a strat class
     @Override
-    public void exitAtom(FormulaGrammarParser.AtomContext ctx) {
-        Set<String> validStates = model.getStates(ctx.ID().getText());
-        evalStack.push(validStates);
-    }
-
-    /**
-     * Pushes to the return stack the Negation of the proposition,
-     * i.e. the complement of the set in regard of the whole set of states in the model.
-     */
-    @Override
-    public void exitNegation(FormulaGrammarParser.NegationContext ctx) {
-        Set<String> allStates = new HashSet<>(this.model.getAllStates());
-        Set<String> previous = evalStack.pop();
-        // TODO: check what happens with empty difference
-        allStates.removeAll(previous);
-        evalStack.push(allStates);
-    }
-
-    /**
-     * Pushes to the return stack the value of a Conjunction ("or"),
-     * which is the Intersection of the two subformula's results currently on top of the stack.
-     */
-    @Override
-    public void exitConjunction(FormulaGrammarParser.ConjunctionContext ctx) {
-        Set<String> right = evalStack.pop();
-        Set<String> left = evalStack.pop();
-        evalStack.push(Model.intersect(left, right));
-    }
-
-    /**
-     * Pushes to return stack the value of a Disjunction ("and"),
-     * which is the Union of the two subformula's results currently on top of the stack.
-     */
-    @Override
-    public void exitDisjunction(FormulaGrammarParser.DisjunctionContext ctx) {
-        Set<String> left = evalStack.pop();
-        Set<String> right = evalStack.pop();
-        left.addAll(right);
-        evalStack.push(new HashSet<>(left));
-    }
-
-    /**
-     * Pushes to return stack the value of a Implication, which is the logical sequence of two subformula.
-     * Definitively, (a -> b) is (!a or b), which is how this is implemented as well.
-     */
-    @Override
-    public void exitImplication(FormulaGrammarParser.ImplicationContext ctx) {
-        Set<String> b = evalStack.pop();
-        Set<String> a = evalStack.pop();
-        Set<String> result = new HashSet<>(this.model.getAllStates());
-        // !a:
-        result.removeAll(a);
-        // !a or b:
-        result.addAll(b);
-        evalStack.push(result);
-    }
-
-
-    @Override
-    public void exitKnowledge(FormulaGrammarParser.KnowledgeContext ctx) {
-        Set<String> innerTrueZone = evalStack.pop();
-        int agent = Integer.valueOf(ctx.agentid().getText());
-        Set<String> result = new HashSet<>();
-
-        for (Set<String> equivClass : model.getEquivClasses(agent)) {
-            if (innerTrueZone.containsAll(equivClass))    // if all state in the cluster is in the true states zone
-                result.addAll(equivClass);
+    public void enterCoAnnouncement(FormulaGrammarParser.CoAnnouncementContext ctx) {
+        List<Integer> agents = new ArrayList<>();
+        for (FormulaGrammarParser.AgentidContext aCtx : ctx.agentlist().agentid()) {
+            agents.add(Integer.valueOf(aCtx.getText()));
         }
 
-        // push the result to the stack
+        List<Integer> restOfAgents = new ArrayList<>();
+        for (int i = 0; i < model.getNumberOfAgents(); i++) {
+            restOfAgents.add(i+1);
+        }
+        restOfAgents.removeAll(agents);
+
+        String formula = ctx.calformula().getText();
+        Set<String> result = new HashSet<>();
+
+        for (String state : model.getAllStates()) {
+            Set<Map<Integer, Set<String>>> agentsStrategies;
+            Set<Set<String>> otherAgentsStrategies;
+            try {
+                agentsStrategies = model.getIndiStrategies(state, agents);
+                otherAgentsStrategies = model.getStrategies(state, restOfAgents);
+            } catch (UnknownAgentException e) {
+                System.err.println(e.toString());
+                evalStack.push(new HashSet<>());
+                return;
+            }
+
+            for (Map<Integer, Set<String>> rawstrat : agentsStrategies) {
+                Set<String> strat = Intersection.intersect(rawstrat.values());
+                boolean allParsingReturnsTrue = true;
+                for (Set<String> oStrat : otherAgentsStrategies) {
+                    Model submodel = model.getShrunkModel(Intersection.intersect(strat, oStrat));
+                    if (!ModelChecker.evalFormula(submodel, formula).contains(state)) {
+                        allParsingReturnsTrue = false;
+                        break;
+                    }
+                }
+                if (!allParsingReturnsTrue) {
+                    continue;    // - to the next strat
+                    // the loop will olso be finished here if for every strat, !allParsingReturnsTrue,
+                    // thus break to the next state
+                }
+                // if for the strat, all parsing of formula on the submodel made is true
+                printValidStrat(strat, rawstrat, agents, state);
+                result.add(state);
+                break;    // - to the next state
+            }
+        }
+        // push the collected states as result
         evalStack.push(result);
     }
 
     @Override
-    public void exitPalformula(FormulaGrammarParser.PalformulaContext ctx) {
-        // states where the announcement is true
-        Set<String> trueStates = evalStack.pop();
-        Set<String> falseStates = new HashSet<>(model.getAllStates());
-        falseStates.removeAll(trueStates);
-        // push back the false states which will be used again when exiting Announcement, as result of this stage,
-        // which is same result as negation of the formula
-        evalStack.push(falseStates);
-        aModelsCache.push(model);
-        model = model.getShrunkModel(trueStates);
+    public void exitCalformula(FormulaGrammarParser.CalformulaContext ctx) {
+        // getting rid of extra parsed result
+        evalStack.pop();
     }
-
-    @Override
-    public void exitPuAnnouncement(FormulaGrammarParser.PuAnnouncementContext ctx) {
-        model = aModelsCache.pop();
-        Set<String> result = evalStack.pop();
-        // adding up the false states of announcement formula stored when exiting it
-        result.addAll(evalStack.pop());
-        evalStack.push(result);
-    }
-
-    // TODO maybe make a strat class
 
     @Override
     public void enterGrAnnouncement(FormulaGrammarParser.GrAnnouncementContext ctx) {
-        List<Integer> agentlist = new ArrayList<>();
+        List<Integer> agents = new ArrayList<>();
         for (FormulaGrammarParser.AgentidContext aCtx : ctx.agentlist().agentid()) {
-            agentlist.add(Integer.valueOf(aCtx.getText()));
+            agents.add(Integer.valueOf(aCtx.getText()));
         }
         String formula = ctx.galformula().getText();
         Set<String> result = new HashSet<>();
@@ -144,16 +101,17 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         for (String state : model.getAllStates()) {
             Set<Map<Integer, Set<String>>> strats;
             try {
-                strats = model.getIndiStrategies(state, agentlist);
-            } catch (ForeignComponentException fe) {
-                // TODO handle ForeignComponentException
+                strats = model.getIndiStrategies(state, agents);
+            } catch (UnknownAgentException e) {
+                System.err.println(e.toString());
+                evalStack.push(new HashSet<>());
                 return;
             }
             for (Map<Integer, Set<String>> rawstrat : strats) {
-                Set<String> strat = Model.intersect(rawstrat.values());
+                Set<String> strat = Intersection.intersect(rawstrat.values());
                 Model submodel = model.getShrunkModel(strat);
                 if (ModelChecker.evalFormula(submodel, formula).contains(state)) {
-                    printValidStrat(strat, rawstrat, agentlist, state);
+                    printValidStrat(strat, rawstrat, agents, state);
                     result.add(state);
                     break;
                 }
@@ -171,60 +129,110 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
     }
 
     @Override
-    public void enterCoAnnouncement(FormulaGrammarParser.CoAnnouncementContext ctx) {
-        List<Integer> agentlist = new ArrayList<>();
-        for (FormulaGrammarParser.AgentidContext aCtx : ctx.agentlist().agentid()) {
-            agentlist.add(Integer.valueOf(aCtx.getText()));
-        }
-        String formula = ctx.calformula().getText();
-        Set<String> result = new HashSet<>();
-        List<Integer> restAgentlist = new ArrayList<>();
-        // iterate to create a list
-        for (int i = 0; i < model.getNumberOfAgents(); i++) {
-            restAgentlist.add(i+1);
-        }
-        restAgentlist.removeAll(agentlist);
+    public void exitPalformula(FormulaGrammarParser.PalformulaContext ctx) {
+        // states where the announcement is true
+        Set<String> trueStates = evalStack.pop();
+        Set<String> falseStates = model.getAllStates();
+        falseStates.removeAll(trueStates);
+        // push back the false states which will be used again when exiting Announcement, as result of this stage,
+        // which is same result as negation of the formula
+        evalStack.push(falseStates);
+        aModelsCache.push(model);
+        model = model.getShrunkModel(trueStates);
+    }
 
-        for (String state : model.getAllStates()) {
-            Set<Map<Integer, Set<String>>> agentsStrategies;
-            Set<Set<String>> otherAgentsStrategies;
-            try {
-                agentsStrategies = model.getIndiStrategies(state, agentlist);
-                otherAgentsStrategies = model.getStrategies(state, restAgentlist);
-            } catch (ForeignComponentException fe) {
-                // TODO handle ForeignComponentException
-                return;
-            }
-            // TODO Model.getStrat pushed forward a map instead of intersection
-            for (Map<Integer, Set<String>> rawstrat : agentsStrategies) {
-                Set<String> strat = Model.intersect(rawstrat.values());
-                boolean allParsingReturnsTrue = true;
-                for (Set<String> oStrat : otherAgentsStrategies) {
-                    Model submodel = model.getShrunkModel(Model.intersect(strat, oStrat));
-                    if (!ModelChecker.evalFormula(submodel, formula).contains(state)) {
-                        allParsingReturnsTrue = false;
-                        break;
-                    }
-                }
-                if (!allParsingReturnsTrue) {
-                    continue;    // - to the next strat
-                    // the loop will olso be finished here if for every strat, !allParsingReturnsTrue,
-                    // thus break to the next state
-                }
-                // if for the strat, all parsing of formula on the submodel made is true
-                printValidStrat(strat, rawstrat, agentlist, state);
-                result.add(state);
-                break;    // - to the next state
-            }
-        }
-        // push the collected states as result
+    @Override
+    public void exitPuAnnouncement(FormulaGrammarParser.PuAnnouncementContext ctx) {
+        model = aModelsCache.pop();
+        Set<String> result = evalStack.pop();
+        // adding up the false states of announcement formula stored when exiting it
+        result.addAll(evalStack.pop());
         evalStack.push(result);
     }
 
     @Override
-    public void exitCalformula(FormulaGrammarParser.CalformulaContext ctx) {
-        // getting rid of extra parsed result
-        evalStack.pop();
+    public void exitKnowledge(FormulaGrammarParser.KnowledgeContext ctx) {
+        Set<String> innerTrueZone = evalStack.pop();
+        int agent = Integer.valueOf(ctx.agentid().getText());
+        Set<String> result = new HashSet<>();
+
+        List<Set<String>> equivClasses;
+        try {
+            equivClasses = model.getEquivClasses(agent);
+        } catch (UnknownAgentException e) {
+            System.err.println(e.toString());
+            evalStack.push(new HashSet<>());
+            return;
+        }
+
+        for (Set<String> equivClass : equivClasses) {
+            if (innerTrueZone.containsAll(equivClass))    // if all state in the cluster is in the true states zone
+                result.addAll(equivClass);
+        }
+
+        // push the result to the stack
+        evalStack.push(result);
+    }
+
+    /**
+     * Pushes to return stack the value of a Implication, which is the logical sequence of two subformula.
+     * Definitively, (a -> b) is (!a or b), which is how this is implemented as well.
+     */
+    @Override
+    public void exitImplication(FormulaGrammarParser.ImplicationContext ctx) {
+        Set<String> b = evalStack.pop();
+        Set<String> a = evalStack.pop();
+        Set<String> result = model.getAllStates();
+        // !a:
+        result.removeAll(a);
+        // !a or b:
+        result.addAll(b);
+        evalStack.push(result);
+    }
+
+    /**
+     * Pushes to the return stack the Negation of the proposition,
+     * i.e. the complement of the set in regard of the whole set of states in the model.
+     */
+    @Override
+    public void exitNegation(FormulaGrammarParser.NegationContext ctx) {
+        Set<String> negation = model.getAllStates();
+        Set<String> previous = evalStack.pop();
+        negation.removeAll(previous);
+        evalStack.push(negation);
+    }
+
+    /**
+     * Pushes to the return stack the value of a Conjunction ("or"),
+     * which is the Intersection of the two subformula's results currently on top of the stack.
+     */
+    @Override
+    public void exitConjunction(FormulaGrammarParser.ConjunctionContext ctx) {
+        Set<String> right = evalStack.pop();
+        Set<String> left = evalStack.pop();
+        evalStack.push(Intersection.intersect(left, right));
+    }
+
+    /**
+     * Pushes to return stack the value of a Disjunction ("and"),
+     * which is the Union of the two subformula's results currently on top of the stack.
+     */
+    @Override
+    public void exitDisjunction(FormulaGrammarParser.DisjunctionContext ctx) {
+        Set<String> left = evalStack.pop();
+        Set<String> right = evalStack.pop();
+        left.addAll(right);
+        evalStack.push(new HashSet<>(left));
+    }
+
+    /**
+     * The base case method, where a proposition (an ID in terms of token) is examined, and
+     * a set of states where the proposition holds is pushed into the return stack evalStack.
+     */
+    @Override
+    public void exitAtom(FormulaGrammarParser.AtomContext ctx) {
+        Set<String> validStates = model.getStates(ctx.ID().getText());
+        evalStack.push(validStates);
     }
 
 
@@ -233,11 +241,6 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         for (int agent : rawstrat.keySet()) {
             System.out.println("\t"+agent+": "+rawstrat.get(agent).toString());
         }
-    }
-
-    // TODO encapsulation
-    public Model getModel() {
-        return model;
     }
 
     public Set<String> getSolution() {

@@ -14,30 +14,11 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Set;
 
-// TODO modifiers/access
-
 public class ModelChecker {
-    // The filename for the model and the formula we want to verify
-    private String filename;
-    private String formula;
-
-    // The model resulting from parsing filename
-    private Model model;
-
-    // TODO really needed?
-    public ModelChecker(String filename, String formula) {
-        this.filename = filename;
-        this.formula = formula;
-    }
-
     public static void main(String[] args) {
         if (args.length < 2 || args.length > 3) {
-            // TODO: we should improve error checking (file exists, etc);
             System.err.println("You need to provide a model file and a formula, ");
             System.err.println("\tExample: ");
             System.err.println("\t$ java ModelChecker sample.gwm \"K(1,p1win)\"");
@@ -47,40 +28,30 @@ public class ModelChecker {
             System.exit(1);
         }
 
-        ModelChecker mc = new ModelChecker(args[0], args[1]);
-        boolean isStateProvided = false;
-        String providedState = null;
-        if (args.length == 3) {
-            isStateProvided = true;
-            providedState = args[2];
-        }
-        mc.start(isStateProvided, providedState);
-    }
+        // TODO improve error checking e.g. file exists
+        String filename = args[0];
+        String formula = args[1];
 
-    private void start(boolean isStateProvided, String providedState) {
-        System.out.println("-- Model file: " + this.filename + " --");
-
-        // Read in model
-        this.model = readModel(this.filename);
+        System.out.println("-- Model file: " + filename + " --");
+        Model model = readModel(filename);
         if (model == null) {
-            return;
+            System.exit(2);
         }
         System.out.println("-- Model successfully generated, proceeding to evaluation --");
-
-        // We begin to parse the formula:
         Set<String> solution = evalFormula(model, formula);
         System.out.println("-- Evaluation complete --");
 
-        // Printing output
-        if (isStateProvided) {
-            System.out.println("Under the provided state " + providedState + " the formula is " +
-                    solution.contains(providedState)
+        // printing solution
+        if (args.length == 3) {
+            // TODO validate if provided state is in model
+            System.out.println("Under the provided state " + args[2] + " the formula is " +
+                    solution.contains(args[2])
             );
         } else {
             System.out.println("The formula is true in " + solution.size() + " states");
             System.out.println("These are the states: "+ solution);
         }
-        // Model info
+
         System.out.println("\nModel info:");
         System.out.println(model.toString());
         System.out.println("-- Model checking finished --");
@@ -111,12 +82,11 @@ public class ModelChecker {
 
     public static Model readModel(String filename) {
         // read formula
-        // TODO: improve exception handling :-)!
         ANTLRInputStream input;
         try (FileInputStream fi = new FileInputStream(filename)) {
             input = new ANTLRInputStream(fi);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.err.println(e.toString());
             return null;
         }
         // create a lexer that feeds off of input CharStream

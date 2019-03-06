@@ -123,7 +123,7 @@ class ModelCheckerTest {
         Set<String> kandk = eval(BFP+"burglars1",
                 "K(1, !p1 -> (p2 or p4)) and K(1, p1 -> !(p2 or p4))"
         );
-        Set<String> mandm = Model.intersect(
+        Set<String> mandm = Intersection.intersect(
                 eval(BFP+"burglars1", "K(1, !p1 -> (p2 or p4))"),
                 eval(BFP+"burglars1", "K(1, p1 -> !(p2 or p4))")
         );
@@ -137,7 +137,7 @@ class ModelCheckerTest {
         Set<String> kppand = eval(BFP+"burglars1",
                 "K(1, !p1 -> (p2 or p4)) and (p1) and (p2) and (!p3) and (!p4)"
         );
-        Set<String> mandm = Model.intersect(
+        Set<String> mandm = Intersection.intersect(
                 eval(BFP+"burglars1", "K(1, !p1 -> (p2 or p4))"),
                 eval(BFP+"burglars1", "(p1) and (p2) and (!p3) and (!p4)")
         );
@@ -156,7 +156,7 @@ class ModelCheckerTest {
         );
         Set<String> m1 = eval(BFP+"burglars1", "K(1, !p1 -> (p2 | p4))");
         Set<String> m2 = eval(BFP+"burglars1", "K(1, p1 -> !(p2 & p4))");
-        Set<String> mandm = Model.intersect(m1, m2);
+        Set<String> mandm = Intersection.intersect(m1, m2);
         assertEquals(kand, kandk);
         assertTrue(kand.contains("S0101"));
         assertTrue(kand.contains("S1100"));

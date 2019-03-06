@@ -1,17 +1,18 @@
 package mccal.model;
 
-import mccal.exceptions.ForeignComponentException;
+import mccal.Intersection;
+import mccal.exceptions.UnknownAgentException;
+
 import java.util.*;
 
 /**
  * A class for an epistemic model.
  */
-// TODO rearrange methods
 public class Model {
     private static int PRINT_STATES_COLUMNS = 10;
 
     private int numAgents;    // they are named by index, conventionally starting from 1
-    private Set<String> states = new HashSet<>();    // all states in the model
+    private Set<String> allstates = new HashSet<>();    // all states in the model
     // maps every proposition to the set of states where it is true
     private Map<String, Set<String>> atoms = new HashMap<>();
     // represents the epistemic relations via mapping every agent to a list of equivalence classes which are sets of
@@ -26,29 +27,10 @@ public class Model {
         }
     }
 
-    public static <T> Set<T> intersect(Collection<Set<T>> sets) {
-        Iterator<Set<T>> it = sets.iterator();
-        if (!it.hasNext()) {
-            return new HashSet<>();
-        }
-        Set<T> result = new HashSet<>(it.next());
-        while (it.hasNext()) {
-            result.retainAll(it.next());
-        }
-        return result;
-    }
-
-    public static <T> Set<T> intersect(Set<T> a, Set<T> b) {
-        Set<T> intersection = new HashSet<>(a);
-        intersection.retainAll(b);
-        return intersection;
-    }
-
-    // TODO
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("Number of agents: ").append(numAgents).append("\n")
-                .append("States:").append(formatStateStrings(states, 0, false)).append("\n")
+                .append("States:").append(formatStateStrings(allstates, 0, false)).append("\n")
                 .append("Equivalences:\n");
         for (int agent = 1; agent <= numAgents; agent++) {
             result.append("For Agent ").append(agent).append(" ");
@@ -92,7 +74,7 @@ public class Model {
      */
     public Model bisumContract() {
         Set<Set<String>> buckets = new HashSet<>();
-        buckets.add(new HashSet<>(states));    // a copy of all states
+        buckets.add(new HashSet<>(allstates));    // a copy of all states
 
         // partition by atoms
         for (Set<String> atomStates : atoms.values()) {
@@ -108,7 +90,7 @@ public class Model {
                     Set<String> equivStates;
                     try {
                         equivStates = getEquivStates(agent, aPrebucket);
-                    } catch (ForeignComponentException e) {
+                    } catch (UnknownAgentException e) {
                         // should not be happening, as the agent is from model's internal list
                         System.err.println(e.toString());
                         return null;
@@ -134,7 +116,7 @@ public class Model {
         List<Set<String>> newBuckets = new ArrayList<>();
         List<Set<String>> oldBuckets = new ArrayList<>();
         for (Set<String> aBucket : buckets) {
-            Set<String> conjunct = intersect(aBucket, compareBucket);
+            Set<String> conjunct = Intersection.intersect(aBucket, compareBucket);
             Set<String> disjunct = new HashSet<>(aBucket);
             disjunct.removeAll(conjunct);
             if (!conjunct.isEmpty() && !disjunct.isEmpty()) {
@@ -151,7 +133,7 @@ public class Model {
      * Be noted that returned references are all to the states and equiv sets in the model, not copies.
      * TODO are they?
      */
-    public Set<Set<String>> getStrategies(String realState, int agent) throws ForeignComponentException {
+    public Set<Set<String>> getStrategies(String realState, int agent) throws UnknownAgentException {
         Set<Set<String>> strategies = new HashSet<>();
         Set<String> realClass = new HashSet<>(getEquivStates(agent, realState));
         strategies.add(realClass);
@@ -176,7 +158,7 @@ public class Model {
     /**
      * Returns intersections on all pairs of strategies for all agents.
      */
-    public Set<Map<Integer, Set<String>>> getIndiStrategies(String realState, List<Integer> agentlist) throws ForeignComponentException {
+    public Set<Map<Integer, Set<String>>> getIndiStrategies(String realState, List<Integer> agentlist) throws UnknownAgentException {
         Set<Map<Integer, Set<String>>> result = new HashSet<>();
         int sizeAgentlist = agentlist.size();
         if (sizeAgentlist == 0)
@@ -209,7 +191,7 @@ public class Model {
         return result;
     }
 
-    public Set<Set<String>> getStrategies(String realState, List<Integer> agentlist) throws ForeignComponentException {
+    public Set<Set<String>> getStrategies(String realState, List<Integer> agentlist) throws UnknownAgentException {
         int sizeAgentlist = agentlist.size();
         if (sizeAgentlist == 0) {
             return new HashSet<>();
@@ -224,7 +206,7 @@ public class Model {
                 Set<Set<String>> stratsJ = getStrategies(realState, agentlist.get(j));
                 for (Set<String> stratI : stratsI) {
                     for (Set<String> stratJ : stratsJ) {
-                        allStrats.add(intersect(stratI, stratJ));
+                        allStrats.add(Intersection.intersect(stratI, stratJ));
                     }
                 }
             }
@@ -279,7 +261,7 @@ public class Model {
         shrunkEquivRels.entrySet().removeAll(regEmptyEquivRels);
         // setup shrunk model
         Model shrunk = new Model(numAgents);
-        shrunk.states = new HashSet<>(validStates);
+        shrunk.allstates = new HashSet<>(validStates);
         shrunk.atoms = shrunkAtoms;
         shrunk.equivRels = shrunkEquivRels;
         return shrunk;
@@ -292,7 +274,7 @@ public class Model {
     }
 
     public Set<String> getAllStates() {
-        return new HashSet<>(states);
+        return new HashSet<>(allstates);
     }
 
     /**
@@ -304,55 +286,55 @@ public class Model {
         return new HashSet<>();
     }
 
-    // TODO foreign agent?
-    public List<Set<String>> getEquivClasses(int agent) {
+    // TODO Unknown agent: simplify to just checking agent > numAgent?
+    public List<Set<String>> getEquivClasses(int agent) throws UnknownAgentException {
+        if (!equivRels.containsKey(agent))
+            throw new UnknownAgentException("Error - getEquivStates: unknown agent provided to the model");
         List<Set<String>> result = new ArrayList<>();
-        if (equivRels.containsKey(agent)) {
-            for (Set<String> aClass : equivRels.get(agent)) {
-                result.add(new HashSet<>(aClass));
-            }
-        }
-        return result;
-    }
-
-    // TODO foreign state resilient?
-    public Set<String> getEquivStates(int agent, Set<String> theStates) throws ForeignComponentException {
-        Set<String> result = new HashSet<>();
-        List<Set<String>> eqClasses = equivRels.get(agent);
-        if (eqClasses == null) {
-            throw new ForeignComponentException("Error: foreign agent (not existing in the model)");
-        }
-        for (Set<String> aClass : eqClasses) {
-            if (!intersect(aClass, theStates).isEmpty())
-                result.addAll(aClass);
+        for (Set<String> aClass : equivRels.get(agent)) {
+            result.add(new HashSet<>(aClass));
         }
         return result;
     }
 
     /**
-     *  Returns the set of states epistemically equivalent to the one provided for agent.
+     * Returns all states that are equivalent to at least one of the provided states
+     * Throws UnknownAgentException if the agent provided is not part of the model.
      */
-    public Set<String> getEquivStates(int agent, String state) throws ForeignComponentException {
-        // get the equiv classes for this agent:
-        List<Set<String>> eqClasses = equivRels.get(agent);
-        if (eqClasses == null) {
-            throw new ForeignComponentException("Error: foreign agent (not existing in the model)");
+    public Set<String> getEquivStates(int agent, Set<String> theStates) throws UnknownAgentException {
+        if (!equivRels.containsKey(agent))
+            throw new UnknownAgentException("Error - getEquivStates: unknown agent provided to the model");
+        Set<String> result = new HashSet<>();
+        for (Set<String> aClass : equivRels.get(agent)) {
+            if (!Intersection.intersect(aClass, theStates).isEmpty())
+                result.addAll(aClass);
         }
+        if (result.isEmpty())
+            System.err.println("Warning - getEquivStates: state not in this model");
+        return result;
+    }
 
+    /**
+     *  Returns the set of states epistemically equivalent to the one provided for agent
+     */
+    public Set<String> getEquivStates(int agent, String state) throws UnknownAgentException {
+        // get the equiv classes for this agent:
+        if (!equivRels.containsKey(agent))
+            throw new UnknownAgentException("Error - getEquivStates: unknown agent provided to the model");
         // iterate over the classes to find the one that contains the state
-        for (Set<String> aClass : eqClasses) {
-            if (aClass.contains(state)) {
+        for (Set<String> aClass : equivRels.get(agent)) {
+            if (aClass.contains(state))
                 return new HashSet<>(aClass);
-            }
         }
-        throw new ForeignComponentException("Error: foreign state (not existing in the model)");
+        System.err.println("Warning - getEquivStates: state not in this model");
+        return new HashSet<>();
     }
 
     // setters
 
     // TODO if fail when try to add an existing state?
     public void addState(String id) {
-        states.add(id);
+        allstates.add(id);
     }
 
     public void addAtom(String atom, Set<String> states) {
@@ -366,7 +348,7 @@ public class Model {
     public void addEquivClass(int agent, Set<String> newClass) {
         List<Set<String>> classes = equivRels.get(agent);
         for (Set<String> c : classes) {
-            if (!intersect(newClass, c).isEmpty()) {
+            if (!Intersection.intersect(newClass, c).isEmpty()) {
                 c.addAll(newClass);
                 return;
             }
