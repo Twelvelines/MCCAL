@@ -1,11 +1,11 @@
 // The number of agents
 N = 2;
 
-// The list of states.
+// The list of states
 S1; S2;
 
 // The epistemic relation is a list of triples (agent, state, state)
 R = { (1, S1, S2) };
 
-// This tells that atom1 is true in S1 and S3, etc.
+// The atoms and the states where they hold true
 atom1 = { S1, S2 };

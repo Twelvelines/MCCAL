@@ -56,6 +56,11 @@ class ModelCheckerTest {
     }
 
     @Test
+    void evalSample2S1t6() {
+        assertTrue(eval(MFP + "sample2", "<<1,2,3>>!K(1, atom1)").contains("S1"));
+    }
+
+    @Test
     void evalBurglars1MisHex() {
         String mis;
         try {
@@ -362,4 +367,5 @@ class ModelCheckerTest {
         assertTrue(eval(MFP + "sample2", "[atom1][atom2][atom3] K(1, atom3)").contains("S1"));
         // as nonsense announcement always results to return true
     }
+
 }

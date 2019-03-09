@@ -22,7 +22,7 @@ formula:
     | '<' agentlist '>' galformula    # GrAnnouncement
     | '<<' agentlist '>>' calformula        # CoAnnouncement
     | ID                            # Atom
-    ;
+;
 
 palformula: formula;
 galformula: formula;

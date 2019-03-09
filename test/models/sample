@@ -1,19 +1,13 @@
-// This is a simple file for testing purposes.
-/* (multiple line comments are possible as well)
-   See the other files for additional meaningful examples
-*/
-
-
 // The number of agents
 N = 3;
 
-// The list of states.
+// The list of states
 S1; S2; S3;
 
 // The epistemic relation is a list of triples (agent, state, state)
 R = { (3, S1, S2), (2, S2, S3) };
 
-// This tells that atom1 is true in S1 and S3, etc.
+// The atoms and the states where they hold true
 atom1 = { S1 };
 atom2 = { S2 };
 atom3 = { S3 };
