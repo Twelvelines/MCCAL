@@ -33,8 +33,8 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         System.out.println("- CAL: " +
                 "co-strategy " + strat.toString() +
                 " from agents " + agents.toString() +
-                " is valid for " + formula +
-                " under state " + state
+                " is valid under state " + state +
+                " for " + formula
         );
         for (int agent : rawstrat.keySet()) {
             System.out.println("\t"+agent+": "+rawstrat.get(agent).toString());
