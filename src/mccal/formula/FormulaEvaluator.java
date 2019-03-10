@@ -29,6 +29,18 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         this.verbose = verbose;
     }
 
+    private void printValidStrat(Set<String> strat, Map<Integer, Set<String>> rawstrat, List<Integer> agents, String state, String formula) {
+        System.out.println("- CAL: " +
+                "co-strategy " + strat.toString() +
+                " from agents " + agents.toString() +
+                " is valid for " + formula +
+                " under state " + state
+        );
+        for (int agent : rawstrat.keySet()) {
+            System.out.println("\t"+agent+": "+rawstrat.get(agent).toString());
+        }
+    }
+
     // TODO maybe make a strat class
     @Override
     public void enterCoAnnouncement(FormulaGrammarParser.CoAnnouncementContext ctx) {
@@ -44,8 +56,8 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         restOfAgents.removeAll(agents);
 
         String formula = ctx.calformula().getText();
-        Set<String> result = new HashSet<>();
 
+        Set<String> result = new HashSet<>();
         for (String state : model.getAllStates()) {
             Set<Map<Integer, Set<String>>> agentsStrategies;
             Set<Set<String>> otherAgentsStrategies;
@@ -74,7 +86,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                     // thus break to the next state
                 }
                 // if for the strat, all parsing of formula on the submodel made is true
-                printValidStrat(strat, rawstrat, agents, state);
+                printValidStrat(strat, rawstrat, agents, state, formula);
                 result.add(state);
                 break;    // - to the next state
             }
@@ -96,8 +108,8 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
             agents.add(Integer.valueOf(aCtx.getText()));
         }
         String formula = ctx.galformula().getText();
-        Set<String> result = new HashSet<>();
 
+        Set<String> result = new HashSet<>();
         for (String state : model.getAllStates()) {
             Set<Map<Integer, Set<String>>> strats;
             try {
@@ -111,7 +123,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                 Set<String> strat = Intersection.intersect(rawstrat.values());
                 Model submodel = model.getShrunkModel(strat);
                 if (ModelChecker.evalFormula(submodel, formula).contains(state)) {
-                    printValidStrat(strat, rawstrat, agents, state);
+                    printValidStrat(strat, rawstrat, agents, state, formula);
                     result.add(state);
                     break;
                 }
@@ -235,13 +247,6 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         evalStack.push(validStates);
     }
 
-
-    private void printValidStrat(Set<String> strat, Map<Integer, Set<String>> rawstrat, List<Integer> agentlist, String state) {
-        System.out.println("- CAL: strategy "+strat.toString()+" of agents "+agentlist.toString()+" is valid on state "+state);
-        for (int agent : rawstrat.keySet()) {
-            System.out.println("\t"+agent+": "+rawstrat.get(agent).toString());
-        }
-    }
 
     public Set<String> getSolution() {
         return evalStack.peek();
