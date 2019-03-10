@@ -50,7 +50,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
             Set<Map<Integer, Set<String>>> agentsStrategies;
             Set<Set<String>> otherAgentsStrategies;
             try {
-                agentsStrategies = model.getIndiStrategies(state, agents);
+                agentsStrategies = model.getDetailedStrategies(state, agents);
                 otherAgentsStrategies = model.getStrategies(state, restOfAgents);
             } catch (UnknownAgentException e) {
                 System.err.println(e.toString());
@@ -101,7 +101,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         for (String state : model.getAllStates()) {
             Set<Map<Integer, Set<String>>> strats;
             try {
-                strats = model.getIndiStrategies(state, agents);
+                strats = model.getDetailedStrategies(state, agents);
             } catch (UnknownAgentException e) {
                 System.err.println(e.toString());
                 evalStack.push(new HashSet<>());
