@@ -277,27 +277,41 @@ public class ModelGrammarParser extends Parser {
 			match(T__2);
 			setState(36);
 			match(T__5);
-			setState(37);
-			edge();
-			setState(42);
+			setState(46);
 			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==T__6) {
+			switch (_input.LA(1)) {
+			case T__7:
 				{
+				}
+				break;
+			case T__8:
 				{
 				setState(38);
-				match(T__6);
-				setState(39);
 				edge();
-				}
-				}
-				setState(44);
+				setState(43);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
+				while (_la==T__6) {
+					{
+					{
+					setState(39);
+					match(T__6);
+					setState(40);
+					edge();
+					}
+					}
+					setState(45);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				}
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
-			setState(45);
+			setState(48);
 			match(T__7);
-			setState(46);
+			setState(49);
 			match(T__3);
 			}
 		}
@@ -339,35 +353,35 @@ public class ModelGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(48);
-			match(T__8);
-			setState(49);
-			match(NONZEROINT);
-			setState(50);
-			match(T__6);
 			setState(51);
-			match(ID);
+			match(T__8);
 			setState(52);
-			match(T__6);
+			match(NONZEROINT);
 			setState(53);
+			match(T__6);
+			setState(54);
 			match(ID);
-			setState(58);
+			setState(55);
+			match(T__6);
+			setState(56);
+			match(ID);
+			setState(61);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==T__6) {
 				{
 				{
-				setState(54);
+				setState(57);
 				match(T__6);
-				setState(55);
+				setState(58);
 				match(ID);
 				}
 				}
-				setState(60);
+				setState(63);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(61);
+			setState(64);
 			match(T__9);
 			}
 		}
@@ -410,19 +424,19 @@ public class ModelGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(68);
+			setState(71);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==ID) {
 				{
 				{
-				setState(63);
+				setState(66);
 				prop();
-				setState(64);
+				setState(67);
 				match(T__3);
 				}
 				}
-				setState(70);
+				setState(73);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -466,15 +480,15 @@ public class ModelGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(71);
-			atoms();
-			setState(72);
-			match(T__2);
-			setState(73);
-			match(T__5);
 			setState(74);
-			statelist();
+			atoms();
 			setState(75);
+			match(T__2);
+			setState(76);
+			match(T__5);
+			setState(77);
+			statelist();
+			setState(78);
 			match(T__7);
 			}
 		}
@@ -511,7 +525,7 @@ public class ModelGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(77);
+			setState(80);
 			match(ID);
 			}
 		}
@@ -552,21 +566,21 @@ public class ModelGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(79);
+			setState(82);
 			match(ID);
-			setState(84);
+			setState(87);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==T__6) {
 				{
 				{
-				setState(80);
+				setState(83);
 				match(T__6);
-				setState(81);
+				setState(84);
 				match(ID);
 				}
 				}
-				setState(86);
+				setState(89);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -584,27 +598,28 @@ public class ModelGrammarParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\22Z\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\22]\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\3\2\3\2"+
 		"\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\4\3\4\6\4!\n\4\r\4\16\4\"\3\5\3\5\3\5\3"+
-		"\5\3\5\3\5\7\5+\n\5\f\5\16\5.\13\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6"+
-		"\3\6\3\6\7\6;\n\6\f\6\16\6>\13\6\3\6\3\6\3\7\3\7\3\7\7\7E\n\7\f\7\16\7"+
-		"H\13\7\3\b\3\b\3\b\3\b\3\b\3\b\3\t\3\t\3\n\3\n\3\n\7\nU\n\n\f\n\16\nX"+
-		"\13\n\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\3\3\2\3\4\2U\2\24\3\2\2\2\4\31"+
-		"\3\2\2\2\6 \3\2\2\2\b$\3\2\2\2\n\62\3\2\2\2\fF\3\2\2\2\16I\3\2\2\2\20"+
-		"O\3\2\2\2\22Q\3\2\2\2\24\25\5\4\3\2\25\26\5\6\4\2\26\27\5\b\5\2\27\30"+
-		"\5\f\7\2\30\3\3\2\2\2\31\32\t\2\2\2\32\33\7\5\2\2\33\34\7\r\2\2\34\35"+
-		"\7\6\2\2\35\5\3\2\2\2\36\37\7\22\2\2\37!\7\6\2\2 \36\3\2\2\2!\"\3\2\2"+
-		"\2\" \3\2\2\2\"#\3\2\2\2#\7\3\2\2\2$%\7\7\2\2%&\7\5\2\2&\'\7\b\2\2\',"+
-		"\5\n\6\2()\7\t\2\2)+\5\n\6\2*(\3\2\2\2+.\3\2\2\2,*\3\2\2\2,-\3\2\2\2-"+
-		"/\3\2\2\2.,\3\2\2\2/\60\7\n\2\2\60\61\7\6\2\2\61\t\3\2\2\2\62\63\7\13"+
-		"\2\2\63\64\7\r\2\2\64\65\7\t\2\2\65\66\7\22\2\2\66\67\7\t\2\2\67<\7\22"+
-		"\2\289\7\t\2\29;\7\22\2\2:8\3\2\2\2;>\3\2\2\2<:\3\2\2\2<=\3\2\2\2=?\3"+
-		"\2\2\2><\3\2\2\2?@\7\f\2\2@\13\3\2\2\2AB\5\16\b\2BC\7\6\2\2CE\3\2\2\2"+
-		"DA\3\2\2\2EH\3\2\2\2FD\3\2\2\2FG\3\2\2\2G\r\3\2\2\2HF\3\2\2\2IJ\5\20\t"+
-		"\2JK\7\5\2\2KL\7\b\2\2LM\5\22\n\2MN\7\n\2\2N\17\3\2\2\2OP\7\22\2\2P\21"+
-		"\3\2\2\2QV\7\22\2\2RS\7\t\2\2SU\7\22\2\2TR\3\2\2\2UX\3\2\2\2VT\3\2\2\2"+
-		"VW\3\2\2\2W\23\3\2\2\2XV\3\2\2\2\7\",<FV";
+		"\5\3\5\3\5\3\5\7\5,\n\5\f\5\16\5/\13\5\5\5\61\n\5\3\5\3\5\3\5\3\6\3\6"+
+		"\3\6\3\6\3\6\3\6\3\6\3\6\7\6>\n\6\f\6\16\6A\13\6\3\6\3\6\3\7\3\7\3\7\7"+
+		"\7H\n\7\f\7\16\7K\13\7\3\b\3\b\3\b\3\b\3\b\3\b\3\t\3\t\3\n\3\n\3\n\7\n"+
+		"X\n\n\f\n\16\n[\13\n\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\3\3\2\3\4\2Y\2"+
+		"\24\3\2\2\2\4\31\3\2\2\2\6 \3\2\2\2\b$\3\2\2\2\n\65\3\2\2\2\fI\3\2\2\2"+
+		"\16L\3\2\2\2\20R\3\2\2\2\22T\3\2\2\2\24\25\5\4\3\2\25\26\5\6\4\2\26\27"+
+		"\5\b\5\2\27\30\5\f\7\2\30\3\3\2\2\2\31\32\t\2\2\2\32\33\7\5\2\2\33\34"+
+		"\7\r\2\2\34\35\7\6\2\2\35\5\3\2\2\2\36\37\7\22\2\2\37!\7\6\2\2 \36\3\2"+
+		"\2\2!\"\3\2\2\2\" \3\2\2\2\"#\3\2\2\2#\7\3\2\2\2$%\7\7\2\2%&\7\5\2\2&"+
+		"\60\7\b\2\2\'\61\3\2\2\2(-\5\n\6\2)*\7\t\2\2*,\5\n\6\2+)\3\2\2\2,/\3\2"+
+		"\2\2-+\3\2\2\2-.\3\2\2\2.\61\3\2\2\2/-\3\2\2\2\60\'\3\2\2\2\60(\3\2\2"+
+		"\2\61\62\3\2\2\2\62\63\7\n\2\2\63\64\7\6\2\2\64\t\3\2\2\2\65\66\7\13\2"+
+		"\2\66\67\7\r\2\2\678\7\t\2\289\7\22\2\29:\7\t\2\2:?\7\22\2\2;<\7\t\2\2"+
+		"<>\7\22\2\2=;\3\2\2\2>A\3\2\2\2?=\3\2\2\2?@\3\2\2\2@B\3\2\2\2A?\3\2\2"+
+		"\2BC\7\f\2\2C\13\3\2\2\2DE\5\16\b\2EF\7\6\2\2FH\3\2\2\2GD\3\2\2\2HK\3"+
+		"\2\2\2IG\3\2\2\2IJ\3\2\2\2J\r\3\2\2\2KI\3\2\2\2LM\5\20\t\2MN\7\5\2\2N"+
+		"O\7\b\2\2OP\5\22\n\2PQ\7\n\2\2Q\17\3\2\2\2RS\7\22\2\2S\21\3\2\2\2TY\7"+
+		"\22\2\2UV\7\t\2\2VX\7\22\2\2WU\3\2\2\2X[\3\2\2\2YW\3\2\2\2YZ\3\2\2\2Z"+
+		"\23\3\2\2\2[Y\3\2\2\2\b\"-\60?IY";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
