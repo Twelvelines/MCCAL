@@ -11,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class ModelTest {
     private final String MFP = "test/models/";
 
-    private Set<String> bisumContractPrune(String modelfile) {
+    private Set<String> bisimContractPrune(String modelfile) {
         Model ogmodel = ModelChecker.readModel(MFP + modelfile);
         System.out.println("Raw model:");
         System.out.println(ogmodel.toString());
-        Model bcmodel = ogmodel.bisumContract();
+        Model bcmodel = ogmodel.bisimContract();
         System.out.println("Contracted model:");
         System.out.println(bcmodel.toString());
         Set<String> diff = new HashSet<>(ogmodel.getAllStates());
@@ -24,10 +24,20 @@ class ModelTest {
     }
 
     @Test
+    void equalsReflexive() {
+        assertTrue(ModelChecker.readModel(MFP + "sample2").equals(ModelChecker.readModel(MFP + "sample2")));
+    }
+
+    @Test
+    void equalsReflexive1() {
+        assertFalse(ModelChecker.readModel(MFP + "sample2").equals(ModelChecker.readModel(MFP + "sample2.5")));
+    }
+
+    @Test
     void bisimContract() {
         Set<String> actual = new HashSet<>();
         actual.add("S2");
-        assertEquals(bisumContractPrune("bisimSample"), actual);
+        assertEquals(bisimContractPrune("bisimSample"), actual);
     }
 
     // TODO bucketise n test refactor
@@ -36,7 +46,7 @@ class ModelTest {
     void bisimContract1() {
         Set<String> actual = new HashSet<>();
         actual.add("S2");
-        assertEquals(bisumContractPrune("bisimSample1"), actual);
+        assertEquals(bisimContractPrune("bisimSample1"), actual);
     }
 
     @Test
@@ -44,17 +54,7 @@ class ModelTest {
         Set<String> actual = new HashSet<>();
         actual.add("S1");
         actual.add("S2");
-        assertEquals(bisumContractPrune("bisimSample2"), actual);
-    }
-
-    @Test
-    void getStrategies1() {
-        //TODO
-    }
-
-    @Test
-    void getCoStrategies1() {
-        //TODO
+        assertEquals(bisimContractPrune("bisimSample2"), actual);
     }
 
     @Test

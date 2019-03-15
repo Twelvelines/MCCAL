@@ -73,7 +73,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                 if (!restOfAgents.isEmpty()) {
                     boolean allParsingReturnsTrue = true;
                     for (Set<String> oStrat : otherAgentsStrategies) {
-                        Model submodel = model.getShrunkModel(Intersection.intersect(strat, oStrat)).bisumContract();
+                        Model submodel = model.getShrunkModel(Intersection.intersect(strat, oStrat)).bisimContract();
                         if (!ModelChecker.evalFormula(submodel, formula).contains(state)) {
                             allParsingReturnsTrue = false;
                             break;
@@ -82,7 +82,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                     if (!allParsingReturnsTrue)
                         continue;    // next strat
                 } else {
-                    Model submodel = model.getShrunkModel(strat).bisumContract();
+                    Model submodel = model.getShrunkModel(strat).bisimContract();
                     if (!ModelChecker.evalFormula(submodel, formula).contains(state))
                         continue;    // next strat
                 }
@@ -122,7 +122,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
             }
             for (Map<Integer, Set<String>> mappedstrat : strats) {
                 Set<String> strat = Intersection.intersect(mappedstrat.values());
-                Model submodel = model.getShrunkModel(strat).bisumContract();
+                Model submodel = model.getShrunkModel(strat).bisimContract();
 
                 //System.out.println("Strat "+agents.toString()+":"+strat.toString()+"\n"+submodel.toString()+"\n");
 

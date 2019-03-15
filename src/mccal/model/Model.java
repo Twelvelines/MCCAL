@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class Model {
     private static int PRINT_STATES_COLUMNS = 10;
-    public static int counter;
+    //public static int counter;
 
     private int numAgents;    // they are named by index, conventionally starting from 1
     private Set<String> allstates = new HashSet<>();    // all states in the model
@@ -26,6 +26,13 @@ public class Model {
             equivRels.put(numAgents, new ArrayList<>());
             numAgents--;
         }
+    }
+
+    public boolean equals(Model mobj) {
+        return numAgents == mobj.numAgents &&
+                allstates.equals(mobj.allstates) &&
+                atoms.equals(mobj.atoms) &&
+                equivRels.equals(mobj.equivRels);
     }
 
     @Override
@@ -73,7 +80,7 @@ public class Model {
     /**
      * Returns bisimulation contraction of the model.
      */
-    public Model bisumContract() {
+    public Model bisimContract() {
         Set<Set<String>> buckets = new HashSet<>();
         buckets.add(new HashSet<>(allstates));    // a copy of all states
 
