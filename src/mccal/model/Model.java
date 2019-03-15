@@ -10,6 +10,7 @@ import java.util.*;
  */
 public class Model {
     private static int PRINT_STATES_COLUMNS = 10;
+    public static int counter;
 
     private int numAgents;    // they are named by index, conventionally starting from 1
     private Set<String> allstates = new HashSet<>();    // all states in the model
@@ -106,7 +107,7 @@ public class Model {
         Set<String> union = new HashSet<>();
         for (Set<String> aBucket : buckets) {
             List<String> abList = new ArrayList<>(aBucket);
-            // TODO state id concat (not easy)
+            // 16TODO state id concat (not easy)
             union.add(abList.get(0));
         }
         return getShrunkModel(union);
@@ -127,103 +128,6 @@ public class Model {
         }
         buckets.removeAll(oldBuckets);
         buckets.addAll(newBuckets);
-    }
-
-    public Set<Map<Integer, Set<String>>> getDetailedStrategies(String realState, int agent) throws UnknownAgentException {
-        Map<Integer, Set<String>> realClass = new HashMap<>();
-        realClass.put(agent, getEquivStates(agent, realState));
-        Set<Map<Integer, Set<String>>> strategies = new HashSet<>();
-        strategies.add(realClass);
-        // combination of the rest of equiv classes
-        List<Set<String>> restOfClasses = new ArrayList<>(equivRels.get(agent));
-        restOfClasses.remove(realClass.get(agent));
-        for (Set<String> rClass : restOfClasses) {
-            // add the class to the existing strats
-            Set<Map<Integer, Set<String>>> stratsToAdd = new HashSet<>();
-            for (Map<Integer, Set<String>> strat : strategies) {
-                // TODO map copy?
-                Map<Integer, Set<String>> newStrat = new HashMap<>();
-                Set<String> newStratContent = new HashSet<>(strat.get(agent));
-                newStratContent.addAll(rClass);
-                newStrat.put(agent, newStratContent);
-                stratsToAdd.add(newStrat);
-            }
-            strategies.addAll(stratsToAdd);
-        }
-        return strategies;
-    }
-
-    /**
-     * Returns intersections on all pairs of strategies for all agents.
-     */
-    public Set<Map<Integer, Set<String>>> getDetailedStrategies(String realState, List<Integer> agents) throws UnknownAgentException {
-        Set<Map<Integer, Set<String>>> strategies = new HashSet<>();
-        int sizeAgentlist = agents.size();
-        if (sizeAgentlist == 0)
-            return strategies;
-
-        int firstAgent = agents.get(0);
-        strategies.addAll(getDetailedStrategies(realState, firstAgent));
-        for (int i = 1; i < agents.size(); i++) {
-            int agent = agents.get(i);
-            Set<Map<Integer, Set<String>>> freshStrats = new HashSet<>();
-            for (Set<String> iStrat : getStrategies(realState, agent)) {    // new agent's strat
-                for (Map<Integer, Set<String>> exStrat : strategies) {    // existing strat
-                    Map<Integer, Set<String>> newStrat = new HashMap<>();
-                    // copy exStrat TODO map copy?
-                    for (int key : exStrat.keySet()) {
-                        newStrat.put(key, new HashSet<>(exStrat.get(key)));
-                    }
-                    // add iStrat
-                    newStrat.put(agent, iStrat);
-
-                    freshStrats.add(newStrat);
-                }
-            }
-            strategies = freshStrats;
-        }
-        return strategies;
-    }
-
-    public Set<Set<String>> getStrategies(String realState, int agent) throws UnknownAgentException {
-        Set<String> realClass = getEquivStates(agent, realState);
-        Set<Set<String>> strategies = new HashSet<>();
-        strategies.add(realClass);
-        // combination of the rest of equiv classes
-        List<Set<String>> restOfClasses = new ArrayList<>(equivRels.get(agent));
-        restOfClasses.remove(realClass);
-        for (Set<String> rClass : restOfClasses) {
-            // add the class to the existing strats
-            Set<Set<String>> stratsToAdd = new HashSet<>();
-            for (Set<String> strat : strategies) {
-                Set<String> newStrat = new HashSet<>(strat);
-                newStrat.addAll(rClass);
-                stratsToAdd.add(newStrat);
-            }
-            strategies.addAll(stratsToAdd);
-        }
-        return strategies;
-    }
-
-    public Set<Set<String>> getStrategies(String realState, List<Integer> agents) throws UnknownAgentException {
-        Set<Set<String>> strategies = new HashSet<>();
-        int sizeAgentlist = agents.size();
-        if (sizeAgentlist == 0)
-            return strategies;
-
-        int firstAgent = agents.get(0);
-        strategies.addAll(getStrategies(realState, firstAgent));
-        for (int i = 1; i < agents.size(); i++) {
-            int agent = agents.get(i);
-            Set<Set<String>> freshStrats = new HashSet<>();
-            for (Set<String> iStrat : getStrategies(realState, agent)) {    // new agent's strat
-                for (Set<String> exStrat : strategies) {    // existing strat
-                    freshStrats.add(Intersection.intersect(iStrat, exStrat));
-                }
-            }
-            strategies = freshStrats;
-        }
-        return strategies;
     }
 
     /**
@@ -277,6 +181,102 @@ public class Model {
         shrunk.atoms = shrunkAtoms;
         shrunk.equivRels = shrunkEquivRels;
         return shrunk;
+    }
+
+    public Set<Map<Integer, Set<String>>> getDetailedStrategies(String realState, int agent) throws UnknownAgentException {
+        Map<Integer, Set<String>> realClass = new HashMap<>();
+        realClass.put(agent, getEquivStates(agent, realState));
+        Set<Map<Integer, Set<String>>> strategies = new HashSet<>();
+        strategies.add(realClass);
+        // combination of the rest of equiv classes
+        List<Set<String>> restOfClasses = new ArrayList<>(equivRels.get(agent));
+        restOfClasses.remove(realClass.get(agent));
+        for (Set<String> rClass : restOfClasses) {
+            // add the class to the existing strats
+            Set<Map<Integer, Set<String>>> stratsToAdd = new HashSet<>();
+            for (Map<Integer, Set<String>> strat : strategies) {
+                // TODO map copy?
+                Map<Integer, Set<String>> newStrat = new HashMap<>();
+                Set<String> newStratContent = new HashSet<>(strat.get(agent));
+                newStratContent.addAll(rClass);
+                newStrat.put(agent, newStratContent);
+                stratsToAdd.add(newStrat);
+            }
+            strategies.addAll(stratsToAdd);
+        }
+        return strategies;
+    }
+
+    /**
+     * Returns intersections on all pairs of strategies for all agents.
+     */
+    public Set<Map<Integer, Set<String>>> getDetailedStrategies(String realState, List<Integer> agents) throws UnknownAgentException {
+        Set<Map<Integer, Set<String>>> strategies = new HashSet<>();
+        if (agents.size() == 0)
+            return strategies;
+
+        int firstAgent = agents.get(0);
+        strategies.addAll(getDetailedStrategies(realState, firstAgent));
+        for (int i = 1; i < agents.size(); i++) {
+            int agent = agents.get(i);
+            Set<Map<Integer, Set<String>>> freshStrats = new HashSet<>();
+            for (Set<String> iStrat : getStrategies(realState, agent)) {    // new agent's strat
+                for (Map<Integer, Set<String>> exStrat : strategies) {    // existing strat
+                    Map<Integer, Set<String>> newStrat = new HashMap<>();
+                    // copy exStrat TODO map copy?
+                    for (int key : exStrat.keySet()) {
+                        newStrat.put(key, new HashSet<>(exStrat.get(key)));
+                    }
+                    // add iStrat
+                    newStrat.put(agent, iStrat);
+
+                    freshStrats.add(newStrat);
+                }
+            }
+            strategies = freshStrats;
+        }
+        return strategies;
+    }
+
+    public Set<Set<String>> getStrategies(String realState, int agent) throws UnknownAgentException {
+        Set<String> realClass = getEquivStates(agent, realState);
+        Set<Set<String>> strategies = new HashSet<>();
+        strategies.add(realClass);
+        // combination of the rest of equiv classes
+        List<Set<String>> restOfClasses = new ArrayList<>(equivRels.get(agent));
+        restOfClasses.remove(realClass);
+        for (Set<String> rClass : restOfClasses) {
+            // add the class to the existing strats
+            Set<Set<String>> stratsToAdd = new HashSet<>();
+            for (Set<String> strat : strategies) {
+                Set<String> newStrat = new HashSet<>(strat);
+                newStrat.addAll(rClass);
+                stratsToAdd.add(newStrat);
+                //System.out.println(counter++);
+            }
+            strategies.addAll(stratsToAdd);
+        }
+        return strategies;
+    }
+
+    public Set<Set<String>> getStrategies(String realState, List<Integer> agents) throws UnknownAgentException {
+        Set<Set<String>> strategies = new HashSet<>();
+        if (agents.size() == 0)
+            return strategies;
+
+        int firstAgent = agents.get(0);
+        strategies.addAll(getStrategies(realState, firstAgent));
+        for (int i = 1; i < agents.size(); i++) {
+            int agent = agents.get(i);
+            Set<Set<String>> freshStrats = new HashSet<>();
+            for (Set<String> iStrat : getStrategies(realState, agent)) {    // new agent's strat
+                for (Set<String> exStrat : strategies) {    // existing strat
+                    freshStrats.add(Intersection.intersect(iStrat, exStrat));
+                }
+            }
+            strategies = freshStrats;
+        }
+        return strategies;
     }
 
     // getters

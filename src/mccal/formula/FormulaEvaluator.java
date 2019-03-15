@@ -29,15 +29,15 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         this.verbose = verbose;
     }
 
-    private void printValidStrat(Set<String> strat, Map<Integer, Set<String>> rawstrat, List<Integer> agents, String state, String formula) {
+    private void printValidStrat(Set<String> strat, Map<Integer, Set<String>> mappedstrat, List<Integer> agents, String state, String formula) {
         System.out.println("- CAL: " +
                 "co-strategy " + strat.toString() +
                 " from agents " + agents.toString() +
                 " is valid under state " + state +
                 " for " + formula
         );
-        for (int agent : rawstrat.keySet()) {
-            System.out.println("\t"+agent+": "+rawstrat.get(agent).toString());
+        for (int agent : mappedstrat.keySet()) {
+            System.out.println("\t"+agent+": "+mappedstrat.get(agent).toString());
         }
     }
 
@@ -48,13 +48,11 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         for (FormulaGrammarParser.AgentidContext aCtx : ctx.agentlist().agentid()) {
             agents.add(Integer.valueOf(aCtx.getText()));
         }
-
         List<Integer> restOfAgents = new ArrayList<>();
         for (int i = 0; i < model.getNumberOfAgents(); i++) {
             restOfAgents.add(i+1);
         }
         restOfAgents.removeAll(agents);
-
         String formula = ctx.calformula().getText();
 
         Set<String> result = new HashSet<>();
@@ -70,25 +68,28 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                 return;
             }
 
-            for (Map<Integer, Set<String>> rawstrat : agentsStrategies) {
-                Set<String> strat = Intersection.intersect(rawstrat.values());
-                boolean allParsingReturnsTrue = true;
-                for (Set<String> oStrat : otherAgentsStrategies) {
-                    Model submodel = model.getShrunkModel(Intersection.intersect(strat, oStrat));
-                    if (!ModelChecker.evalFormula(submodel, formula).contains(state)) {
-                        allParsingReturnsTrue = false;
-                        break;
+            for (Map<Integer, Set<String>> mappedstrat : agentsStrategies) {
+                Set<String> strat = Intersection.intersect(mappedstrat.values());
+                if (!restOfAgents.isEmpty()) {
+                    boolean allParsingReturnsTrue = true;
+                    for (Set<String> oStrat : otherAgentsStrategies) {
+                        Model submodel = model.getShrunkModel(Intersection.intersect(strat, oStrat)).bisumContract();
+                        if (!ModelChecker.evalFormula(submodel, formula).contains(state)) {
+                            allParsingReturnsTrue = false;
+                            break;
+                        }
                     }
+                    if (!allParsingReturnsTrue)
+                        continue;    // next strat
+                } else {
+                    Model submodel = model.getShrunkModel(strat).bisumContract();
+                    if (!ModelChecker.evalFormula(submodel, formula).contains(state))
+                        continue;    // next strat
                 }
-                if (!allParsingReturnsTrue) {
-                    continue;    // - to the next strat
-                    // the loop will olso be finished here if for every strat, !allParsingReturnsTrue,
-                    // thus break to the next state
-                }
-                // if for the strat, all parsing of formula on the submodel made is true
-                printValidStrat(strat, rawstrat, agents, state, formula);
+                // if for current strat, all parsing of formula on the submodel is true
+                printValidStrat(strat, mappedstrat, agents, state, formula);
                 result.add(state);
-                break;    // - to the next state
+                break;    // next state (exit the strats)
             }
         }
         // push the collected states as result
@@ -119,11 +120,14 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                 evalStack.push(new HashSet<>());
                 return;
             }
-            for (Map<Integer, Set<String>> rawstrat : strats) {
-                Set<String> strat = Intersection.intersect(rawstrat.values());
-                Model submodel = model.getShrunkModel(strat);
+            for (Map<Integer, Set<String>> mappedstrat : strats) {
+                Set<String> strat = Intersection.intersect(mappedstrat.values());
+                Model submodel = model.getShrunkModel(strat).bisumContract();
+
+                //System.out.println("Strat "+agents.toString()+":"+strat.toString()+"\n"+submodel.toString()+"\n");
+
                 if (ModelChecker.evalFormula(submodel, formula).contains(state)) {
-                    printValidStrat(strat, rawstrat, agents, state, formula);
+                    printValidStrat(strat, mappedstrat, agents, state, formula);
                     result.add(state);
                     break;
                 }

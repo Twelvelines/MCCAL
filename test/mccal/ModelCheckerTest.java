@@ -57,12 +57,12 @@ class ModelCheckerTest {
 
     @Test
     void evalSample2S1t7() {
-        assertTrue(eval(MFP + "sample2", "<<1,2>><<1,3>>!K(1, atom1)").contains("S1"));
+        assertFalse(eval(MFP + "sample2", "<<1,2>><<2,3>>!K(2, atom1)").contains("S1"));
     }
 
     @Test
     void evalSample2S1t6() {
-        assertTrue(eval(MFP + "sample2", "<<1,2,3>>!K(1, atom1)").contains("S1"));
+        assertFalse(eval(MFP + "sample2", "<<1,2,3>>!K(2, atom1)").contains("S1"));
     }
 
     @Test
