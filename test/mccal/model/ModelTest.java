@@ -10,17 +10,181 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ModelTest {
     private final String MFP = "test/models/";
+    private final String BMFP = "test/models/bisims/";
 
-    private Set<String> bisimContractPrune(String modelfile) {
-        Model ogmodel = ModelChecker.readModel(MFP + modelfile);
-        System.out.println("Raw model:");
-        System.out.println(ogmodel.toString());
-        Model bcmodel = ogmodel.bisimContract();
-        System.out.println("Contracted model:");
-        System.out.println(bcmodel.toString());
-        Set<String> diff = new HashSet<>(ogmodel.getAllStates());
-        diff.removeAll(bcmodel.getAllStates());
-        return diff;
+    private final Set<String> EMPTY_SET_OF_STRING = new HashSet<>();
+
+    @Test
+    void bisimContract1Full() {
+        Model bs1ctdActual = ModelChecker.readModel(BMFP+"bisimSample1").bisimContract();
+        Model bs1ctd = ModelChecker.readModel(BMFP+"bisimSample1Ctd");
+        Model bs1ctd1 = ModelChecker.readModel(BMFP+"bisimSample1Ctd1");
+        assertTrue(bs1ctdActual.equals(bs1ctd) || bs1ctdActual.equals(bs1ctd1));
+    }
+
+    @Test
+    void bisimContract() {
+        Set<String> c = new HashSet<>();
+        c.add("S1");
+        c.add("S2");
+        assertTrue(ModelChecker.readModel(BMFP+"bisimSample").bisimContract().bisimEquals(
+                ModelChecker.readModel(BMFP+"bisimSampleCtd"), c
+        ));
+    }
+
+    @Test
+    void bisimContract1() {
+        Set<String> c = new HashSet<>();
+        c.add("S2");
+        c.add("S3");
+        assertTrue(ModelChecker.readModel(BMFP+"bisimSample1").bisimContract().bisimEquals(
+                ModelChecker.readModel(BMFP+"bisimSample1Ctd"), c
+        ));
+    }
+
+    @Test
+    void bisimContract2() {
+        Set<String> c1 = new HashSet<>();
+        c1.add("S1");
+        c1.add("S4");
+        Set<String> c2 = new HashSet<>();
+        c2.add("S2");
+        c2.add("S3");
+        assertTrue(ModelChecker.readModel(BMFP+"bisimSample2").bisimContract().bisimEquals(
+                ModelChecker.readModel(BMFP+"bisimSample2Ctd"), c1, c2
+        ));
+    }
+
+    @Test
+    void modelBisimEquals() {
+        Set<String> c = new HashSet<>();
+        c.add("S3");
+        c.add("S2");
+        assertTrue(ModelChecker.readModel(BMFP+"bisimSample1Ctd").bisimEquals(ModelChecker.readModel(BMFP+"bisimSample1Ctd1"), c));
+    }
+
+    @Test
+    void modelBisimEqualsReflexive() {
+        assertTrue(ModelChecker.readModel(MFP+"sample1").bisimEquals(ModelChecker.readModel(MFP+"sample1"), EMPTY_SET_OF_STRING));
+    }
+
+    @Test
+    void bisimEqualsReflexive() {
+        Set<String> s1 = new HashSet<>();
+        s1.add("1");
+        s1.add("2");
+        Set<String> s2 = new HashSet<>();
+        s2.add("1");
+        s2.add("2");
+        assertTrue(Model.bisimEquals(s1, s2, EMPTY_SET_OF_STRING));
+    }
+
+    @Test
+    void bisimEquals2() {
+        Set<String> s1 = new HashSet<>();
+        s1.add("1");
+        s1.add("2");
+        Set<String> s2 = new HashSet<>();
+        s2.add("3");
+        s2.add("4");
+        Set<String> c1 = new HashSet<>();
+        c1.add("1");
+        c1.add("4");
+        Set<String> c2 = new HashSet<>();
+        c2.add("2");
+        c2.add("3");
+        assertTrue(Model.bisimEquals(s1, s2, c1, c2));
+    }
+
+    @Test
+    void bisimEquals1Error() {
+        Set<String> s1 = new HashSet<>();
+        s1.add("1");
+        s1.add("2");
+        s1.add("3");
+        s1.add("4");
+        Set<String> s2 = new HashSet<>();
+        s2.add("1");
+        s2.add("5");
+        s2.add("3");
+        s2.add("6");
+        Set<String> c1 = new HashSet<>();
+        c1.add("2");
+        c1.add("4");
+        Set<String> c2 = new HashSet<>();
+        c2.add("4");
+        c2.add("6");
+        assertFalse(Model.bisimEquals(s1, s2, c1, c2));
+    }
+
+    @Test
+    void bisimEquals1False() {
+        Set<String> s1 = new HashSet<>();
+        s1.add("1");
+        s1.add("2");
+        s1.add("3");
+        s1.add("4");
+        Set<String> s2 = new HashSet<>();
+        s2.add("1");
+        s2.add("5");
+        s2.add("3");
+        s2.add("6");
+        Set<String> c1 = new HashSet<>();
+        c1.add("2");
+        c1.add("4");
+        Set<String> c2 = new HashSet<>();
+        c2.add("3");
+        c2.add("6");
+        assertFalse(Model.bisimEquals(s1, s2, c1, c2));
+    }
+
+    @Test
+    void bisimEquals1() {
+        Set<String> s1 = new HashSet<>();
+        s1.add("1");
+        s1.add("2");
+        s1.add("3");
+        s1.add("4");
+        Set<String> s2 = new HashSet<>();
+        s2.add("1");
+        s2.add("5");
+        s2.add("3");
+        s2.add("6");
+        Set<String> c1 = new HashSet<>();
+        c1.add("2");
+        c1.add("5");
+        Set<String> c2 = new HashSet<>();
+        c2.add("4");
+        c2.add("6");
+        assertTrue(Model.bisimEquals(s1, s2, c1, c2));
+    }
+
+    @Test
+    void bisimEqualsFalse() {
+        Set<String> s1 = new HashSet<>();
+        s1.add("1");
+        s1.add("2");
+        Set<String> s2 = new HashSet<>();
+        s2.add("1");
+        s2.add("3");
+        Set<String> c = new HashSet<>();
+        c.add("1");
+        c.add("3");
+        assertFalse(Model.bisimEquals(s1, s2, c));
+    }
+
+    @Test
+    void bisimEquals() {
+        Set<String> s1 = new HashSet<>();
+        s1.add("1");
+        s1.add("2");
+        Set<String> s2 = new HashSet<>();
+        s2.add("1");
+        s2.add("3");
+        Set<String> c = new HashSet<>();
+        c.add("2");
+        c.add("3");
+        assertTrue(Model.bisimEquals(s1, s2, c));
     }
 
     @Test
@@ -29,37 +193,13 @@ class ModelTest {
     }
 
     @Test
-    void equalsReflexive1() {
+    void equalsReflexiveFalse() {
         assertFalse(ModelChecker.readModel(MFP + "sample2").equals(ModelChecker.readModel(MFP + "sample2.5")));
     }
 
     @Test
-    void bisimContract() {
-        Set<String> actual = new HashSet<>();
-        actual.add("S2");
-        assertEquals(bisimContractPrune("bisimSample"), actual);
-    }
-
-    // TODO bucketise n test refactor
-    // TODO dename states within the model, using incremental identifier instead? it helps with comparing
-    @Test
-    void bisimContract1() {
-        Set<String> actual = new HashSet<>();
-        actual.add("S2");
-        assertEquals(bisimContractPrune("bisimSample1"), actual);
-    }
-
-    @Test
-    void bisimContract2() {
-        Set<String> actual = new HashSet<>();
-        actual.add("S1");
-        actual.add("S2");
-        assertEquals(bisimContractPrune("bisimSample2"), actual);
-    }
-
-    @Test
     void modelToStringSmall() {
-        Model m = ModelChecker.readModel(MFP+"bisimSample1");
+        Model m = ModelChecker.readModel(BMFP+"bisimSample1");
         assert m != null;
         System.out.println(m.toString());
     }

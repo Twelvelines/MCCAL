@@ -28,13 +28,6 @@ public class Model {
         }
     }
 
-    public boolean equals(Model mobj) {
-        return numAgents == mobj.numAgents &&
-                allstates.equals(mobj.allstates) &&
-                atoms.equals(mobj.atoms) &&
-                equivRels.equals(mobj.equivRels);
-    }
-
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("Number of agents: ").append(numAgents).append("\n")
@@ -75,6 +68,92 @@ public class Model {
                 result.append("\n");
         }
         return result.toString();
+    }
+
+    public boolean equals(Model mobj) {
+        return numAgents == mobj.numAgents &&
+                allstates.equals(mobj.allstates) &&
+                atoms.equals(mobj.atoms) &&
+                equivRels.equals(mobj.equivRels);
+    }
+
+    @SafeVarargs
+    public final boolean bisimEquals(Model mobj, Set<String>... xClusters) {
+        if (xClusters.length == 0) {
+            System.err.println("Warning - bisimEquals: no xClusters provided; shifting to simply perform equal check");
+            return equals(mobj);
+        }
+        String shit = "";
+        if (numAgents != mobj.numAgents)
+            shit = "number of agents";
+        if (!bisimEquals(allstates, mobj.allstates, xClusters))
+            shit = "allstates";
+        if (!atoms.keySet().equals(mobj.atoms.keySet()))
+            shit = "atom keyset";
+        for (String key : atoms.keySet()) {
+            if (!bisimEquals(atoms.get(key), mobj.atoms.get(key), xClusters))
+                shit = "atom " + atoms.get(key).toString();
+        }
+        if (!equivRels.keySet().equals(mobj.equivRels.keySet()))
+            shit = "equiv keyset";
+        for (int agent : equivRels.keySet()) {
+            List<Set<String>> list1 = equivRels.get(agent);
+            List<Set<String>> list2 = mobj.equivRels.get(agent);
+            // identify the diffs
+            List<Set<String>> diffs12 = new ArrayList<>(list1);
+            diffs12.removeAll(list2);
+            List<Set<String>> diffs21 = new ArrayList<>(list2);
+            diffs21.removeAll(list1);
+            // find bisim for each diff
+            for (Set<String> diff12 : diffs12) {
+                Set<String> diff21ForDiff12 = null;
+                for (Set<String> diff21 : diffs21) {
+                    if (bisimEquals(diff12, diff21, xClusters)) {
+                        diff21ForDiff12 = diff21;
+                        break;
+                    }
+                }
+                if (diff21ForDiff12 == null) {
+                    shit = "agent " + agent + ": " + list1.toString() + " and " + list2.toString();
+                    break;
+                }
+                diffs21.remove(diff21ForDiff12);
+            }
+        }
+
+        if (!shit.isEmpty())
+            System.out.println(shit + " is not cool");
+        return shit.isEmpty();
+    }
+
+    @SafeVarargs
+    public static boolean bisimEquals(Set<String> states1, Set<String> states2, Set<String>... xClusters) {
+        if (xClusters.length == 0) {
+            System.err.println("Warning: no xClusters provided; shifting to simply perform equal check");
+            return states1.equals(states2);
+        }
+        Set<String> diff12 = new HashSet<>(states1);
+        diff12.removeAll(states2);
+        Set<String> diff21 = new HashSet<>(states2);
+        diff21.removeAll(states1);
+        if (!diff12.isEmpty() || !diff21.isEmpty()) {
+            for (String state : diff12) {
+                // find the cluster
+                Set<String> xCluster = null;
+                for (Set<String> cluster : xClusters) {
+                    if (cluster.contains(state))
+                        xCluster = cluster;
+                }
+                if (xCluster == null) {
+                    System.err.println("xCluster for state "+state+" not found; check if xClusters are correctly provided");
+                    return false;
+                }
+                // the other diff diff21 must contain only one state from the same cluster
+                if (Intersection.intersect(xCluster, diff21).size() != 1)
+                    return false;
+            }
+        }
+        return true;
     }
 
     /**
