@@ -10,7 +10,6 @@ import java.util.*;
  */
 public class Model {
     private static int PRINT_STATES_COLUMNS = 10;
-    //public static int counter;
 
     private int numAgents;    // they are named by index, conventionally starting from 1
     private Set<String> allstates = new HashSet<>();    // all states in the model
@@ -338,7 +337,6 @@ public class Model {
                 Set<String> newStrat = new HashSet<>(strat);
                 newStrat.addAll(rClass);
                 stratsToAdd.add(newStrat);
-                //System.out.println(counter++);
             }
             strategies.addAll(stratsToAdd);
         }

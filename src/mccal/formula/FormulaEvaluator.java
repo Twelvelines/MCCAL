@@ -18,11 +18,17 @@ import java.util.*;
  */
 public class FormulaEvaluator extends FormulaGrammarBaseListener {
     private boolean verbose;
+    private String startingState = null;
     private Model model;    // the model where the formula is evaluated
     // the stack for caching results corresponding to the formula recursion; see javadoc for the class
     private Stack<Set<String>> evalStack = new Stack<>();
     // model caching slot for announcement logic
     private Stack<Model> aModelsCache = new Stack<>();
+
+    public FormulaEvaluator(Model model, boolean verbose, String startingState) {
+        this(model, verbose);
+        this.startingState = startingState;
+    }
 
     public FormulaEvaluator(Model model, boolean verbose) {
         this.model = model;
@@ -57,6 +63,8 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
 
         Set<String> result = new HashSet<>();
         for (String state : model.getAllStates()) {
+            if (startingState != null && !state.equals(startingState))
+                continue;
             Set<Map<Integer, Set<String>>> agentsStrategies;
             Set<Set<String>> otherAgentsStrategies;
             try {
@@ -112,6 +120,8 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
 
         Set<String> result = new HashSet<>();
         for (String state : model.getAllStates()) {
+            if (startingState != null && !state.equals(startingState))
+                continue;
             Set<Map<Integer, Set<String>>> strats;
             try {
                 strats = model.getDetailedStrategies(state, agents);

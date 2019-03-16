@@ -31,6 +31,7 @@ public class ModelChecker {
         // TODO improve error checking e.g. file exists
         String filename = args[0];
         String formula = args[1];
+        String startingState = args.length == 3 ? args[2] : null;
 
         System.out.println("-- Model file: " + filename + " --");
         Model model = readModel(filename);
@@ -38,13 +39,13 @@ public class ModelChecker {
             System.exit(2);
         }
         System.out.println("-- Model successfully generated, proceeding to evaluation --");
-        Set<String> solution = evalFormula(model, formula);
+        Set<String> solution = evalFormula(model, formula, startingState);
         System.out.println("-- Evaluation complete --");
 
         // printing solution
-        if (args.length == 3) {
+        if (startingState != null) {
             // TODO validate if provided state is in model
-            System.out.println("Under the provided state " + args[2] + " the formula is " +
+            System.out.println("Under the provided state " + startingState + " the formula is " +
                     solution.contains(args[2])
             );
         } else {
@@ -62,6 +63,14 @@ public class ModelChecker {
     }
 
     public static Set<String> evalFormula(Model model, String formula, boolean verbose) {
+        return evalFormula(model, formula, verbose, null);
+    }
+
+    public static Set<String> evalFormula(Model model, String formula, String startingState) {
+        return evalFormula(model, formula, false, startingState);
+    }
+
+    public static Set<String> evalFormula(Model model, String formula, boolean verbose, String startingState) {
         ANTLRInputStream finput = new ANTLRInputStream(formula);
         FormulaGrammarLexer flexer = new
                 FormulaGrammarLexer(finput);
@@ -74,7 +83,7 @@ public class ModelChecker {
         // Just a standard walker
         ParseTreeWalker fwalker = new ParseTreeWalker();
         // Now we associate our extractor to the parser.
-        FormulaEvaluator evaluator = new FormulaEvaluator(model, verbose);
+        FormulaEvaluator evaluator = new FormulaEvaluator(model, verbose, startingState);
         // and we walk the tree with our extractor.
         fwalker.walk(evaluator, ftree);
         return evaluator.getSolution();

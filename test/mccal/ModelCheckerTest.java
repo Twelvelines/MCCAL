@@ -50,19 +50,23 @@ class ModelCheckerTest {
         return eval(sampleFilename, formula, true);
     }
 
+    private boolean eval(String sampleFilename, String formula, String startingState) {
+        return ModelChecker.evalFormula(ModelChecker.readModel(sampleFilename), formula, startingState).contains(startingState);
+    }
+
     private Set<String> eval(String sampleFilename, String formula, boolean verbose) {
-        Model model = ModelChecker.readModel(sampleFilename);
-        return ModelChecker.evalFormula(model, formula, verbose);
+        return ModelChecker.evalFormula(ModelChecker.readModel(sampleFilename), formula, verbose);
     }
 
     @Test
     void evalSample2S1t7() {
-        assertFalse(eval(MFP + "sample2", "<<1,2>><<2,3>>!K(2, atom1)").contains("S1"));
+        assertFalse(eval(MFP + "sample2", "<<1,2>><<2,3>>!K(2, atom1)", "S1"));
     }
 
     @Test
     void evalSample2S1t6() {
-        assertFalse(eval(MFP + "sample2", "<<1,2,3>>!K(2, atom1)").contains("S1"));
+        //TODO
+        assertTrue(eval(MFP + "sample2", "<<1,2,3>>!K(2, atom1)", "S1"));
     }
 
     @Test
@@ -229,7 +233,7 @@ class ModelCheckerTest {
             fail();
             return;
         }
-        assertTrue(eval(BFP + "burglars1", "<1,2,3,4>("+sofa+")").contains("S0101"));
+        assertTrue(eval(BFP + "burglars1", "<1,2,3,4>("+sofa+")", "S0101"));
     }
 
     @Test
@@ -242,7 +246,7 @@ class ModelCheckerTest {
             fail();
             return;
         }
-        assertTrue(eval(BFP + "burglars1", "<<1,2,3,4>>("+sofa+")").contains("S0101"));
+        assertTrue(eval(BFP + "burglars1", "<<1,2,3,4>>("+sofa+")", "S0101"));
     }
 
     @Test
@@ -255,7 +259,7 @@ class ModelCheckerTest {
             fail();
             return;
         }
-        assertTrue(eval(BFP + "burglars1", "<1,2>("+sofa+")").contains("S0101"));
+        assertTrue(eval(BFP + "burglars1", "<1,2>("+sofa+")", "S0101"));
     }
 
     @Test
@@ -268,7 +272,7 @@ class ModelCheckerTest {
             fail();
             return;
         }
-        assertFalse(eval(BFP + "burglars1", "<<1,2>>("+sofa+")").contains("S0101"));
+        assertFalse(eval(BFP + "burglars1", "<<1,2>>("+sofa+")", "S0101"));
     }
 
     @Test
@@ -281,7 +285,7 @@ class ModelCheckerTest {
             fail();
             return;
         }
-        assertTrue(eval(BFP + "burglars1", "<1>("+sofa1+")").contains("S0101"));
+        assertTrue(eval(BFP + "burglars1", "<1>("+sofa1+")", "S0101"));
     }
 
     @Test
@@ -294,7 +298,7 @@ class ModelCheckerTest {
             fail();
             return;
         }
-        assertFalse(eval(BFP + "burglars1", "<<1>>("+sofa1+")").contains("S0101"));
+        assertFalse(eval(BFP + "burglars1", "<<1>>("+sofa1+")", "S0101"));
     }
 
     @Test
@@ -304,62 +308,62 @@ class ModelCheckerTest {
 
     @Test
     void evalSample1S1t1() {
-        assertTrue(eval(MFP + "sample1", "<<2>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "<<2>>K(1, atom1)", "S1"));
     }
 
     @Test
     void evalSample1S1t2() {
-        assertTrue(eval(MFP + "sample1", "<<2>>!K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "<<2>>!K(1, atom1)", "S1"));
     }
 
     @Test
     void evalSample1S1t3() {
-        assertTrue(eval(MFP + "sample1", "!<<1>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "!<<1>>K(1, atom1)", "S1"));
     }
 
     @Test
     void evalSample1S1t4() {
-        assertTrue(eval(MFP + "sample1", "<<1>>K(2, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "<<1>>K(2, atom1)", "S1"));
     }
 
     @Test
     void evalSample1S1t5() {
-        assertTrue(eval(MFP + "sample1", "<<1, 2>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "<<1, 2>>K(1, atom1)", "S1"));
     }
 
     @Test
     void evalSample1S1t6() {
-        assertTrue(eval(MFP + "sample1", "<<2>><<1>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample1", "<<2>><<1>>K(1, atom1)", "S1"));
     }
 
     @Test
     void evalSample1S2t1() {
-        assertTrue(eval(MFP + "sample1", "!<<2>>K(1, atom1)").contains("S2"));
+        assertTrue(eval(MFP + "sample1", "!<<2>>K(1, atom1)", "S2"));
     }
 
     @Test
     void evalSample1S2t2() {
-        assertTrue(eval(MFP + "sample1", "<<2>>K(1, !atom1)").contains("S2"));
+        assertTrue(eval(MFP + "sample1", "<<2>>K(1, !atom1)", "S2"));
     }
 
     @Test
     void evalSample1S2t3() {
-        assertTrue(eval(MFP + "sample1", "!<<1>>K(1, atom1)").contains("S2"));
+        assertTrue(eval(MFP + "sample1", "!<<1>>K(1, atom1)", "S2"));
     }
 
     @Test
     void evalSample2S1t1() {
-        assertTrue(eval(MFP + "sample2", "<<3>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample2", "<<3>>K(1, atom1)", "S1"));
     }
 
     @Test
     void evalSample2S1t2() {
-        assertFalse(eval(MFP + "sample2", "<<3>>!K(1, atom1)").contains("S1"));
+        assertFalse(eval(MFP + "sample2", "<<3>>!K(1, atom1)", "S1"));
     }
 
     @Test
     void evalSample2S1t3() {
-        assertTrue(eval(MFP + "sample2", "<<1, 2>>K(1, atom1)").contains("S1"));
+        assertTrue(eval(MFP + "sample2", "<<1, 2>>K(1, atom1)", "S1"));
     }
 
     @Test
