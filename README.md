@@ -59,7 +59,7 @@ A formula is established on the atoms in the model and the logical operations on
 | Parenthesis            | `(p)`        |
 | Negation               | `!p`         |
 | Conjunction            | `p & q`      |
-| Disjunction            | `p | q`      |
+| Disjunction            | `p \| q`      |
 | Implication            | `p -> q`     |
 | Knowledge              | `K(1, p)`    |
 | Public Announcement    | `[p] q`      |
