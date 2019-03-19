@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class FormulaEvaluator extends FormulaGrammarBaseListener {
     private boolean verbose;
-    private String startingState = null;
+    private String startingState;
     private Model model;    // the model where the formula is evaluated
     // the stack for caching results corresponding to the formula recursion; see javadoc for the class
     private Stack<Set<String>> evalStack = new Stack<>();
@@ -82,16 +82,15 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                     boolean allParsingReturnsTrue = true;
                     for (Set<String> oStrat : otherAgentsStrategies) {
                         Model submodel = model.getShrunkModel(Intersection.intersect(strat, oStrat)).bisimContract();
-                        if (!ModelChecker.evalFormula(submodel, formula).contains(state)) {
-                            allParsingReturnsTrue = false;
+                        allParsingReturnsTrue = ModelChecker.evalFormula(submodel, formula, startingState).contains(state);
+                        if (!allParsingReturnsTrue)
                             break;
-                        }
                     }
                     if (!allParsingReturnsTrue)
                         continue;    // next strat
                 } else {
                     Model submodel = model.getShrunkModel(strat).bisimContract();
-                    if (!ModelChecker.evalFormula(submodel, formula).contains(state))
+                    if (!ModelChecker.evalFormula(submodel, formula, startingState).contains(state))
                         continue;    // next strat
                 }
                 // if for current strat, all parsing of formula on the submodel is true
@@ -136,7 +135,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
 
                 //System.out.println("Strat "+agents.toString()+":"+strat.toString()+"\n"+submodel.toString()+"\n");
 
-                if (ModelChecker.evalFormula(submodel, formula).contains(state)) {
+                if (ModelChecker.evalFormula(submodel, formula, startingState).contains(state)) {
                     printValidStrat(strat, mappedstrat, agents, state, formula);
                     result.add(state);
                     break;

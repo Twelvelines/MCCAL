@@ -58,6 +58,24 @@ class ModelCheckerTest {
         return ModelChecker.evalFormula(ModelChecker.readModel(sampleFilename), formula, verbose);
     }
 
+    /* Tests Below*/
+
+    @Test
+    void evalTricky1BcNotPhi() {
+        // which should be the equivalent of evalTricky1Cal
+        assertTrue(eval(MFP + "tricky1bc", "K(1, !K(2,!p)) | K(1, K(2,!p) | K(2,p))", "S3"));
+    }
+
+    @Test
+    void evalTricky1Cal() {
+        assertTrue(eval(MFP + "tricky1", "<<1>>( K(1, !K(2,!p)) | K(1, K(2,!p) | K(2,p)) )", "S3"));
+    }
+
+    @Test
+    void evalTricky1Gal() {
+        assertTrue(eval(MFP + "tricky1", "<1>!<2,3>( !K(1, !K(2,!p)) & !K(1, K(2,!p) | K(2,p)) )", "S3"));
+    }
+
     @Test
     void evalSample2S1t7() {
         assertFalse(eval(MFP + "sample2", "<<1,2>><<2,3>>!K(2, atom1)", "S1"));
@@ -246,7 +264,7 @@ class ModelCheckerTest {
             fail();
             return;
         }
-        assertTrue(eval(BFP + "burglars1", "<<1,2,3,4>>("+sofa+")", "S0101"));
+        assertTrue(eval(BFP + "burglars1", "<<1,2,3>>("+sofa+")", "S0101"));
     }
 
     @Test
