@@ -60,15 +60,62 @@ class ModelCheckerTest {
 
     /* Tests Below*/
 
+    /* insufficient performance
+    @Test
+    void evalBurglars1GalSofa() {
+        String sofa;
+        try {
+            sofa = readFileIntoString(BFP + "burglars1_sofa");
+        } catch (IOException e) {
+            System.err.println(e.toString());
+            fail();
+            return;
+        }
+        assertTrue(eval(BFP + "burglars1", "<1,2,3,4>("+sofa+")", "S0101"));
+    }
+
+    @Test
+    void evalBurglars1CalSofa() {
+        String sofa;
+        try {
+            sofa = readFileIntoString(BFP + "burglars1_sofa");
+        } catch (IOException e) {
+            System.err.println(e.toString());
+            fail();
+            return;
+        }
+        assertTrue(eval(BFP + "burglars1", "<<1,2,3,4>>("+sofa+")", "S0101"));
+    }
+    */
+
+    @Test
+    void evalTricky1S2to5NotPhi() {
+        // which should be the equivalent of evalTricky1Cal
+        assertFalse(eval(MFP + "tricky1s2to5", "K(1, !K(2,!p)) | K( 1, K(2,!p) | K(2,p) )", "S3"));
+    }
+
+    @Test
+    void evalTricky1ManualShrunkS2to5NotPhi() {
+        Set<String> s = new HashSet<>();
+        s.add("S2");
+        s.add("S3");
+        s.add("S4");
+        s.add("S5");
+        assertFalse(ModelChecker.evalFormula(
+                ModelChecker.readModel(MFP+"tricky1").getShrunkModel(s),
+                "K(1, !K(2,!p)) | K(1, K(2,!p) | K(2,p))",
+                "S3"
+        ).contains("S3"));
+    }
+
     @Test
     void evalTricky1BcNotPhi() {
-        // which should be the equivalent of evalTricky1Cal
         assertTrue(eval(MFP + "tricky1bc", "K(1, !K(2,!p)) | K(1, K(2,!p) | K(2,p))", "S3"));
     }
 
     @Test
     void evalTricky1Cal() {
-        assertTrue(eval(MFP + "tricky1", "<<1>>( K(1, !K(2,!p)) | K(1, K(2,!p) | K(2,p)) )", "S3"));
+        assertFalse(eval(MFP + "tricky1", "<<1>>( K(1, !K(2,!p)) | K(1, K(2,!p) | K(2,p)) )", "S3"));
     }
 
     @Test
@@ -83,7 +130,7 @@ class ModelCheckerTest {
 
     @Test
     void evalSample2S1t6() {
-        //TODO
+        // TODO to ask
         assertTrue(eval(MFP + "sample2", "<<1,2,3>>!K(2, atom1)", "S1"));
     }
 
@@ -239,32 +286,6 @@ class ModelCheckerTest {
             return;
         }
         assertTrue(eval(BFP + "burglars1", "["+mis+"]" + sofa).contains("S0101"));
-    }
-
-    @Test
-    void evalBurglars1GalSofa() {
-        String sofa;
-        try {
-            sofa = readFileIntoString(BFP + "burglars1_sofa");
-        } catch (IOException e) {
-            System.err.println(e.toString());
-            fail();
-            return;
-        }
-        assertTrue(eval(BFP + "burglars1", "<1,2,3,4>("+sofa+")", "S0101"));
-    }
-
-    @Test
-    void evalBurglars1CalSofa() {
-        String sofa;
-        try {
-            sofa = readFileIntoString(BFP + "burglars1_sofa");
-        } catch (IOException e) {
-            System.err.println(e.toString());
-            fail();
-            return;
-        }
-        assertTrue(eval(BFP + "burglars1", "<<1,2,3>>("+sofa+")", "S0101"));
     }
 
     @Test
