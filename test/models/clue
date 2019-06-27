@@ -1,0 +1,14 @@
+N = 2;
+
+BCnDD; DDnBC; CDnBD; BDnCD;  // Bishop
+BBnDD; BDnBD; DDnBB;         // Cardinal
+BCnBD; BDnBC; BBnCD; CDnBB;  // Deacon
+
+R = {
+    (1, BBnDD, BBnCD), (1, DDnBC, DDnBB), (1, BCnDD, BCnBD), (1, BDnCD, BDnBD, BDnBC), (1, CDnBD, CDnBB),
+    (2, DDnBB, CDnBB), (2, BCnDD, BBnDD), (2, DDnBC, BDnBC), (2, CDnBD, BDnBD, BCnBD), (2, BDnCD, BBnCD)
+};
+
+b = { BCnDD, DDnBC, CDnBD, BDnCD };  // Bishop
+c = { BBnDD, BDnBD, DDnBB };         // Cardinal
+d = { BCnBD, BDnBC, BBnCD, CDnBB };  // Deacon
