@@ -299,13 +299,13 @@ public class Model {
         Set<Map<Integer, Set<String>>> strategies = new HashSet<>();
         if (agents.size() == 0)
             return strategies;
-
         int firstAgent = agents.get(0);
         strategies.addAll(getDetailedStrategies(realState, firstAgent));
         for (int i = 1; i < agents.size(); i++) {
             int agent = agents.get(i);
             Set<Map<Integer, Set<String>>> freshStrats = new HashSet<>();
-            for (Set<String> iStrat : getStrategies(realState, agent)) {    // new agent's strat
+            Set<Set<String>> restStrats = getStrategies(realState, agent);
+            for (Set<String> iStrat : restStrats) {    // new agent's strat
                 for (Map<Integer, Set<String>> exStrat : strategies) {    // existing strat
                     Map<Integer, Set<String>> newStrat = new HashMap<>();
                     // copy exStrat TODO map copy?

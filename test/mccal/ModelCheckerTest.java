@@ -60,7 +60,7 @@ class ModelCheckerTest {
 
     /* Tests Below*/
 
-    /* insufficient performance
+
     @Test
     void evalBurglars1GalSofa() {
         String sofa;
@@ -86,7 +86,7 @@ class ModelCheckerTest {
         }
         assertTrue(eval(BFP + "burglars1", "<<1,2,3,4>>("+sofa+")", "S0101"));
     }
-    */
+
 
     @Test
     void evalTricky1S2to5NotPhi() {
@@ -266,7 +266,7 @@ class ModelCheckerTest {
     }
 
     @Test
-    void evalBurglars1Shortsight() {
+    void evalBurglars1Shortsighted() {
         assertTrue(eval(
                 BFP + "burglars1",
                 "K(3, !p3) and K(3, p2) and K(3, p4) and !(K(3, !p1) or K(K3, p1))"

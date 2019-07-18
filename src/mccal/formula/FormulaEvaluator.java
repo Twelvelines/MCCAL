@@ -42,8 +42,10 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                 " is valid under state " + state +
                 " for " + formula
         );
-        for (int agent : mappedstrat.keySet()) {
-            System.out.println("\t"+agent+": "+mappedstrat.get(agent).toString());
+        if (mappedstrat != null) {
+            for (int agent : mappedstrat.keySet()) {
+                System.out.println("\t" + agent + ": " + mappedstrat.get(agent).toString());
+            }
         }
     }
 
@@ -65,38 +67,155 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         for (String state : model.getAllStates()) {
             if (startingState != null && !state.equals(startingState))
                 continue;
-            Set<Map<Integer, Set<String>>> agentsStrategies;
-            Set<Set<String>> otherAgentsStrategies;
+            boolean stateContinueSignal = false;
+
+
+            List<Integer> agentsBeforeLast = new ArrayList<>(agents);
+            agentsBeforeLast.remove(agents.size()-1);
+            Set<Map<Integer, Set<String>>> agentsStrats;
+            List<Integer> restAgentsBeforeLast = new ArrayList<>(restOfAgents);
+            if (!restAgentsBeforeLast.isEmpty())
+                restAgentsBeforeLast.remove(restOfAgents.size()-1);
+            Set<Set<String>> otherAgentsStrats;
             try {
-                agentsStrategies = model.getDetailedStrategies(state, agents);
-                otherAgentsStrategies = model.getStrategies(state, restOfAgents);
+                agentsStrats = model.getDetailedStrategies(state, agentsBeforeLast);
+                otherAgentsStrats = model.getStrategies(state, restAgentsBeforeLast);
+
             } catch (UnknownAgentException e) {
                 System.err.println(e.toString());
                 evalStack.push(new HashSet<>());
                 return;
             }
+            int lastAgent = agents.get(agents.size()-1);
+            int lastOtherAgent = restOfAgents.isEmpty() ? 0 : restOfAgents.get(restOfAgents.size()-1);  // TODO concise
+            Set<Set<String>> lastAgentStrats;
+            Set<Set<String>> lastOtherAgentStrats;
+            try {
+                lastAgentStrats = model.getStrategies(state, lastAgent);
+                lastOtherAgentStrats = model.getStrategies(state, lastOtherAgent);
 
-            for (Map<Integer, Set<String>> mappedstrat : agentsStrategies) {
-                Set<String> strat = Intersection.intersect(mappedstrat.values());
-                if (!restOfAgents.isEmpty()) {
-                    boolean allParsingReturnsTrue = true;
-                    for (Set<String> oStrat : otherAgentsStrategies) {
-                        Model submodel = model.getShrunkModel(Intersection.intersect(strat, oStrat)).bisimContract();
-                        allParsingReturnsTrue = ModelChecker.evalFormula(submodel, formula, startingState).contains(state);
-                        if (!allParsingReturnsTrue)
-                            break;
-                    }
-                    if (!allParsingReturnsTrue)
-                        continue;    // next strat
-                } else {
-                    Model submodel = model.getShrunkModel(strat).bisimContract();
-                    if (!ModelChecker.evalFormula(submodel, formula, startingState).contains(state))
-                        continue;    // next strat
+            } catch (UnknownAgentException e) {
+                System.err.println(e.toString());
+                evalStack.push(new HashSet<>());
+                return;
+            }
+            if (agents.size() == 1) {
+                Set<Set<String>> strats;
+                try {
+                    strats = model.getStrategies(state, agents.get(0));
+                } catch (UnknownAgentException e) {
+                    System.err.println(e.toString());
+                    evalStack.push(new HashSet<>());
+                    return;
                 }
-                // if for current strat, all parsing of formula on the submodel is true
-                printValidStrat(strat, mappedstrat, agents, state, formula, "Cal");
-                result.add(state);
-                break;    // next state (exit the strats)
+                for (Set<String> strat : strats) {
+                    if (!restOfAgents.isEmpty()) {
+                        boolean allParsingReturnsTrue = true;
+
+                        if (restOfAgents.size() == 1) {
+                            Set<Set<String>> otherStrats;
+                            try {
+                                otherStrats = model.getStrategies(state, restOfAgents.get(0));
+                            } catch (UnknownAgentException e) {
+                                System.err.println(e.toString());
+                                evalStack.push(new HashSet<>());
+                                return;
+                            }
+
+                            for (Set<String> otherStrat : otherStrats) {
+                                Model submodel = model.getShrunkModel(Intersection.intersect(strat, otherStrat)).bisimContract();
+                                allParsingReturnsTrue = ModelChecker.evalFormula(submodel, formula, startingState).contains(state);
+                                if (!allParsingReturnsTrue)
+                                    break;
+                            }
+                        } else {
+                            for (Set<String> oStrat : lastOtherAgentStrats) {
+                                for (Set<String> exoStrat : otherAgentsStrats) {
+                                    Set<String> otherStrat = Intersection.intersect(exoStrat, oStrat);
+
+                                    Model submodel = model.getShrunkModel(Intersection.intersect(strat, otherStrat)).bisimContract();
+                                    allParsingReturnsTrue = ModelChecker.evalFormula(submodel, formula, startingState).contains(state);
+                                    if (!allParsingReturnsTrue)
+                                        break;
+                                }
+                                if (!allParsingReturnsTrue)
+                                    break;
+                            }
+                        }
+
+                        if (!allParsingReturnsTrue)
+                            continue;    // not a valid strat; next strat
+                    } else {    // switch to GAL
+                        Model submodel = model.getShrunkModel(strat).bisimContract();
+                        if (!ModelChecker.evalFormula(submodel, formula, startingState).contains(state))
+                            continue;    // not a valid strat; next strat
+                    }
+                    // if for current strat, all parsing of formula on the submodel is true
+                    printValidStrat(strat, null, agents, state, formula, "Cal");
+                    result.add(state);
+                    break;    // next state
+                }
+            } else {
+                for (Set<String> iStrat : lastAgentStrats) {
+                    for (Map<Integer, Set<String>> exiStrat : agentsStrats) {
+                        Map<Integer, Set<String>> newStrat = new HashMap<>();
+                        // copy exStrat TODO map copy rather than manually?
+                        for (int key : exiStrat.keySet()) {
+                            newStrat.put(key, new HashSet<>(exiStrat.get(key)));
+                        }
+                        newStrat.put(lastAgent, iStrat);
+                        Set<String> strat = Intersection.intersect(newStrat.values());
+
+                        if (!restOfAgents.isEmpty()) {
+                            boolean allParsingReturnsTrue = true;
+
+                            if (restOfAgents.size() == 1) {
+                                Set<Set<String>> otherStrats;
+                                try {
+                                    otherStrats = model.getStrategies(state, restOfAgents.get(0));
+                                } catch (UnknownAgentException e) {
+                                    System.err.println(e.toString());
+                                    evalStack.push(new HashSet<>());
+                                    return;
+                                }
+
+                                for (Set<String> otherStrat : otherStrats) {
+                                    Model submodel = model.getShrunkModel(Intersection.intersect(strat, otherStrat)).bisimContract();
+                                    allParsingReturnsTrue = ModelChecker.evalFormula(submodel, formula, startingState).contains(state);
+                                    if (!allParsingReturnsTrue)
+                                        break;
+                                }
+                            } else {
+                                for (Set<String> oStrat : lastOtherAgentStrats) {
+                                    for (Set<String> exoStrat : otherAgentsStrats) {
+                                        Set<String> otherStrat = Intersection.intersect(exoStrat, oStrat);
+
+                                        Model submodel = model.getShrunkModel(Intersection.intersect(strat, otherStrat)).bisimContract();
+                                        allParsingReturnsTrue = ModelChecker.evalFormula(submodel, formula, startingState).contains(state);
+                                        if (!allParsingReturnsTrue)
+                                            break;
+                                    }
+                                    if (!allParsingReturnsTrue)
+                                        break;
+                                }
+                            }
+
+                            if (!allParsingReturnsTrue)
+                                continue;    // not a valid strat; next strat
+                        } else {    // switch to GAL
+                            Model submodel = model.getShrunkModel(strat).bisimContract();
+                            if (!ModelChecker.evalFormula(submodel, formula, startingState).contains(state))
+                                continue;    // not a valid strat; next strat
+                        }
+                        // if for current strat, all parsing of formula on the submodel is true
+                        printValidStrat(strat, newStrat, agents, state, formula, "Cal");
+                        result.add(state);
+                        stateContinueSignal = true;
+                        break;    // next state
+                    }
+                    if (stateContinueSignal)
+                        break;
+                }
             }
         }
         // push the collected states as result
@@ -121,22 +240,66 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
         for (String state : model.getAllStates()) {
             if (startingState != null && !state.equals(startingState))
                 continue;
-            Set<Map<Integer, Set<String>>> strats;
-            try {
-                strats = model.getDetailedStrategies(state, agents);
-            } catch (UnknownAgentException e) {
-                System.err.println(e.toString());
-                evalStack.push(new HashSet<>());
-                return;
-            }
-            for (Map<Integer, Set<String>> mappedstrat : strats) {
-                Set<String> strat = Intersection.intersect(mappedstrat.values());
-                Model submodel = model.getShrunkModel(strat).bisimContract();
+            boolean stateContinueSignal = false;
 
-                if (ModelChecker.evalFormula(submodel, formula, startingState).contains(state)) {
-                    printValidStrat(strat, mappedstrat, agents, state, formula, "GAL");
-                    result.add(state);
-                    break;
+            if (agents.size() == 1) {
+                Set<Set<String>> strats;
+                try {
+                    strats = model.getStrategies(state, agents.get(0));
+                } catch (UnknownAgentException e) {
+                    System.err.println(e.toString());
+                    evalStack.push(new HashSet<>());
+                    return;
+                }
+                for (Set<String> strat : strats) {
+                    Model submodel = model.getShrunkModel(strat).bisimContract();
+                    if (ModelChecker.evalFormula(submodel, formula, startingState).contains(state)) {
+                        printValidStrat(strat, null, agents, state, formula, "GAL");
+                        result.add(state);
+                        break;
+                    }
+                }
+            } else {
+                Set<Map<Integer, Set<String>>> strats;
+                List<Integer> beforeLastAgents = new ArrayList<>(agents);
+                beforeLastAgents.remove(agents.size() - 1);
+                try {
+                    strats = model.getDetailedStrategies(state, beforeLastAgents);
+                } catch (UnknownAgentException e) {
+                    System.err.println(e.toString());
+                    evalStack.push(new HashSet<>());
+                    return;
+                }
+                int lastAgent = agents.get(agents.size() - 1);
+                Set<Set<String>> restStrats;
+                try {
+                    restStrats = model.getStrategies(state, lastAgent);
+                } catch (UnknownAgentException e) {
+                    System.err.println(e.toString());
+                    evalStack.push(new HashSet<>());
+                    return;
+                }
+                for (Set<String> iStrat : restStrats) {    // another agent's strat
+                    for (Map<Integer, Set<String>> exStrat : strats) {    // existing strat
+                        Map<Integer, Set<String>> newStrat = new HashMap<>();
+                        // copy exStrat TODO map copy rather than manually?
+                        for (int key : exStrat.keySet()) {
+                            newStrat.put(key, new HashSet<>(exStrat.get(key)));
+                        }
+                        // add iStrat
+                        newStrat.put(lastAgent, iStrat);
+
+                        Set<String> flattenStrat = Intersection.intersect(newStrat.values());
+                        Model submodel = model.getShrunkModel(flattenStrat).bisimContract();
+                        if (ModelChecker.evalFormula(submodel, formula, startingState).contains(state)) {
+                            printValidStrat(flattenStrat, newStrat, agents, state, formula, "GAL");
+                            result.add(state);
+                            stateContinueSignal = true;
+                            break;
+                        }
+                    }
+                    if (stateContinueSignal)
+                        break;
                 }
             }
         }
