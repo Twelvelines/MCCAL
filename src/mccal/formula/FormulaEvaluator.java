@@ -92,7 +92,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
             Set<Set<String>> lastOtherAgentStrats;
             try {
                 lastAgentStrats = model.getStrategies(state, lastAgent);
-                lastOtherAgentStrats = model.getStrategies(state, lastOtherAgent);
+                lastOtherAgentStrats = restOfAgents.isEmpty() ? null : model.getStrategies(state, lastOtherAgent);
 
             } catch (UnknownAgentException e) {
                 System.err.println(e.toString());
