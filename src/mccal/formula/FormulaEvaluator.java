@@ -253,7 +253,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
                 }
                 for (Set<String> strat : strats) {
                     Model submodel = model.getShrunkModel(strat).bisimContract();
-                    if (ModelChecker.evalFormula(submodel, formula, startingState).contains(state)) {
+                    if (!ModelChecker.evalFormula(submodel, "!("+formula+")", startingState).contains(state)) {
                         printValidStrat(strat, null, agents, state, formula, "GAL");
                         result.add(state);
                         break;
@@ -291,7 +291,7 @@ public class FormulaEvaluator extends FormulaGrammarBaseListener {
 
                         Set<String> flattenStrat = Intersection.intersect(newStrat.values());
                         Model submodel = model.getShrunkModel(flattenStrat).bisimContract();
-                        if (ModelChecker.evalFormula(submodel, formula, startingState).contains(state)) {
+                        if (!ModelChecker.evalFormula(submodel, "!("+formula+")", startingState).contains(state)) {
                             printValidStrat(flattenStrat, newStrat, agents, state, formula, "GAL");
                             result.add(state);
                             stateContinueSignal = true;
