@@ -1,4 +1,4 @@
-(
+K(5,
   ((p1) and (p2) and (!p3) and (!p4)) or
     ((p1) and (!p2) and (p3) and (!p4)) or
     ((p1) and (!p2) and (!p3) and (p4)) or
