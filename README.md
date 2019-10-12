@@ -4,7 +4,7 @@
 Utilising [ANTLR][2] for generating customised parsers
 (ANTLR version: 4.7.1)
 
-### Before Started...
+### Before Starting...
 
 Any terminal command or directory mentioned below presumes that you are currently in the project's root directory, namely *MCCAL*, unless otherwise specified. 
 
@@ -108,7 +108,7 @@ A full definition of the formula grammar can be found in `src/mccal/antlr/Formul
 
 
 
-###### *Special thanks to Prof. Franco Raimondi ([fraimondi][1]) for his MCCOGWED project which MCCAL was initially forked from and had given me many food for thought when designing the model checker. Also to Dr. Natasha Alechina for the great effort in supervision, and Dr. Brian Logan for advising support.* 
+###### *Special thanks to Prof. Franco Raimondi ([fraimondi][1]) for his MCCOGWED project which MCCAL was initially forked from and had given me many foods for thought when designing the model checker. Also to Dr. Natasha Alechina for the great effort in supervision, and Dr. Brian Logan and Dr. Rustam Galimullin for advising support.* 
 
 [1]:	https://github.com/fraimondi/mccogwed
 [2]:    https://www.antlr.org
